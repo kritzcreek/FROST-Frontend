@@ -1,0 +1,14 @@
+.roomTime {
+  background-color: #6d49cf;
+  float: left;
+}
+.topic {
+  background-color: #b66360;
+  float: left;
+}
+.timeslot {
+  border-style: ridge;
+  border-color: #08ff00;
+  border-width: 4px;
+  float: left;
+}
