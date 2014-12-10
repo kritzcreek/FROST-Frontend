@@ -18,6 +18,7 @@
     "purescript-arrays"               : "*",
     "purescript-maybe"                : "*",
     "purescript-foldable-traversable" : "*",
+    "purescript-rx"                   : "*",
     "react"                           : "*"
   },
   "devDependencies": {
