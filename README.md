@@ -1,6 +1,6 @@
-# state-psc
+# reactive-psc
 
-An empty PureScript project.
+React View <*> Purescript Controller.
 
 ## Building
 
@@ -8,4 +8,7 @@ An empty PureScript project.
 npm install
 bower update
 grunt
+grunt browser
 ```
+
+--> Open static/index.html
