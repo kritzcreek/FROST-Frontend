@@ -1,4 +1,6 @@
-var RoomTime = React.createClass({
+var RoomTime, Topic, Room, MainApp;
+
+RoomTime = React.createClass({
   render : function(){
     return (
       <div className="roomTime">
@@ -9,7 +11,7 @@ var RoomTime = React.createClass({
   }
 });
 
-var Topic = React.createClass({
+Topic = React.createClass({
   render: function(){
     return (
       <div className="topic">
@@ -20,7 +22,7 @@ var Topic = React.createClass({
   }
 });
 
-var TimeSlot = React.createClass({
+TimeSlot = React.createClass({
   render: function() {
     return (
       <div className="timeslot">
@@ -31,10 +33,7 @@ var TimeSlot = React.createClass({
   }
 });
 
-var MainApp = React.createClass({
-  componentDidMount: function (){
-    console.log(this.props.appState);
-  },
+MainApp = React.createClass({
   render: function() {
     var timedTopics = this.props.appState.timeslots
       .map(function(timeslot){

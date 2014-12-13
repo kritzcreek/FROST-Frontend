@@ -1,23 +1,17 @@
 module Render.Main where
 
 import Render.Types
-import Data.Tuple
-import Data.Tuple.Nested
 import Data.Array
 import Control.Monad.Eff
-import Control.Monad.ST
 
 showSlot :: Slot -> String
 showSlot (Slot {room=r, time=t}) = "Raum " ++ r ++ " Zeitpunkt: " ++ show t
 
-addTopic :: Slot -> Topic -> AppState -> AppState
-addTopic s t as = { timeslots: (s /\ t) : as.timeslots }
+addTimeslot :: Timeslot -> AppState -> AppState
+addTimeslot ts as = { timeslots: ts : as.timeslots }
 
-removeTopic :: Slot -> Topic -> AppState -> AppState
-removeTopic s t as = { timeslots: delete (s /\ t) as.timeslots }
-
-render :: Number -> Unit
-render _ = renderApp $ addTopic mySlot myTopic emptyState
+removeTimeslot :: Timeslot -> AppState -> AppState
+removeTimeslot ts as = { timeslots: delete ts as.timeslots }
 
 foreign import renderApp
 """function renderApp(app){

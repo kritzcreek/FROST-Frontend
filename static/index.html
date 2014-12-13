@@ -2,15 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
-  <script src="../bower_components/react/react.js"></script>
-  <script src="../bower_components/react/JSXTransformer.js"></script>
+  <title>Open Space</title>
+  <script type="text/javascript" src="../bower_components/react/react.js"></script>
+  <script type="text/javascript" src="../bower_components/react/JSXTransformer.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/rxjs/dist/rx.all.js"></script>
+  <script type="text/javascript" src="../bower_components/rxjs-jquery/rx.jquery.js"></script>
+  <link type="text/css" rel="stylesheet"
+  href="../bower_components/bootstrap/dist/css/bootstrap.min.css"></link>
+
   <script type="text/jsx" src="main-component.js"></script>
   <script src="../output/index.js"></script>
-
   <link type="text/css" rel="stylesheet" href="main.css"></link>
 </head>
 <body>
-  <div id="content"></div>
+  <div class="col-md-6">
+    <div id="content"></div>
+  </div>
+<div class="col-md-6">
+  <form role="form">
+    <div class="form-group">
+      <label for="roomInput">Raum: </label>
+      <input class="form-control" type="text"   id="roomInput"/>
+    </div>
+    <div class="form-group">
+      <label for="timeInput">Zeit: </label>
+      <input class="form-control" type="number" id="timeInput"/>
+    </div>
+    <div class="form-group">
+      <label for="topicInput">Thema: </label>
+      <input class="form-control" type="text"   id="topicInput"/>
+    </div>
+    <div class="form-group">
+      <label for="typInput">Art: </label>
+      <input class="form-control" type="text"   id="typInput"/>
+    </div>
+  </form>
+  <button id="submitBtn" class="btn btn-md btn-success"> Hinzufügen </button>
+</div>
+
+
+  <script type="text/javascript">
+    $(setTimeout(PS.Event_Stream_Input.main, 200))
+  </script>
 </body>
 </html>
