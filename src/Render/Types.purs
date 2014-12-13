@@ -1,6 +1,7 @@
 module Render.Types where
 
 import Data.Tuple
+import Data.Maybe
 import Data.Foreign
 import Data.Foreign.Class
 
@@ -50,12 +51,12 @@ instance foreignTopic :: IsForeign Topic where
 
 type Timeslot = Tuple Slot Topic
 
-type AppState = { timeslots :: [Timeslot] }
+type AppState = { timeslots :: [Timeslot], selected :: Maybe Topic }
 
 ---------------------------------------------------------------------
 --| Dummy Werte
 
-emptyState = {timeslots : []}
+emptyState = {timeslots : [], selected: Nothing}
 
 mySlot = Slot {room:"Berlin", time:10}
 mySlot1 = Slot {room:"Hamburg", time:200}
@@ -65,5 +66,5 @@ myTopic = Topic {description:"Functional Javascript", typ:"Diskussion"}
 myState1 = {timeslots:
   [(Tuple mySlot myTopic)
   ,(Tuple  mySlot1 myTopic1)
-  ]}
+  ], selected: Just myTopic1}
 ---------------------------------------------------------------------
