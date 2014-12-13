@@ -19,7 +19,9 @@
     "purescript-maybe"                : "*",
     "purescript-foldable-traversable" : "*",
     "purescript-rx"                   : "*",
-    "react"                           : "*"
+    "purescript-foreign"              : "*",
+    "react"                           : "*",
+    "bootstrap"                       : "*"
   },
   "devDependencies": {
     "purescript-math"                 : "*",
