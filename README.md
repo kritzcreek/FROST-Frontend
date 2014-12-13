@@ -1,6 +1,6 @@
 # reactive-psc
 
-React View <*> Purescript Controller.
+React View <$> RX Binding <*> Purescript Controller.
 
 ## Building
 
