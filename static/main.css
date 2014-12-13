@@ -15,3 +15,6 @@
   float: left;
   padding: 3px;
 }
+.timeslot.selected {
+  border-color: #ff0026;
+}
