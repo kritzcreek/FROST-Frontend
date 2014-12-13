@@ -32,6 +32,15 @@ function readSlot (){
 }
 """ :: forall eff. Eff( dom :: DOM | eff ) Foreign
 
+foreign import getDetail
+"""
+function getDetail (e){
+  return function(){
+    return e.originalEvent.detail;
+    }
+}
+""" :: forall eff. J.JQueryEvent -> Eff( dom :: DOM | eff ) Foreign
+
 parseTopic :: Foreign -> Either ForeignError Topic
 parseTopic ft = do
   t <- read ft :: F Topic
@@ -47,13 +56,7 @@ parseTimeslot fs ft = do
   s <- parseSlot fs
   t <- parseTopic ft
   return $ Tuple s t
-
-postTopic :: forall eff. Topic -> Eff(trace :: Trace | eff) Unit
-postTopic (Topic t) = print $ "Beschreibung: " ++ t.description ++ " Typ: " ++ t.typ
-
-postSlot :: forall eff. Slot -> Eff(trace :: Trace | eff) Unit
-postSlot (Slot s) = print $ "Raum: " ++ s.room ++ " Typ: " ++ (show s.time)
-
+  
 type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h | eff ) Unit
 
 streams :: forall eff h. Stream AppState h eff
@@ -62,10 +65,21 @@ streams = do
   appSt <- newSTRef myState1
   renderApp <$> readSTRef appSt
 
-  submit <- J.select "#submitBtn"
-  submitClick <- "click" `onAsObservable` submit
+  add <- J.select "#addBtn"
+  emitter <- J.select ".app"
 
-  subscribe submitClick (\_-> do
+  onAdd  <- "click" `onAsObservable` add
+  onSelect <- "selectTimeSlot" `onAsObservable` emitter
+
+  subscribe onSelect (\e -> do
+    ft <- getDetail e
+    case parseTopic ft of
+      Right t -> void $ modifySTRef appSt $ select t
+      Left e -> trace $ show e
+    renderApp <$> readSTRef appSt
+    )
+
+  subscribe onAdd (\_-> do
     t <- readTopic
     s <- readSlot
     case parseTimeslot s t of

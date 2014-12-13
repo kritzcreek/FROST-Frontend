@@ -23,9 +23,15 @@ Topic = React.createClass({
 });
 
 TimeSlot = React.createClass({
+  handleClick : function(e){
+    var event = new CustomEvent('selectTimeSlot',
+                  { 'detail': this.props.tuple.value1 });
+    this.props.emit(event);
+  },
+
   render: function() {
     return (
-      <div className="timeslot">
+      <div className={this.props.selected ? 'timeslot selected' : ' ' + ' timeslot'} onClick={this.handleClick}>
         <RoomTime values={this.props.tuple.value0}></RoomTime>
         <Topic values={this.props.tuple.value1}></Topic>
       </div>
@@ -34,11 +40,19 @@ TimeSlot = React.createClass({
 });
 
 MainApp = React.createClass({
+  emit : function(event){
+    this.getDOMNode().dispatchEvent(event);
+  },
+
   render: function() {
     var timedTopics = this.props.appState.timeslots
       .map(function(timeslot){
+        var selected = timeslot.value1.description === this.props.appState.selected.value0.description;
         return (
-          <TimeSlot tuple={timeslot}> </TimeSlot>
+          <TimeSlot
+          selected={selected}
+          key={timeslot.value1.description}
+          tuple={timeslot} emit={this.emit}> </TimeSlot>
         );
       },this);
     return (
