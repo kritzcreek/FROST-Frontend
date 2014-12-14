@@ -47,7 +47,7 @@ MainApp = React.createClass({
   render: function() {
     var timedTopics = this.props.appState.timeslots
       .map(function(timeslot){
-        var selected = timeslot.value1.description === this.props.appState.selected.value0.description;
+        var selected = timeslot.value1.description === (this.props.appState.selected.value0 && this.props.appState.selected.value0.description);
         return (
           <TimeSlot
           selected={selected}

@@ -66,5 +66,5 @@ myTopic = Topic {description:"Functional Javascript", typ:"Diskussion"}
 myState1 = {timeslots:
   [(Tuple mySlot myTopic)
   ,(Tuple  mySlot1 myTopic1)
-  ], selected: Just myTopic1}
+  ], selected: Nothing :: Maybe Topic}
 ---------------------------------------------------------------------
