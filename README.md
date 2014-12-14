@@ -17,4 +17,4 @@ grunt
 grunt browser
 ```
 
-Point your browser at ** localhost:9001/static **
+Point your browser at **localhost:9001/static**
