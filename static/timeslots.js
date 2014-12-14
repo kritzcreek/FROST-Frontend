@@ -1,12 +1,12 @@
-var RoomTime, Topic, Room, Timeslots, Topics;
+var Slot, TsTopic, Room, Timeslots, Topics;
 
 var Panel = ReactBootstrap.Panel;
 
 
-RoomTime = React.createClass({
+Slot = React.createClass({
   render : function(){
     return (
-      <div className="roomTime">
+      <div className="ts-slot">
         <div className="room"> Raum: {this.props.values.room}</div>
         <div className="time"> Zeit: {this.props.values.time}</div>
       </div>
@@ -14,10 +14,10 @@ RoomTime = React.createClass({
   }
 });
 
-Topic = React.createClass({
+TsTopic = React.createClass({
   render: function(){
     return (
-      <div className="topic">
+      <div className="ts-topic">
       <div className="description"> Thema: {this.props.values.description}</div>
       <div className="typ"> Typ: {this.props.values.typ}</div>
       </div>
@@ -35,32 +35,11 @@ TimeSlot = React.createClass({
   render: function() {
     return (
       <div className={this.props.selected ? 'timeslot selected' : ' ' + ' timeslot'} onClick={this.handleClick}>
-        <RoomTime values={this.props.tuple.value0}></RoomTime>
-        <Topic values={this.props.tuple.value1}></Topic>
+        <Slot values={this.props.tuple.value0}></Slot>
+        <TsTopic values={this.props.tuple.value1}></TsTopic>
       </div>
     );
   }
-});
-
-Topics = React.createClass({
-  emit : function(event){
-    this.getDOMNode().dispatchEvent(event);
-  },
-  render: function(){
-    var topics = this.props.topics
-    .map(function(topic){
-    return (
-      <Topic values ={topic} key={topic.description}> </Topic>
-    );
-  },this);
-  return (
-    <Panel id="topicsContainer" header="Themen" bsStyle="primary">
-      <div id="topic">
-        {topics}
-      </div>
-    </Panel>
-  );
-}
 });
 
 Timeslots = React.createClass({
