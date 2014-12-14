@@ -21,7 +21,8 @@
     "purescript-rx"                   : "*",
     "purescript-foreign"              : "*",
     "react"                           : "*",
-    "bootstrap"                       : "*"
+    "bootstrap"                       : "*",
+    "react-bootstrap"                 : "*"
   },
   "devDependencies": {
     "purescript-math"                 : "*",
