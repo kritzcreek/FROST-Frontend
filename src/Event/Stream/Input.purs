@@ -59,21 +59,7 @@ parseTimeslot fs ft = do
   return $ Tuple s t
 
 type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h | eff ) Unit
---type TopicSt eff = StateT Foreign ( Eff( dom :: DOM | eff))
 
-{-
---addTopic :: forall eff. TopicSt eff Topic
-addTopic = do
-  add <- J.select "#addBtn"
-  onAdd  <- "click" `onAsObservable` add
-  subscribe onAdd (_ ->
-    dot <- readTopic
-    s <- readSlot
-    case parseTimeslot s t of
-      Right ts -> void $ modifySTRef appSt $ addTimeslot ts
-      Left e -> trace $ show e
-    )
--}
 streams :: forall h eff. Stream AppState h eff
 streams = do
 
@@ -81,7 +67,7 @@ streams = do
   renderApp <$> readSTRef appSt
 
   menuEmitter <- J.select "#menuContainer"
-  appEmitter <- J.select ".app"
+  appEmitter <- J.select "#app"
 
   onAddTopic    <- "addTopic" `onAsObservable` menuEmitter
   onRemoveTopic <- "removeTopic" `onAsObservable` menuEmitter

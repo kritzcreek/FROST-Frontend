@@ -56,7 +56,7 @@ MainApp = React.createClass({
         );
       },this);
     return (
-      <div className="app">
+      <div id="app">
         {timedTopics}
       </div>
     );
