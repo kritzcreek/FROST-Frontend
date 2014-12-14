@@ -51,16 +51,26 @@ unselect as = { topics     : as.topics
               , selected   : Nothing :: Maybe Topic
               }
 
+
+foreign import renderMenu
+"""function renderMenu(){
+    React.render(
+      React.createElement(Menu, null),
+      document.getElementById('menu')
+    );
+}
+""" :: forall eff. Eff( dom::DOM | eff ) Unit
+
 foreign import renderTopics
-"""function renderTopics(topics){
+"""function renderTopics(topicsAndSelected){
   return function(){
     React.render(
-      React.createElement(Topics, {topics: topics}),
+      React.createElement(Topics, {topicsAndSelected: topicsAndSelected}),
       document.getElementById('topics')
-    )
+      )
+    }
   }
-}
-""" :: forall eff. [Topic] -> Eff( dom::DOM | eff ) Unit
+  """ :: forall eff. Tuple [Topic] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderTimeslots
 """function renderTimeslots(timeslotsAndSelected){
@@ -73,16 +83,7 @@ foreign import renderTimeslots
   }
 """ :: forall eff. Tuple [Timeslot] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
 
-{- foreign import renderApp
-"""function renderApp(app){
-    React.render(
-      React.createElement(MainApp, {appState: app}),
-      document.getElementById('timeslots')
-    );
-}
-""" :: forall eff. AppState -> Unit -}
-
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   renderTimeslots $ Tuple as.timeslots as.selected
-  renderTopics as.topics
+  renderTopics    $ Tuple as.topics    as.selected

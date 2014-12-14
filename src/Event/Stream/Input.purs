@@ -65,13 +65,18 @@ streams = do
 
   appSt <- newSTRef myState1
   readSTRef appSt >>= renderApp
+  renderMenu
 
-  menuEmitter <- J.select "#menuContainer"
-  appEmitter <- J.select "#timeSlotsContainer"
+  menuEmitter     <- J.select "#menuContainer"
+  timeslotEmitter <- J.select "#timeSlotsContainer"
+  topicEmitter    <- J.select "#topicsContainer"
 
-  onAddTopic    <- "addTopic" `onAsObservable` menuEmitter
-  onRemoveTopic <- "removeTopic" `onAsObservable` menuEmitter
-  onSelect      <- "selectTimeSlot" `onAsObservable` appEmitter
+  onAddTopic       <- "addTopic" `onAsObservable` menuEmitter
+  onRemoveTopic    <- "removeTopic" `onAsObservable` menuEmitter
+  onTimeslotSelect <- "selectTimeSlot" `onAsObservable` timeslotEmitter
+  onTopicSelect    <- "selectTopic" `onAsObservable` topicEmitter
+
+  let onSelect = merge onTimeslotSelect onTopicSelect
 
   subscribe onSelect (\e -> do
     ft <- getDetail e

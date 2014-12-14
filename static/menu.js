@@ -78,9 +78,3 @@ Menu = React.createClass({
     );
   }
 });
-
-
-React.render(
-  React.createElement(Menu, null),
-  document.getElementById('menu')
-);
