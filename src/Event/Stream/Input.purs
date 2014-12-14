@@ -7,6 +7,7 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Tuple
+import Data.Maybe
 
 import Control.Monad.Eff
 import Control.Monad.ST
@@ -56,20 +57,35 @@ parseTimeslot fs ft = do
   s <- parseSlot fs
   t <- parseTopic ft
   return $ Tuple s t
-  
-type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h | eff ) Unit
 
-streams :: forall eff h. Stream AppState h eff
+type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h | eff ) Unit
+--type TopicSt eff = StateT Foreign ( Eff( dom :: DOM | eff))
+
+{-
+--addTopic :: forall eff. TopicSt eff Topic
+addTopic = do
+  add <- J.select "#addBtn"
+  onAdd  <- "click" `onAsObservable` add
+  subscribe onAdd (_ ->
+    dot <- readTopic
+    s <- readSlot
+    case parseTimeslot s t of
+      Right ts -> void $ modifySTRef appSt $ addTimeslot ts
+      Left e -> trace $ show e
+    )
+-}
+streams :: forall h eff. Stream AppState h eff
 streams = do
 
   appSt <- newSTRef myState1
   renderApp <$> readSTRef appSt
 
-  add <- J.select "#addBtn"
-  emitter <- J.select ".app"
+  menuEmitter <- J.select "#menuContainer"
+  appEmitter <- J.select ".app"
 
-  onAdd  <- "click" `onAsObservable` add
-  onSelect <- "selectTimeSlot" `onAsObservable` emitter
+  onAddTopic    <- "addTopic" `onAsObservable` menuEmitter
+  onRemoveTopic <- "removeTopic" `onAsObservable` menuEmitter
+  onSelect      <- "selectTimeSlot" `onAsObservable` appEmitter
 
   subscribe onSelect (\e -> do
     ft <- getDetail e
@@ -79,12 +95,22 @@ streams = do
     renderApp <$> readSTRef appSt
     )
 
-  subscribe onAdd (\_-> do
-    t <- readTopic
-    s <- readSlot
-    case parseTimeslot s t of
-      Right ts -> void $ modifySTRef appSt $ addTimeslot ts
+  subscribe onAddTopic (\e -> do
+    ft <- getDetail e
+    case parseTopic ft of
+      Right t -> void $ modifySTRef appSt $ addTimeslot (Tuple mySlot t)
       Left e -> trace $ show e
+    renderApp <$> readSTRef appSt
+    )
+
+  subscribe onRemoveTopic (\_ -> do
+    app <- readSTRef appSt
+    case app.selected of
+      Just t -> do
+        modifySTRef appSt $ removeTopic t
+        modifySTRef appSt $ unselect
+        return unit
+      Nothing -> trace "Wähle ein Thema aus."
     renderApp <$> readSTRef appSt
     )
 
