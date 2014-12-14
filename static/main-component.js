@@ -1,4 +1,7 @@
-var RoomTime, Topic, Room, MainApp;
+var RoomTime, Topic, Room, Timeslots, Topics;
+
+var Panel = ReactBootstrap.Panel;
+
 
 RoomTime = React.createClass({
   render : function(){
@@ -39,15 +42,37 @@ TimeSlot = React.createClass({
   }
 });
 
-MainApp = React.createClass({
+Topics = React.createClass({
+  emit : function(event){
+    this.getDOMNode().dispatchEvent(event);
+  },
+  render: function(){
+    var topics = this.props.topics
+    .map(function(topic){
+    return (
+      <Topic values ={topic} key={topic.description}> </Topic>
+    );
+  },this);
+  return (
+    <Panel id="topicsContainer" header="Themen" bsStyle="primary">
+      <div id="topic">
+        {topics}
+      </div>
+    </Panel>
+  );
+}
+});
+
+Timeslots = React.createClass({
   emit : function(event){
     this.getDOMNode().dispatchEvent(event);
   },
 
   render: function() {
-    var timedTopics = this.props.appState.timeslots
+    var _selected = this.props.timeslotsAndSelected.value1;
+    var timedTopics = this.props.timeslotsAndSelected.value0
       .map(function(timeslot){
-        var selected = timeslot.value1.description === (this.props.appState.selected.value0 && this.props.appState.selected.value0.description);
+        var selected = timeslot.value1.description === (_selected.value0 && _selected.value0.description);
         return (
           <TimeSlot
           selected={selected}
@@ -56,9 +81,11 @@ MainApp = React.createClass({
         );
       },this);
     return (
-      <div id="app">
-        {timedTopics}
-      </div>
+      <Panel id="timeSlotsContainer" header="Timeslots" bsStyle="primary">
+        <div id="app">
+          {timedTopics}
+        </div>
+      </Panel>
     );
   }
 });

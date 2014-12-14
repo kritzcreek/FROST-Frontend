@@ -64,10 +64,10 @@ streams :: forall h eff. Stream AppState h eff
 streams = do
 
   appSt <- newSTRef myState1
-  renderApp <$> readSTRef appSt
+  readSTRef appSt >>= renderApp
 
   menuEmitter <- J.select "#menuContainer"
-  appEmitter <- J.select "#app"
+  appEmitter <- J.select "#timeSlotsContainer"
 
   onAddTopic    <- "addTopic" `onAsObservable` menuEmitter
   onRemoveTopic <- "removeTopic" `onAsObservable` menuEmitter
@@ -78,15 +78,15 @@ streams = do
     case parseTopic ft of
       Right t -> void $ modifySTRef appSt $ select t
       Left e -> trace $ show e
-    renderApp <$> readSTRef appSt
+    readSTRef appSt >>= renderApp
     )
 
   subscribe onAddTopic (\e -> do
     ft <- getDetail e
     case parseTopic ft of
-      Right t -> void $ modifySTRef appSt $ addTimeslot (Tuple mySlot t)
+      Right t -> void $ modifySTRef appSt $ addTopic t
       Left e -> trace $ show e
-    renderApp <$> readSTRef appSt
+    readSTRef appSt >>= renderApp
     )
 
   subscribe onRemoveTopic (\_ -> do
@@ -97,7 +97,7 @@ streams = do
         modifySTRef appSt $ unselect
         return unit
       Nothing -> trace "Wähle ein Thema aus."
-    renderApp <$> readSTRef appSt
+    readSTRef appSt >>= renderApp
     )
 
 main = runST streams
