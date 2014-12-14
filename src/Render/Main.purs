@@ -51,6 +51,17 @@ unselect as = { topics     : as.topics
               , selected   : Nothing :: Maybe Topic
               }
 
+sanitizeTopic :: Topic -> SanitizedTopic
+sanitizeTopic (Topic t) = { description : t.description
+                          , typ         : (show t.typ)
+                          }
+
+sanitizeAppState :: AppState -> SanitizedAppState
+sanitizeAppState as = { topics     : sanitizeTopic <$> as.topics
+                      , slots      : as.slots
+                      , timeslots  : as.timeslots
+                      , selected   : (sanitizeTopic <$> as.selected) :: Maybe SanitizedTopic
+                      }
 
 foreign import renderMenu
 """function renderMenu(){
@@ -70,7 +81,7 @@ foreign import renderTopics
       )
     }
   }
-  """ :: forall eff. Tuple [Topic] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
+  """ :: forall eff. Tuple [SanitizedTopic] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderTimeslots
 """function renderTimeslots(timeslotsAndSelected){
@@ -81,9 +92,10 @@ foreign import renderTimeslots
       );
     }
   }
-""" :: forall eff. Tuple [Timeslot] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
+""" :: forall eff. Tuple [Timeslot] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
 
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
-  renderTimeslots $ Tuple as.timeslots as.selected
-  renderTopics    $ Tuple as.topics    as.selected
+  let as' = sanitizeAppState as
+  renderTimeslots $ Tuple as'.timeslots as'.selected
+  renderTopics    $ Tuple as'.topics    as'.selected
