@@ -51,16 +51,25 @@ module.exports = function(grunt) {
       tests: {
         src: "tmp/index.js"
       }
+    },
+    connect: {
+      server: {
+        options: {
+          port: 9001,
+          base: ''
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks("grunt-execute");
   grunt.loadNpmTasks("grunt-purescript");
 
   grunt.registerTask("test", ["pscMake:tests", "copy", "execute:tests"]);
   grunt.registerTask("make", ["pscMake:lib", "dotPsci"]);
-  grunt.registerTask("default", ["clean", "make", "test"]);
-  grunt.registerTask("browser", ["clean", "make", "psc:all"]);
+  grunt.registerTask("default", ["clean", "make", "psc:all"]);
+  grunt.registerTask("browser", ["clean", "make", "psc:all", "connect:server:keepalive"]);
 };
