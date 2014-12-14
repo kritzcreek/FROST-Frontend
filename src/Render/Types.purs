@@ -20,18 +20,6 @@ instance foreignSlot :: IsForeign Slot where
     time <- readProp "time" val :: F Number
     return $ Slot {room: room, time: time}
 
-{-
-instance fromJSONSlot :: FromJSON Slot where
-  parseJSON (JObject o) = do
-    room <- o .: "room"
-    time <- o .: "time"
-    return $ Slot {room:room, time:time}
-  parseJSON _ = fail "Slot parse failed."
-
-instance toJSONSlot :: ToJSON Slot where
-  toJSON (Topic t) = object ["room" .= t.room, "time" .= t.time]
--}
-
 ---------------------------------------------------------------------
 --| Topics
 
@@ -51,20 +39,24 @@ instance foreignTopic :: IsForeign Topic where
 
 type Timeslot = Tuple Slot Topic
 
-type AppState = { timeslots :: [Timeslot], selected :: Maybe Topic }
+type AppState = { topics :: [Topic]
+                , slots :: [Slot]
+                , timeslots :: [Timeslot]
+                , selected :: Maybe Topic
+                }
 
 ---------------------------------------------------------------------
 --| Dummy Werte
 
-emptyState = {timeslots : [], selected: Nothing}
+emptyState = {topics: [], slots: [], timeslots: [], selected: Nothing}
 
 mySlot = Slot {room:"Berlin", time:10}
 mySlot1 = Slot {room:"Hamburg", time:200}
 myTopic1 = Topic {description:"Reactive Design", typ:"Vorstellung"}
 myTopic = Topic {description:"Functional Javascript", typ:"Diskussion"}
 
-myState1 = {timeslots:
-  [(Tuple mySlot myTopic)
-  ,(Tuple  mySlot1 myTopic1)
-  ], selected: Nothing :: Maybe Topic}
+myState1 = { topics: [myTopic, myTopic1]
+           , slots : [mySlot, mySlot1]
+           , timeslots: [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
+           , selected: Nothing :: Maybe Topic}
 ---------------------------------------------------------------------

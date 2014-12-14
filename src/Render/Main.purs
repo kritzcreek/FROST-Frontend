@@ -6,24 +6,49 @@ import Data.Maybe
 import Data.Tuple
 import Control.Monad.Eff
 
-showSlot :: Slot -> String
-showSlot (Slot {room=r, time=t}) = "Raum " ++ r ++ " Zeitpunkt: " ++ show t
-
 addTimeslot :: Timeslot -> AppState -> AppState
-addTimeslot ts as = { timeslots: ts : as.timeslots, selected: as.selected }
+addTimeslot ts as = { topics     : as.topics
+                    , slots      : as.slots
+                    , timeslots  : ts : as.timeslots
+                    , selected   : as.selected
+                    }
 
 removeTimeslot :: Timeslot -> AppState -> AppState
-removeTimeslot ts as = { timeslots: delete ts as.timeslots, selected: as.selected }
+removeTimeslot ts as = { topics     : as.topics
+                       , slots      : as.slots
+                       , timeslots  : delete ts as.timeslots
+                       , selected   : as.selected
+                       }
+
+addTopic :: Topic -> AppState -> AppState
+addTopic t as = { topics     : t:as.topics
+                , slots      : as.slots
+                , timeslots  : as.timeslots
+                , selected   : as.selected
+                }
 
 removeTopic :: Topic -> AppState -> AppState
-removeTopic t as = { timeslots: filter (\(Tuple s t') -> t' /= t ) as.timeslots
-                   , selected: as.selected}
+removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
+                   in { topics    : delete t as.topics
+                      , slots     : as.slots
+                      , timeslots : topicslotFilter as.timeslots
+                      , selected  : as.selected
+                      }
 
 select :: Topic -> AppState -> AppState
-select topic as = {timeslots: as.timeslots, selected: Just topic}
+select topic as = { topics     : as.topics
+                  , slots      : as.slots
+                  , timeslots  : as.timeslots
+                  , selected   : Just topic
+                  }
 
 unselect :: AppState -> AppState
-unselect as = {timeslots: as.timeslots, selected: Nothing :: Maybe Topic} 
+unselect as = { topics     : as.topics
+              , slots      : as.slots
+              , timeslots  : as.timeslots
+              , selected   : Nothing :: Maybe Topic
+              }
+
 
 foreign import renderApp
 """function renderApp(app){
