@@ -55,12 +55,19 @@ sanitizeTopic :: Topic -> SanitizedTopic
 sanitizeTopic (Topic t) = { description : t.description
                           , typ         : (show t.typ)
                           }
+sanitizeSlot :: Slot -> SanitizedSlot
+sanitizeSlot (Slot s) = { room  : show s.room
+                        , block : show s.block
+                        }
+
+sanitizeTimeslot :: Timeslot -> SanitizedTimeslot
+sanitizeTimeslot (Tuple s t) = Tuple (sanitizeSlot s) (sanitizeTopic t)
 
 sanitizeAppState :: AppState -> SanitizedAppState
-sanitizeAppState as = { topics     : sanitizeTopic <$> as.topics
-                      , slots      : as.slots
-                      , timeslots  : as.timeslots
-                      , selected   : (sanitizeTopic <$> as.selected) :: Maybe SanitizedTopic
+sanitizeAppState as = { topics     : sanitizeTopic    <$> as.topics
+                      , slots      : sanitizeSlot     <$> as.slots
+                      , timeslots  : sanitizeTimeslot <$> as.timeslots
+                      , selected   : sanitizeTopic    <$> as.selected
                       }
 
 foreign import renderMenu
@@ -85,14 +92,14 @@ foreign import renderTopics
 
 foreign import renderTimeslots
 """function renderTimeslots(timeslotsAndSelected){
-  return function(){
-    React.render(
-        React.createElement(Timeslots, {timeslotsAndSelected: timeslotsAndSelected}),
-        document.getElementById('timeslots')
-      );
+    return function(){
+      React.render(
+          React.createElement(Timeslots, {timeslotsAndSelected: timeslotsAndSelected}),
+          document.getElementById('timeslots')
+        );
+      }
     }
-  }
-""" :: forall eff. Tuple [Timeslot] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
+""" :: forall eff. Tuple [SanitizedTimeslot] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
 
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
