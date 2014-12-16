@@ -23,11 +23,12 @@ Tableheader = React.createClass({
 
 Tablebody = React.createClass({
     render: function(){
+      var blocks= this.props.blocks;
       var rows = _.zip(this.props.rooms, this.props.grid)
       .map(function(row){
         var room = _.head(row);
         return(
-          <Tablerow room={room} row={_.tail(row)[0]} key={room.name}></Tablerow>
+          <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name}></Tablerow>
         );
       });
       return(
@@ -40,10 +41,12 @@ Tablebody = React.createClass({
 
 Tablerow = React.createClass({
   render: function(){
-    var topics = this.props.row
-    .map(function(topic){
+    var topics = _.zip(this.props.blocks, this.props.row)
+    .map(function(zip){
+      var block = zip[0];
+      var topic = zip[1];
       return(
-        <td> {topic.value0 ? topic.value0.description : ''} </td>
+        <td key={block.start}> {topic.value0 ? topic.value0.description : ''} </td>
       );
     });
     return(
@@ -59,8 +62,8 @@ Grid = React.createClass({
   render: function(){
     return(
       <Table striped bordered condensed>
-        <Tableheader blocks={this.props.blocks}></Tableheader>
-        <Tablebody rooms={this.props.rooms} grid={this.props.grid}></Tablebody>
+        <Tableheader blocks={this.props.blocks} />
+        <Tablebody {...this.props} />
       </Table>
     );
   }
