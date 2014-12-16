@@ -4,19 +4,26 @@ var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Panel = ReactBootstrap.Panel;
+var Input = ReactBootstrap.Input;
 
 AddModal = React.createClass({
   handleClick: function() {
     var event = new CustomEvent('addTopic',
     { 'detail': {
                  description: $('#topicInput').val(),
-                 typ: $('#typInput').val()
+                 typ: $('#topicTypeInput').val()
                 }
     });
     this.props.emit(event);
     this.props.onRequestHide();
   },
   render: function() {
+    var options = this.props.topicTypes
+    .map(function(topicType){
+      return (
+        <option value={topicType}>{topicType}</option>
+      );
+    });
     return (
       <Modal {...this.props} title="Neues Thema" animation={true}>
       <div className="modal-body">
@@ -26,8 +33,11 @@ AddModal = React.createClass({
             <input className="form-control" type="text"   id="topicInput"/>
           </div>
           <div className="form-group">
-            <label htmlFor="typInput">Art: </label>
-            <input className="form-control" type="text"   id="typInput"/>
+            <Input type="select" label='Typ'
+            defaultValue={_.head(this.props.topicTypes)}
+            id="topicTypeInput">
+              {options}
+            </Input>
           </div>
         </form>
       </div>
@@ -72,7 +82,7 @@ Menu = React.createClass({
   render: function(){
     return (
       <Panel id="menuContainer" header="Menü" bsStyle="primary">
-        <OpenAddModal emit={this.emit}></OpenAddModal>
+        <OpenAddModal topicTypes={this.props.topicTypes} emit={this.emit}></OpenAddModal>
         <RemoveButton emit={this.emit}></RemoveButton>
       </Panel>
     );

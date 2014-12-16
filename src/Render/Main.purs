@@ -94,13 +94,15 @@ makeGrid :: SanitizedAppState -> [[Maybe SanitizedTopic]]
 makeGrid as' = (\r -> (\b -> findIn r b as'.timeslots ) <$> as'.blocks ) <$> as'.rooms
 
 foreign import renderMenu
-"""function renderMenu(){
+"""function renderMenu(topicTypes){
+  return function(){
     React.render(
-      React.createElement(Menu, null),
+      React.createElement(Menu, {topicTypes: topicTypes}),
       document.getElementById('menu')
-    );
+      );
+  }
 }
-""" :: forall eff. Eff( dom::DOM | eff ) Unit
+""" :: forall eff. [String] -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderTopics
 """function renderTopics(topicsAndSelected){

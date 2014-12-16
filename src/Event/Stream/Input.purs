@@ -65,7 +65,7 @@ streams = do
 
   appSt <- newSTRef myState1
   readSTRef appSt >>= renderApp
-  renderMenu
+  renderMenu (show <$> topicTypes)
 
   menuEmitter     <- J.select "#menuContainer"
   timeslotEmitter <- J.select "#timeSlotsContainer"

@@ -8,7 +8,6 @@ import Data.Foreign.Class
 
 ---------------------------------------------------------------------
 
-
 data TopicType = Discussion
                | Presentation
                | Workshop
@@ -29,7 +28,27 @@ instance foreignTopicType :: IsForeign TopicType where
     Right "Workshop"     -> Right Workshop
     _                    -> Left $ JSONError "Cant read TopicType"
 
---| Slots
+-- Used to fill Dropdowns etc.
+-- TODO: Find a proper way to enumerate Union Datatypes
+topicTypes = [Discussion, Presentation, Workshop]
+---------------------------------------------------------------------
+
+--| Topics
+
+newtype Topic = Topic { description :: String, typ :: TopicType }
+
+instance eqTopic :: Eq Topic where
+  (==) (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
+  (/=) (Topic t1) (Topic t2) = t1.description /= t2.description || t1.typ /= t2.typ
+
+instance foreignTopic :: IsForeign Topic where
+    read val = do
+      description <- readProp "description" val :: F String
+      typ         <- readProp "typ"         val :: F TopicType
+      return $ Topic {description: description, typ: typ}
+
+---------------------------------------------------------------------
+--| Slot
 
 newtype Slot = Slot { room :: Room, block :: Block }
 instance eqSlot :: Eq Slot where
@@ -41,6 +60,9 @@ instance foreignSlot :: IsForeign Slot where
     room <- readProp "room" val :: F Room
     block <- readProp "block" val :: F Block
     return $ Slot {room: room, block: block}
+
+---------------------------------------------------------------------
+--| Room
 
 newtype Room = Room { name :: String, capacity :: Number }
 instance showRoom :: Show Room where
@@ -54,6 +76,9 @@ instance foreignRoom :: IsForeign Room where
     capacity <- readProp "capacity" val :: F Number
     return $ Room {name: name, capacity: capacity}
 
+---------------------------------------------------------------------
+--| Block
+
 newtype Block = Block { start :: String }
 instance showBlock :: Show Block where
   show (Block b) = b.start
@@ -66,19 +91,7 @@ instance foreignBlock :: IsForeign Block where
     return $ Block {start: start}
 
 ---------------------------------------------------------------------
---| Topics
 
-newtype Topic = Topic { description :: String, typ :: TopicType }
-instance eqTopic :: Eq Topic where
-  (==) (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
-  (/=) (Topic t1) (Topic t2) = t1.description /= t2.description || t1.typ /= t2.typ
-
-instance foreignTopic :: IsForeign Topic where
-  read val = do
-    description <- readProp "description" val :: F String
-    typ         <- readProp "typ"         val :: F TopicType
-    return $ Topic {description: description, typ: typ}
----------------------------------------------------------------------
 --| Gesamter AppState
 
 type Timeslot = Tuple Slot Topic
