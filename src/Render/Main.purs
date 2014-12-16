@@ -10,6 +10,8 @@ import DOM
 
 addTimeslot :: Timeslot -> AppState -> AppState
 addTimeslot ts as = { topics     : as.topics
+                    , rooms      : as.rooms
+                    , blocks     : as.blocks
                     , slots      : as.slots
                     , timeslots  : ts : as.timeslots
                     , selected   : as.selected
@@ -17,6 +19,8 @@ addTimeslot ts as = { topics     : as.topics
 
 removeTimeslot :: Timeslot -> AppState -> AppState
 removeTimeslot ts as = { topics     : as.topics
+                       , rooms      : as.rooms
+                       , blocks     : as.blocks
                        , slots      : as.slots
                        , timeslots  : delete ts as.timeslots
                        , selected   : as.selected
@@ -24,6 +28,8 @@ removeTimeslot ts as = { topics     : as.topics
 
 addTopic :: Topic -> AppState -> AppState
 addTopic t as = { topics     : t:as.topics
+                , rooms      : as.rooms
+                , blocks     : as.blocks
                 , slots      : as.slots
                 , timeslots  : as.timeslots
                 , selected   : as.selected
@@ -32,6 +38,8 @@ addTopic t as = { topics     : t:as.topics
 removeTopic :: Topic -> AppState -> AppState
 removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
                    in { topics    : delete t as.topics
+                      , rooms     : as.rooms
+                      , blocks    : as.blocks
                       , slots     : as.slots
                       , timeslots : topicslotFilter as.timeslots
                       , selected  : as.selected
@@ -39,6 +47,8 @@ removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
 
 select :: Topic -> AppState -> AppState
 select topic as = { topics     : as.topics
+                  , rooms      : as.rooms
+                  , blocks     : as.blocks
                   , slots      : as.slots
                   , timeslots  : as.timeslots
                   , selected   : Just topic
@@ -46,11 +56,42 @@ select topic as = { topics     : as.topics
 
 unselect :: AppState -> AppState
 unselect as = { topics     : as.topics
+              , rooms      : as.rooms
+              , blocks     : as.blocks
               , slots      : as.slots
               , timeslots  : as.timeslots
               , selected   : Nothing :: Maybe Topic
               }
 
+sanitizeTopic :: Topic -> SanitizedTopic
+sanitizeTopic (Topic t) = { description : t.description
+                          , typ         : (show t.typ)
+                          }
+sanitizeSlot :: Slot -> SanitizedSlot
+sanitizeSlot (Slot s) = { room  : show s.room
+                        , block : show s.block
+                        }
+
+sanitizeTimeslot :: Timeslot -> SanitizedTimeslot
+sanitizeTimeslot (Tuple s t) = Tuple (sanitizeSlot s) (sanitizeTopic t)
+
+sanitizeAppState :: AppState -> SanitizedAppState
+sanitizeAppState as = { topics     : sanitizeTopic    <$> as.topics
+                      , rooms      : as.rooms
+                      , blocks     : as.blocks
+                      , slots      : sanitizeSlot     <$> as.slots
+                      , timeslots  : sanitizeTimeslot <$> as.timeslots
+                      , selected   : sanitizeTopic    <$> as.selected
+                      }
+
+findIn :: Room -> Block -> [SanitizedTimeslot] -> Maybe SanitizedTopic
+findIn r b tss = let filteredtss = filter (\(Tuple s _) -> s.room == show r && s.block == show b) tss
+                 in case filteredtss of
+                  [] -> Nothing
+                  [(Tuple _ t)] -> Just t
+                  _ -> Nothing
+makeGrid :: SanitizedAppState -> [[Maybe SanitizedTopic]]
+makeGrid as' = (\r -> (\b -> findIn r b as'.timeslots ) <$> as'.blocks ) <$> as'.rooms
 
 foreign import renderMenu
 """function renderMenu(){
@@ -70,20 +111,39 @@ foreign import renderTopics
       )
     }
   }
-  """ :: forall eff. Tuple [Topic] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
+  """ :: forall eff. Tuple [SanitizedTopic] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderTimeslots
 """function renderTimeslots(timeslotsAndSelected){
-  return function(){
-    React.render(
-        React.createElement(Timeslots, {timeslotsAndSelected: timeslotsAndSelected}),
-        document.getElementById('timeslots')
-      );
+    return function(){
+      React.render(
+          React.createElement(Timeslots, {timeslotsAndSelected: timeslotsAndSelected}),
+          document.getElementById('timeslots')
+        );
+      }
+    }
+""" :: forall eff. Tuple [SanitizedTimeslot] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
+
+foreign import renderGrid
+"""
+function renderGrid(rooms){
+  return function(blocks){
+      return function(grid){
+        return function(){
+        React.render(
+          React.createElement(Grid, {rooms: rooms, blocks: blocks, grid: grid}),
+          document.getElementById('grid')
+        );
+      }
     }
   }
-""" :: forall eff. Tuple [Timeslot] (Maybe Topic) -> Eff( dom::DOM | eff ) Unit
+}
+
+""" :: forall eff. [Room] -> [Block] -> [[Maybe SanitizedTopic]] -> Eff( dom::DOM | eff ) Unit
 
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
-  renderTimeslots $ Tuple as.timeslots as.selected
-  renderTopics    $ Tuple as.topics    as.selected
+  let as' = sanitizeAppState as
+  renderTimeslots $ Tuple as'.timeslots as'.selected
+  renderTopics    $ Tuple as'.topics    as'.selected
+  renderGrid as'.rooms as'.blocks (makeGrid as')
