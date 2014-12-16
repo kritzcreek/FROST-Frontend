@@ -17,9 +17,9 @@
   "dependencies": {
     "purescript-arrays"               : "*",
     "purescript-maybe"                : "*",
-    "purescript-foldable-traversable" : "*",
     "purescript-rx"                   : "*",
     "purescript-foreign"              : "*",
+    "lodash"                          : "*",
     "react"                           : "*",
     "bootstrap"                       : "*",
     "react-bootstrap"                 : "*"

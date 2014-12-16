@@ -6,7 +6,6 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 
---import Data.JSON
 ---------------------------------------------------------------------
 
 
@@ -85,6 +84,8 @@ instance foreignTopic :: IsForeign Topic where
 type Timeslot = Tuple Slot Topic
 
 type AppState = { topics :: [Topic]
+                , rooms :: [Room]
+                , blocks :: [Block]
                 , slots :: [Slot]
                 , timeslots :: [Timeslot]
                 , selected :: Maybe Topic
@@ -95,6 +96,8 @@ type SanitizedSlot =  { room :: String, block :: String }
 type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 
 type SanitizedAppState = { topics :: [SanitizedTopic]
+                         , rooms :: [Room]
+                         , blocks :: [Block]
                          , slots :: [SanitizedSlot]
                          , timeslots :: [SanitizedTimeslot]
                          , selected :: Maybe SanitizedTopic
@@ -102,7 +105,7 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
 ---------------------------------------------------------------------
 --| Dummy Values
 
-emptyState = {topics: [], slots: [], timeslots: [], selected: Nothing}
+emptyState = {topics: [], rooms:[], blocks:[], slots: [], timeslots: [], selected: Nothing}
 
 myRoom = Room {name: "Berlin", capacity: 100}
 myRoom1 = Room {name: "Hamburg", capacity: 80}
@@ -120,6 +123,8 @@ myTopic2 = Topic {description:"Functional Javascript", typ:Discussion}
 
 myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , slots : [mySlot, mySlot1]
+           , rooms : [myRoom, myRoom1, myRoom2]
+           , blocks : [myBlock, myBlock1]
            , timeslots: [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
            , selected: Nothing :: Maybe Topic}
 ---------------------------------------------------------------------
