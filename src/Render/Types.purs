@@ -2,6 +2,7 @@ module Render.Types where
 
 import Data.Tuple
 import Data.Maybe
+import qualified Data.Map as M
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
@@ -55,8 +56,11 @@ instance eqSlot :: Eq Slot where
   (==) (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
   (/=) (Slot s1) (Slot s2) = s1.room /= s2.room || s1.block /= s2.block
 
+instance ordSlot :: Ord Slot where
+  compare (Slot s1) (Slot s2) = (show s1.room ++ show s1.block) `compare` (show s2.room ++ show s2.block)
+
 instance showSlot :: Show Slot where
-  show (Slot s) = "{ room: " ++ show s.room ++" block: " ++ show s.block ++ "}" 
+  show (Slot s) = "{ room: " ++ show s.room ++" block: " ++ show s.block ++ "}"
 
 instance foreignSlot :: IsForeign Slot where
   read val = do
@@ -103,7 +107,7 @@ type AppState = { topics :: [Topic]
                 , rooms :: [Room]
                 , blocks :: [Block]
                 , slots :: [Slot]
-                , timeslots :: [Timeslot]
+                , timeslots :: M.Map Slot Topic
                 , selected :: Maybe Topic
                 }
 
@@ -141,6 +145,6 @@ myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , slots : [mySlot, mySlot1]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
-           , timeslots: [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
+           , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
            , selected: Nothing :: Maybe Topic}
 ---------------------------------------------------------------------

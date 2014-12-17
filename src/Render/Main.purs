@@ -3,26 +3,27 @@ module Render.Main where
 import Render.Types
 import Data.Array
 import Data.Maybe
+import qualified Data.Map as M
 import Data.Tuple
 import Control.Monad.Eff
 
 import DOM
 
-addTimeslot :: Timeslot -> AppState -> AppState
-addTimeslot ts as = { topics     : as.topics
-                    , rooms      : as.rooms
-                    , blocks     : as.blocks
-                    , slots      : as.slots
-                    , timeslots  : ts : as.timeslots
-                    , selected   : as.selected
-                    }
+addTimeslot :: Slot -> Topic -> AppState -> AppState
+addTimeslot s t as = { topics     : as.topics
+                     , rooms      : as.rooms
+                     , blocks     : as.blocks
+                     , slots      : as.slots
+                     , timeslots  : M.insert s t as.timeslots
+                     , selected   : as.selected
+                     }
 
-removeTimeslot :: Timeslot -> AppState -> AppState
-removeTimeslot ts as = { topics     : as.topics
+removeTimeslot :: Slot -> AppState -> AppState
+removeTimeslot s as = { topics     : as.topics
                        , rooms      : as.rooms
                        , blocks     : as.blocks
                        , slots      : as.slots
-                       , timeslots  : delete ts as.timeslots
+                       , timeslots  : M.delete s as.timeslots
                        , selected   : as.selected
                        }
 
@@ -41,7 +42,7 @@ removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
                       , rooms     : as.rooms
                       , blocks    : as.blocks
                       , slots     : as.slots
-                      , timeslots : topicslotFilter as.timeslots
+                      , timeslots : M.fromList $ topicslotFilter (M.toList as.timeslots)
                       , selected  : as.selected
                       }
 
@@ -80,7 +81,7 @@ sanitizeAppState as = { topics     : sanitizeTopic    <$> as.topics
                       , rooms      : as.rooms
                       , blocks     : as.blocks
                       , slots      : sanitizeSlot     <$> as.slots
-                      , timeslots  : sanitizeTimeslot <$> as.timeslots
+                      , timeslots  : sanitizeTimeslot <$> (M.toList as.timeslots)
                       , selected   : sanitizeTopic    <$> as.selected
                       }
 

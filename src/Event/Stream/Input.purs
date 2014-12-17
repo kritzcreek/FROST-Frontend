@@ -113,7 +113,7 @@ streams = do
 
   subscribe timeTopic (\fts -> do
     case fts of
-      Right ts -> void $ modifySTRef appSt $ addTimeslot ts
+      Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
       Left e -> trace $ show e
     readSTRef appSt >>= renderApp
     )

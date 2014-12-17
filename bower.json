@@ -17,6 +17,7 @@
   "dependencies": {
     "purescript-arrays"               : "*",
     "purescript-maybe"                : "*",
+    "purescript-maps"                 : "*",
     "purescript-rx"                   : "https://github.com/kRITZCREEK/purescript-rx.git#master",
     "purescript-foreign"              : "*",
     "lodash"                          : "*",
