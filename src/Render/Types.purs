@@ -55,6 +55,9 @@ instance eqSlot :: Eq Slot where
   (==) (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
   (/=) (Slot s1) (Slot s2) = s1.room /= s2.room || s1.block /= s2.block
 
+instance showSlot :: Show Slot where
+  show (Slot s) = "{ room: " ++ show s.room ++" block: " ++ show s.block ++ "}" 
+
 instance foreignSlot :: IsForeign Slot where
   read val = do
     room <- readProp "room" val :: F Room

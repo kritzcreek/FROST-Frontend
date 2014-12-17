@@ -21,7 +21,7 @@ AddModal = React.createClass({
     var options = this.props.topicTypes
     .map(function(topicType){
       return (
-        <option value={topicType}>{topicType}</option>
+        <option key={topicType} value={topicType}>{topicType}</option>
       );
     });
     return (
