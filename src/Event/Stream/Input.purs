@@ -107,7 +107,10 @@ streams = do
     readSTRef appSt >>= renderApp
     )
 
-  let timeTopic = combineLatest parseTimeslotEvent onSelectSlotWithoutTopic onTopicSelect
+  let timeTopic =
+    do fs <- getDetail <$> onSelectSlotWithoutTopic
+       ft <- getDetail <$> onTopicSelect
+       return $ parseTimeslot fs ft
 
   subscribe timeTopic (\fts -> do
     case fts of
