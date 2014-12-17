@@ -10,64 +10,29 @@ import Control.Monad.Eff
 import DOM
 
 addTimeslot :: Slot -> Topic -> AppState -> AppState
-addTimeslot s t as = { topics     : as.topics
-                     , rooms      : as.rooms
-                     , blocks     : as.blocks
-                     , slots      : as.slots
-                     , timeslots  : M.insert s t as.timeslots
-                     , selected   : as.selected
-                     }
+addTimeslot s t as = as { timeslots = M.insert s t as.timeslots }
 
 removeTimeslot :: Slot -> AppState -> AppState
-removeTimeslot s as = { topics     : as.topics
-                       , rooms      : as.rooms
-                       , blocks     : as.blocks
-                       , slots      : as.slots
-                       , timeslots  : M.delete s as.timeslots
-                       , selected   : as.selected
-                       }
+removeTimeslot s as = as { timeslots = M.delete s as.timeslots }
 
 addTopic :: Topic -> AppState -> AppState
-addTopic t as = { topics     : t:as.topics
-                , rooms      : as.rooms
-                , blocks     : as.blocks
-                , slots      : as.slots
-                , timeslots  : as.timeslots
-                , selected   : as.selected
-                }
+addTopic t as = as { topics = t:as.topics}
 
 removeTopic :: Topic -> AppState -> AppState
 removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
-                   in { topics    : delete t as.topics
-                      , rooms     : as.rooms
-                      , blocks    : as.blocks
-                      , slots     : as.slots
-                      , timeslots : M.fromList $ topicslotFilter (M.toList as.timeslots)
-                      , selected  : as.selected
-                      }
+                   in as { topics    = delete t as.topics
+                         , timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)
+                         }
 
-select :: Topic -> AppState -> AppState
-select topic as = { topics     : as.topics
-                  , rooms      : as.rooms
-                  , blocks     : as.blocks
-                  , slots      : as.slots
-                  , timeslots  : as.timeslots
-                  , selected   : Just topic
-                  }
+selectTopic :: Topic -> AppState -> AppState
+selectTopic topic as = as { selectedTopic = Just topic }
 
-unselect :: AppState -> AppState
-unselect as = { topics     : as.topics
-              , rooms      : as.rooms
-              , blocks     : as.blocks
-              , slots      : as.slots
-              , timeslots  : as.timeslots
-              , selected   : Nothing :: Maybe Topic
-              }
+unselectTopic :: AppState -> AppState
+unselectTopic as = as { selectedTopic = Nothing :: Maybe Topic }
 
 sanitizeTopic :: Topic -> SanitizedTopic
-sanitizeTopic (Topic t) = { description : t.description
-                          , typ         : (show t.typ)
-                          }
+sanitizeTopic (Topic t) = t { typ = show t.typ }
+
 sanitizeSlot :: Slot -> SanitizedSlot
 sanitizeSlot (Slot s) = { room  : show s.room
                         , block : show s.block
@@ -82,7 +47,7 @@ sanitizeAppState as = { topics     : sanitizeTopic    <$> as.topics
                       , blocks     : as.blocks
                       , slots      : sanitizeSlot     <$> as.slots
                       , timeslots  : sanitizeTimeslot <$> (M.toList as.timeslots)
-                      , selected   : sanitizeTopic    <$> as.selected
+                      , selectedTopic   : sanitizeTopic    <$> as.selectedTopic
                       }
 
 findIn :: Room -> Block -> [SanitizedTimeslot] -> Maybe SanitizedTopic
@@ -91,6 +56,7 @@ findIn r b tss = let filteredtss = filter (\(Tuple s _) -> s.room == show r && s
                   [] -> Nothing
                   [(Tuple _ t)] -> Just t
                   _ -> Nothing
+
 makeGrid :: SanitizedAppState -> [[Maybe SanitizedTopic]]
 makeGrid as' = (\r -> (\b -> findIn r b as'.timeslots ) <$> as'.blocks ) <$> as'.rooms
 
@@ -136,5 +102,5 @@ function renderGrid(rooms){
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   let as' = sanitizeAppState as
-  renderTopics    $ Tuple as'.topics    as'.selected
+  renderTopics $ Tuple as'.topics as'.selectedTopic
   renderGrid as'.rooms as'.blocks (makeGrid as')

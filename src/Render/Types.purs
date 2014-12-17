@@ -108,7 +108,7 @@ type AppState = { topics :: [Topic]
                 , blocks :: [Block]
                 , slots :: [Slot]
                 , timeslots :: M.Map Slot Topic
-                , selected :: Maybe Topic
+                , selectedTopic :: Maybe Topic
                 }
 
 type SanitizedTopic = { description :: String, typ :: String }
@@ -120,7 +120,7 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
                          , blocks :: [Block]
                          , slots :: [SanitizedSlot]
                          , timeslots :: [SanitizedTimeslot]
-                         , selected :: Maybe SanitizedTopic
+                         , selectedTopic :: Maybe SanitizedTopic
                          }
 ---------------------------------------------------------------------
 --| Dummy Values
@@ -146,5 +146,6 @@ myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
            , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
-           , selected: Nothing :: Maybe Topic}
+           , selectedTopic: Nothing :: Maybe Topic
+           }
 ---------------------------------------------------------------------

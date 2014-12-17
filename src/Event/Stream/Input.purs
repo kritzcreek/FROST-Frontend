@@ -83,7 +83,7 @@ streams = do
   subscribe onSelect (\e -> do
     let ft = getDetail e
     case parseTopic ft of
-      Right t -> void $ modifySTRef appSt $ select t
+      Right t -> void $ modifySTRef appSt $ selectTopic t
       Left e -> trace $ show e
     readSTRef appSt >>= renderApp
     )
@@ -98,16 +98,16 @@ streams = do
 
   subscribe onRemoveTopic (\_ -> do
     app <- readSTRef appSt
-    case app.selected of
+    case app.selectedTopic of
       Just t -> do
         modifySTRef appSt $ removeTopic t
-        modifySTRef appSt $ unselect
+        modifySTRef appSt $ unselectTopic
         return unit
       Nothing -> trace "Wähle ein Thema aus."
     readSTRef appSt >>= renderApp
     )
 
-  let timeTopic = zip parseTimeslotEvent onSelectSlotWithoutTopic onTopicSelect
+  let timeTopic = combineLatest parseTimeslotEvent onSelectSlotWithoutTopic onTopicSelect
 
   subscribe timeTopic (\fts -> do
     case fts of
