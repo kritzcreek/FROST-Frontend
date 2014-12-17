@@ -15,46 +15,7 @@
 
 }
 .topic.selected {
-  border: 1px solid #000000;
-  border-width: 2px;
-}
-
-.ts-slot {
-  float:left;
-  padding: 10px;
-  border: 1px solid #a80002;
-  border-radius: 5px 0px 0px 5px;
-  background-image: -webkit-gradient(linear, center top, center bottom, from(#402aa4), to(#2725af));
-  background-image: -webkit-linear-gradient(top, #402aa4, #2725af);
-  background-image: -moz-linear-gradient(top, #402aa4, #2725af);
-  background-image: -o-linear-gradient(top, #402aa4, #2725af);
-  background-image: -ms-linear-gradient(top, #402aa4, #2725af);
-  background-image: linear-gradient(to bottom, #402aa4, #2725af);
-  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-}
-.ts-topic {
-  float:left;
-  padding: 10px;
-  border: 1px solid #a80002;
-  border-radius: 0px 5px 5px 0px;
-  background-image: -webkit-gradient(linear, center top, center bottom, from(#d5575b), to(#c43033));
-  background-image: -webkit-linear-gradient(top, #d5575b, #c43033);
-  background-image: -moz-linear-gradient(top, #d5575b, #c43033);
-  background-image: -o-linear-gradient(top, #d5575b, #c43033);
-  background-image: -ms-linear-gradient(top, #d5575b, #c43033);
-  background-image: linear-gradient(to bottom, #d5575b, #c43033);
-  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-}
-.timeslot {
-  float: left;
-}
-.timeslot.selected {
-  border: 3px solid #000000;
-  border-radius: 10px;
+  border: 1px solid #031ece;
 }
 
 td.highlight {

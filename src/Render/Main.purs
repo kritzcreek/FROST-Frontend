@@ -116,17 +116,6 @@ foreign import renderTopics
   }
   """ :: forall eff. Tuple [SanitizedTopic] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
 
-foreign import renderTimeslots
-"""function renderTimeslots(timeslotsAndSelected){
-    return function(){
-      React.render(
-          React.createElement(Timeslots, {timeslotsAndSelected: timeslotsAndSelected}),
-          document.getElementById('timeslots')
-        );
-      }
-    }
-""" :: forall eff. Tuple [SanitizedTimeslot] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
-
 foreign import renderGrid
 """
 function renderGrid(rooms){
@@ -147,6 +136,5 @@ function renderGrid(rooms){
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   let as' = sanitizeAppState as
-  renderTimeslots $ Tuple as'.timeslots as'.selected
   renderTopics    $ Tuple as'.topics    as'.selected
   renderGrid as'.rooms as'.blocks (makeGrid as')

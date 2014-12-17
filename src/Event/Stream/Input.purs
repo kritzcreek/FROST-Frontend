@@ -69,18 +69,16 @@ streams = do
   renderMenu (show <$> topicTypes)
 
   menuEmitter     <- J.select "#menuContainer"
-  timeslotEmitter <- J.select "#timeSlotsContainer"
   topicEmitter    <- J.select "#topicsContainer"
   gridEmitter     <- J.select "#gridContainer"
 
   onAddTopic       <- "addTopic" `onAsObservable` menuEmitter
   onRemoveTopic    <- "removeTopic" `onAsObservable` menuEmitter
-  onTimeslotSelect <- "selectTimeSlot" `onAsObservable` timeslotEmitter
   onTopicSelect    <- "selectTopic" `onAsObservable` topicEmitter
   onSelectSlotWithTopic <- "selectSlotWithTopic" `onAsObservable` gridEmitter
   onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
 
-  let onSelect = onTimeslotSelect `merge` onTopicSelect `merge` onSelectSlotWithTopic
+  let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
 
   subscribe onSelect (\e -> do
     let ft = getDetail e

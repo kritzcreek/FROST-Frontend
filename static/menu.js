@@ -81,10 +81,10 @@ Menu = React.createClass({
   },
   render: function(){
     return (
-      <Panel id="menuContainer" header="Menü" bsStyle="primary">
+      <div id="menuContainer">
         <OpenAddModal topicTypes={this.props.topicTypes} emit={this.emit}></OpenAddModal>
         <RemoveButton emit={this.emit}></RemoveButton>
-      </Panel>
+      </div>
     );
   }
 });
