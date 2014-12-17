@@ -1,4 +1,4 @@
-var Grid, Tableheader, Tablebody, Tablerow;
+var Grid, Tableheader, Tablebody, Tablerow, Tablecell;
 
 var Table = ReactBootstrap.Table;
 
@@ -28,9 +28,9 @@ Tablebody = React.createClass({
       .map(function(row){
         var room = _.head(row);
         return(
-          <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name}></Tablerow>
+          <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name} emit={this.props.emit}></Tablerow>
         );
-      });
+      }, this);
       return(
           <tbody>
             {rows}
@@ -46,9 +46,9 @@ Tablerow = React.createClass({
       var block = zip[0];
       var topic = zip[1];
       return(
-        <td key={block.start}> {topic.value0 ? topic.value0.description : ''} </td>
+        <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
       );
-    });
+    }, this);
     return(
       <tr>
         <td>{this.props.room.name}</td>
@@ -58,12 +58,48 @@ Tablerow = React.createClass({
   }
 });
 
+Tablecell = React.createClass({
+  getInitialState: function(){
+    return {mouseOver:false, selected:false};
+  },
+  handleMouseOver: function(e){
+    this.setState({mouseOver : true});
+  },
+  handleMouseOut:function(e){
+    this.setState({mouseOver : false});
+  },
+  handleClick: function(e){
+    var topic=this.props.topic.value0;
+    var event;
+    if(topic){
+      event = new CustomEvent('selectSlotWithTopic',
+      { 'detail': {'description': topic.description, 'typ' :topic.typ}});
+    }else{
+      event = new CustomEvent('selectSlotWithoutTopic',
+      { 'detail': { 'room': this.props.room, 'block': this.props.block}});
+      this.setState({selected : !this.state.selected});
+    }
+    this.props.emit(event);
+  },
+  render: function(){
+    var topic=this.props.topic.value0;
+    var highlight = !topic && (this.state.mouseOver || this.state.selected);
+    return (
+      <td onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut} onClick={this.handleClick}
+      className={highlight ? 'highlight' : ''}>{topic ? topic.description : ''} </td>
+    );
+  }
+});
+
 Grid = React.createClass({
+  emit: function(event){
+    this.getDOMNode().dispatchEvent(event);
+  },
   render: function(){
     return(
-      <Table striped bordered condensed>
+      <Table striped bordered condensed id='gridContainer'>
         <Tableheader blocks={this.props.blocks} />
-        <Tablebody {...this.props} />
+        <Tablebody {...this.props} emit={this.emit}/>
       </Table>
     );
   }

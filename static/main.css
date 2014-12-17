@@ -56,3 +56,7 @@
   border: 3px solid #000000;
   border-radius: 10px;
 }
+
+td.highlight {
+  background-color: #70e01b;
+}

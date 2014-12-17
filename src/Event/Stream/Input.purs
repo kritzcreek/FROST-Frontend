@@ -6,7 +6,7 @@ import Rx.Observable
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
-import Data.Tuple
+import Data.Tuple hiding(zip)
 import Data.Maybe
 
 import Control.Monad.Eff
@@ -36,11 +36,9 @@ function readSlot (){
 foreign import getDetail
 """
 function getDetail (e){
-  return function(){
     return e.originalEvent.detail;
-    }
 }
-""" :: forall eff. J.JQueryEvent -> Eff( dom :: DOM | eff ) Foreign
+""" :: forall eff. J.JQueryEvent -> Foreign
 
 parseTopic :: Foreign -> Either ForeignError Topic
 parseTopic ft = do
@@ -51,6 +49,9 @@ parseSlot :: Foreign -> Either ForeignError Slot
 parseSlot fs = do
   s <- read fs :: F Slot
   return s
+
+parseTimeslotEvent :: J.JQueryEvent -> J.JQueryEvent -> Either ForeignError Timeslot
+parseTimeslotEvent se te = parseTimeslot (getDetail se) (getDetail te)
 
 parseTimeslot :: Foreign -> Foreign -> Either ForeignError Timeslot
 parseTimeslot fs ft = do
@@ -70,16 +71,19 @@ streams = do
   menuEmitter     <- J.select "#menuContainer"
   timeslotEmitter <- J.select "#timeSlotsContainer"
   topicEmitter    <- J.select "#topicsContainer"
+  gridEmitter     <- J.select "#gridContainer"
 
   onAddTopic       <- "addTopic" `onAsObservable` menuEmitter
   onRemoveTopic    <- "removeTopic" `onAsObservable` menuEmitter
   onTimeslotSelect <- "selectTimeSlot" `onAsObservable` timeslotEmitter
   onTopicSelect    <- "selectTopic" `onAsObservable` topicEmitter
+  onSelectSlotWithTopic <- "selectSlotWithTopic" `onAsObservable` gridEmitter
+  onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
 
-  let onSelect = merge onTimeslotSelect onTopicSelect
+  let onSelect = onTimeslotSelect `merge` onTopicSelect `merge` onSelectSlotWithTopic
 
   subscribe onSelect (\e -> do
-    ft <- getDetail e
+    let ft = getDetail e
     case parseTopic ft of
       Right t -> void $ modifySTRef appSt $ select t
       Left e -> trace $ show e
@@ -87,7 +91,7 @@ streams = do
     )
 
   subscribe onAddTopic (\e -> do
-    ft <- getDetail e
+    let ft = getDetail e
     case parseTopic ft of
       Right t -> void $ modifySTRef appSt $ addTopic t
       Left e -> trace $ show e
@@ -104,5 +108,15 @@ streams = do
       Nothing -> trace "Wähle ein Thema aus."
     readSTRef appSt >>= renderApp
     )
+
+  let timeTopic = zip parseTimeslotEvent onSelectSlotWithoutTopic onTopicSelect
+
+  subscribe timeTopic (\fts -> do
+    case fts of
+      Right ts -> void $ modifySTRef appSt $ addTimeslot ts
+      Left e -> trace $ show e
+    readSTRef appSt >>= renderApp
+    )
+
 
 main = runST streams
