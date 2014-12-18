@@ -7,8 +7,17 @@ import qualified Data.Map as M
 import Data.Tuple
 import Control.Monad.Eff
 
+import Debug.Trace
 import DOM
 
+evalAction :: Action -> AppState -> AppState
+evalAction (SelectTopic t) as   = selectTopic t as
+evalAction (AddTopic t) as      = addTopic t as
+evalAction (DeleteTopic t) as   = removeTopic t as
+evalAction (AssignTopic t s) as = addTimeslot s t as
+evalAction (UnassignTopic t) as = let topicslotFilter = filter (\(Tuple _ t') -> t' /= t)
+                                  in as {timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
+evalAction (ShowError e) as     = as
 addTimeslot :: Slot -> Topic -> AppState -> AppState
 addTimeslot s t as = as { timeslots = M.insert s t as.timeslots }
 
