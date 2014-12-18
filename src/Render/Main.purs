@@ -42,13 +42,14 @@ sanitizeTimeslot :: Timeslot -> SanitizedTimeslot
 sanitizeTimeslot (Tuple s t) = Tuple (sanitizeSlot s) (sanitizeTopic t)
 
 sanitizeAppState :: AppState -> SanitizedAppState
-sanitizeAppState as = { topics     : sanitizeTopic    <$> as.topics
-                      , rooms      : as.rooms
-                      , blocks     : as.blocks
-                      , slots      : sanitizeSlot     <$> as.slots
-                      , timeslots  : sanitizeTimeslot <$> (M.toList as.timeslots)
-                      , selectedTopic   : sanitizeTopic    <$> as.selectedTopic
-                      }
+sanitizeAppState as = let topicNotInGrid t = (filter (\t' -> t == t')(M.values as.timeslots)) == []
+                      in { topics          : sanitizeTopic    <$> filter topicNotInGrid as.topics
+                         , rooms           : as.rooms
+                         , blocks          : as.blocks
+                         , slots           : sanitizeSlot     <$> as.slots
+                         , timeslots       : sanitizeTimeslot <$> (M.toList as.timeslots)
+                         , selectedTopic   : sanitizeTopic    <$> as.selectedTopic
+                         }
 
 findIn :: Room -> Block -> [SanitizedTimeslot] -> Maybe SanitizedTopic
 findIn r b tss = let filteredtss = filter (\(Tuple s _) -> s.room == show r && s.block == show b) tss
