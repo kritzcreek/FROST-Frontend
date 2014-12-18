@@ -84,57 +84,56 @@ streams = do
 
   let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
 
-  subscribe onSelect (\e -> do
-                         let ft = getDetail e
-                         case parseTopic ft of
-                           Right t -> void $ modifySTRef appSt $ selectTopic t
-                           Left e -> trace $ show e
-                         readSTRef appSt >>= renderApp
-                     )
+  let select = (\e -> do
+                   let ft = getDetail e
+                   case parseTopic ft of
+                     Right t -> SelectTopic t
+                     Left e -> ShowError (show e)
+               ) <$> onSelect
 
-  subscribe onAddTopic (\e -> do
-                           let ft = getDetail e
-                           case parseTopic ft of
-                             Right t -> void $ modifySTRef appSt $ addTopic t
-                             Left e -> trace $ show e
-                           readSTRef appSt >>= renderApp
-                       )
+  let add = (\e -> do
+                let ft = getDetail e
+                case parseTopic ft of
+                  Right t -> AddTopic t
+                  Left e -> ShowError (show e)
+            ) <$> onAddTopic
 
-  subscribe onRemoveTopic (\_ -> do
-                              app <- readSTRef appSt
-                              case app.selectedTopic of
-                                Just t -> do
-                                  modifySTRef appSt $ removeTopic t
-                                  modifySTRef appSt $ unselectTopic
-                                  return unit
-                                Nothing -> trace "Wähle ein Thema aus."
-                              readSTRef appSt >>= renderApp
-                          )
+  let delete = (\e -> do
+                   let ft = getDetail e
+                   case parseTopic ft of
+                     Right t -> DeleteTopic t
+                     Left e  -> ShowError (show e)
+               ) <$> onRemoveTopic
 
   let timeTopic =
         do fs <- getDetail <$> onSelectSlotWithoutTopic
            ft <- getDetail <$> onTopicSelect
            return $ parseTimeslot fs ft
 
-  subscribe timeTopic (\fts -> do
-                          case fts of
-                            Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
-                            Left e -> trace $ show e
-                          readSTRef appSt >>= renderApp
-                      )
+  let assign = (\fts -> do
+                   case fts of
+                     Right (Tuple s t) -> AssignTopic t s
+                     Left e -> ShowError (show e)
+               ) <$> timeTopic
 
-  let dragTopic =
-        do ft <- getDetail <$> onMouseDownTopic
-           --onMouseMove
-           fs <- getDetail <$> onMouseUpSlot
-           return $ parseTimeslot fs ft
+  let change = select `merge` add `merge` delete `merge` assign
 
-  subscribe dragTopic (\fts -> do
-                          case fts of
-                            Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
-                            Left e -> trace $ "HI"
-                          readSTRef appSt >>= renderApp
-                      )
+  subscribe change (\a -> do
+                          (modifySTRef appSt $ evalAction a) >>= renderApp
+                   )
+    
+  -- let dragTopic =
+  --       do ft <- getDetail <$> onMouseDownTopic
+  --          --onMouseMove
+  --          fs <- getDetail <$> onMouseUpSlot
+  --          return $ parseTimeslot fs ft
+
+  -- subscribe dragTopic (\fts -> do
+  --                         case fts of
+  --                           Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
+  --                           Left e -> trace $ "HI"
+  --                         readSTRef appSt >>= renderApp
+  --                     )
 
 
 main = runST streams

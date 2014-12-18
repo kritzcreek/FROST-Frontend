@@ -7,7 +7,9 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 
----------------------------------------------------------------------
+-----------------
+--| TopicType |--
+-----------------
 
 data TopicType = Discussion
                | Presentation
@@ -32,9 +34,10 @@ instance foreignTopicType :: IsForeign TopicType where
 -- Used to fill Dropdowns etc.
 -- TODO: Find a proper way to enumerate Union Datatypes
 topicTypes = [Discussion, Presentation, Workshop]
----------------------------------------------------------------------
 
---| Topics
+--------------
+--| Topics |--
+--------------
 
 newtype Topic = Topic { description :: String, typ :: TopicType }
 
@@ -48,8 +51,10 @@ instance foreignTopic :: IsForeign Topic where
       typ         <- readProp "typ"         val :: F TopicType
       return $ Topic {description: description, typ: typ}
 
----------------------------------------------------------------------
---| Slot
+
+------------
+--| Slot |--
+------------
 
 newtype Slot = Slot { room :: Room, block :: Block }
 instance eqSlot :: Eq Slot where
@@ -68,8 +73,10 @@ instance foreignSlot :: IsForeign Slot where
     block <- readProp "block" val :: F Block
     return $ Slot {room: room, block: block}
 
----------------------------------------------------------------------
---| Room
+
+------------
+--| Room |--
+------------
 
 newtype Room = Room { name :: String, capacity :: Number }
 instance showRoom :: Show Room where
@@ -83,8 +90,10 @@ instance foreignRoom :: IsForeign Room where
     capacity <- readProp "capacity" val :: F Number
     return $ Room {name: name, capacity: capacity}
 
----------------------------------------------------------------------
---| Block
+
+-------------
+--| Block |--
+-------------
 
 newtype Block = Block { start :: String }
 instance showBlock :: Show Block where
@@ -97,9 +106,21 @@ instance foreignBlock :: IsForeign Block where
     start <- readProp "start" val     :: F String
     return $ Block {start: start}
 
----------------------------------------------------------------------
+---------------
+--| Actions |--
+---------------
 
---| Gesamter AppState
+data Action = SelectTopic Topic
+            | AddTopic Topic
+            | DeleteTopic Topic
+            | AssignTopic Topic Slot
+            | UnassignTopic Topic
+            | ShowError String
+
+
+-------------------------
+--| Gesamter AppState |--
+-------------------------
 
 type Timeslot = Tuple Slot Topic
 
@@ -122,8 +143,10 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
                          , timeslots :: [SanitizedTimeslot]
                          , selectedTopic :: Maybe SanitizedTopic
                          }
----------------------------------------------------------------------
---| Dummy Values
+
+ --------------------
+ --| Dummy Values |--
+ --------------------
 
 emptyState = {topics: [], rooms:[], blocks:[], slots: [], timeslots: [], selected: Nothing}
 
@@ -148,4 +171,3 @@ myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
            , selectedTopic: Nothing :: Maybe Topic
            }
----------------------------------------------------------------------
