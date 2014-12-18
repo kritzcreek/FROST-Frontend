@@ -68,56 +68,73 @@ streams = do
   readSTRef appSt >>= renderApp
   renderMenu (show <$> topicTypes)
 
+  document        <- J.select "document"
   menuEmitter     <- J.select "#menuContainer"
   topicEmitter    <- J.select "#topicsContainer"
   gridEmitter     <- J.select "#gridContainer"
 
-  onAddTopic       <- "addTopic" `onAsObservable` menuEmitter
-  onRemoveTopic    <- "removeTopic" `onAsObservable` menuEmitter
-  onTopicSelect    <- "selectTopic" `onAsObservable` topicEmitter
-  onSelectSlotWithTopic <- "selectSlotWithTopic" `onAsObservable` gridEmitter
+  onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
+  onRemoveTopic            <- "removeTopic" `onAsObservable` menuEmitter
+  onTopicSelect            <- "selectTopic" `onAsObservable` topicEmitter
+  onSelectSlotWithTopic    <- "selectSlotWithTopic" `onAsObservable` gridEmitter
   onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
+  onMouseUpSlot            <- "mouseUpGrid" `onAsObservable` gridEmitter
+  onMouseMove              <- "mouseMove" `onAsObservable` document
+  onMouseDownTopic         <- "mouseDownTopic" `onAsObservable` topicEmitter
 
   let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
 
   subscribe onSelect (\e -> do
-    let ft = getDetail e
-    case parseTopic ft of
-      Right t -> void $ modifySTRef appSt $ selectTopic t
-      Left e -> trace $ show e
-    readSTRef appSt >>= renderApp
-    )
+                         let ft = getDetail e
+                         case parseTopic ft of
+                           Right t -> void $ modifySTRef appSt $ selectTopic t
+                           Left e -> trace $ show e
+                         readSTRef appSt >>= renderApp
+                     )
 
   subscribe onAddTopic (\e -> do
-    let ft = getDetail e
-    case parseTopic ft of
-      Right t -> void $ modifySTRef appSt $ addTopic t
-      Left e -> trace $ show e
-    readSTRef appSt >>= renderApp
-    )
+                           let ft = getDetail e
+                           case parseTopic ft of
+                             Right t -> void $ modifySTRef appSt $ addTopic t
+                             Left e -> trace $ show e
+                           readSTRef appSt >>= renderApp
+                       )
 
   subscribe onRemoveTopic (\_ -> do
-    app <- readSTRef appSt
-    case app.selectedTopic of
-      Just t -> do
-        modifySTRef appSt $ removeTopic t
-        modifySTRef appSt $ unselectTopic
-        return unit
-      Nothing -> trace "Wähle ein Thema aus."
-    readSTRef appSt >>= renderApp
-    )
+                              app <- readSTRef appSt
+                              case app.selectedTopic of
+                                Just t -> do
+                                  modifySTRef appSt $ removeTopic t
+                                  modifySTRef appSt $ unselectTopic
+                                  return unit
+                                Nothing -> trace "Wähle ein Thema aus."
+                              readSTRef appSt >>= renderApp
+                          )
 
   let timeTopic =
-    do fs <- getDetail <$> onSelectSlotWithoutTopic
-       ft <- getDetail <$> onTopicSelect
-       return $ parseTimeslot fs ft
+        do fs <- getDetail <$> onSelectSlotWithoutTopic
+           ft <- getDetail <$> onTopicSelect
+           return $ parseTimeslot fs ft
 
   subscribe timeTopic (\fts -> do
-    case fts of
-      Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
-      Left e -> trace $ show e
-    readSTRef appSt >>= renderApp
-    )
+                          case fts of
+                            Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
+                            Left e -> trace $ show e
+                          readSTRef appSt >>= renderApp
+                      )
+
+  let dragTopic =
+        do ft <- getDetail <$> onMouseDownTopic
+           --onMouseMove
+           fs <- getDetail <$> onMouseUpSlot
+           return $ parseTimeslot fs ft
+
+  subscribe dragTopic (\fts -> do
+                          case fts of
+                            Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
+                            Left e -> trace $ "HI"
+                          readSTRef appSt >>= renderApp
+                      )
 
 
 main = runST streams

@@ -68,15 +68,24 @@ Tablecell = React.createClass({
   handleMouseOut:function(e){
     this.setState({mouseOver : false});
   },
+  handleMouseUp:function(e){
+    var topic=this.props.topic.value0;
+    var event;
+    if(!topic){
+      event = new CustomEvent('mouseUpGrid',
+                              { 'detail': { 'room': this.props.room, 'block': this.props.block}});
+    }
+    this.props.emit(event);
+  },
   handleClick: function(e){
     var topic=this.props.topic.value0;
     var event;
     if(topic){
       event = new CustomEvent('selectSlotWithTopic',
-      { 'detail': {'description': topic.description, 'typ' :topic.typ}});
+                              { 'detail': {'description': topic.description, 'typ' :topic.typ}});
     }else{
       event = new CustomEvent('selectSlotWithoutTopic',
-      { 'detail': { 'room': this.props.room, 'block': this.props.block}});
+                              { 'detail': { 'room': this.props.room, 'block': this.props.block}});
       this.setState({selected : !this.state.selected});
     }
     this.props.emit(event);
@@ -85,8 +94,7 @@ Tablecell = React.createClass({
     var topic=this.props.topic.value0;
     var highlight = !topic && (this.state.mouseOver || this.state.selected);
     return (
-      <td onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut} onClick={this.handleClick}
-      className={highlight ? 'highlight' : ''}>{topic ? topic.description : ''} </td>
+        <td onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut} onClick={this.handleClick} onMouseUp={this.handleMouseUp} className={highlight ? 'highlight' : ''}>{topic ? topic.description : ''} </td>
     );
   }
 });

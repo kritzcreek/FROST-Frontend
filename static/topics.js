@@ -8,9 +8,14 @@ Topic = React.createClass({
     { 'detail': this.props.values });
     this.props.emit(event);
   },
+  handleMouseDown: function(e) {
+    var event = new CustomEvent('mouseDownTopic',
+                                { 'detail': this.props.values });
+    this.props.emit(event);
+  },
   render: function(){
     return (
-      <div className={this.props.selected ? "topic selected" : "topic"} onClick={this.handleClick}>
+      <div className={this.props.selected ? "topic selected" : "topic"} onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
         <div className="description"> Thema: {this.props.values.description}</div>
         <div className="typ"> Typ: {this.props.values.typ}</div>
       </div>
