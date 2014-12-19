@@ -70,11 +70,12 @@ streams = do
   gridEmitter     <- J.select "#gridContainer"
 
   onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
-  onRemoveTopic            <- "removeTopic" `onAsObservable` menuEmitter
   onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
   onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
   onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
+  onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
   onDragOverTrash          <- "dragOverTrash" `onAsObservable` menuEmitter
+  onDragLeaveTrash         <- "dragLeaveTrash" `onAsObservable` menuEmitter
 
   let add = (\e -> do
                 let ft = getDetail e
@@ -82,14 +83,7 @@ streams = do
                   Right t -> AddTopic t
                   Left e -> ShowError (show e)
             ) <$> onAddTopic
-
-  let delete = (\e -> do
-                   let ft = getDetail e
-                   case parseTopic ft of
-                     Right t -> DeleteTopic t
-                     Left e  -> ShowError (show e)
-               ) <$> onRemoveTopic
-
+  
   let dragOverSlot = (\e ->
                        case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
@@ -97,8 +91,12 @@ streams = do
                      ) <$> onDragOverSlot
 
   let dragOverTrash = (const DeleteTopic) <$> onDragOverTrash
+
+  --HTML 5 fires dragLeave before dragEnd occurs
+  -- TODO: Find a cleaner solution
+  let dragLeave = delay 30 $ (const UnassignTopic) <$> (onDragLeaveSlot `merge` onDragLeaveTrash)
   
-  let dragOver = dragOverSlot `merge` dragOverTrash
+  let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash 
       
   let dragTopic =
         do  (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
@@ -106,7 +104,7 @@ streams = do
             onDragEndTopic
             return $ action t
 
-  let change = add `merge` delete `merge` dragTopic
+  let change = add `merge` dragTopic
 
   subscribe change (\a -> do
                           (modifySTRef appSt $ evalAction a) >>= renderApp

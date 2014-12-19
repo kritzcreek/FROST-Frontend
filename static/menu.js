@@ -70,6 +70,8 @@ RemoveButton = React.createClass({
   },
   handleDragLeave : function(e){
     this.setState({dragOver: false});
+    var event = new CustomEvent('dragLeaveTrash');
+    this.props.emit(event);
   },
   handleClick: function() {
     var event = new CustomEvent('removeTopic');

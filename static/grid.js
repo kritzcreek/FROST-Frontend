@@ -67,6 +67,8 @@ Tablecell = React.createClass({
   },
   handleDragLeave : function(e){
     this.setState({dragOver: false});
+    var event = new CustomEvent('dragLeaveSlot');
+    this.props.emit(event);
   },
   handleDragOver: function(e){
     var event = new CustomEvent('dragOverSlot',
