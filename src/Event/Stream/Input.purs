@@ -78,9 +78,9 @@ streams = do
   onTopicSelect            <- "selectTopic" `onAsObservable` topicEmitter
   onSelectSlotWithTopic    <- "selectSlotWithTopic" `onAsObservable` gridEmitter
   onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
-  onMouseUpSlot            <- "mouseUpGrid" `onAsObservable` gridEmitter
-  onMouseMove              <- "mouseMove" `onAsObservable` document
-  onMouseDownTopic         <- "mouseDownTopic" `onAsObservable` topicEmitter
+  onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
+  onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
+  onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
 
   let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
 
@@ -116,24 +116,24 @@ streams = do
                      Left e -> ShowError (show e)
                ) <$> timeTopic
 
-  let change = select `merge` add `merge` delete `merge` assign
+    
+  let dragTopic =
+         do ft <- getDetail <$> onDragStartTopic
+            fs <- getDetail <$> onDragOverSlot
+            onDragEndTopic
+            return $ parseTimeslot fs ft
+
+  let drag = (\fts -> do
+                 case fts of
+                   Right (Tuple s t) -> AssignTopic t s
+                   Left e -> ShowError $ show e
+             ) <$> dragTopic
+
+  let change = select `merge` add `merge` delete `merge` assign `merge` drag
 
   subscribe change (\a -> do
                           (modifySTRef appSt $ evalAction a) >>= renderApp
                    )
-    
-  -- let dragTopic =
-  --       do ft <- getDetail <$> onMouseDownTopic
-  --          --onMouseMove
-  --          fs <- getDetail <$> onMouseUpSlot
-  --          return $ parseTimeslot fs ft
-
-  -- subscribe dragTopic (\fts -> do
-  --                         case fts of
-  --                           Right (Tuple s t) -> void $ modifySTRef appSt $ addTimeslot s t
-  --                           Left e -> trace $ "HI"
-  --                         readSTRef appSt >>= renderApp
-  --                     )
-
+  
 
 main = runST streams

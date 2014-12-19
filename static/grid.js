@@ -5,52 +5,52 @@ var Table = ReactBootstrap.Table;
 Tableheader = React.createClass({
   render: function(){
     var ths = this.props.blocks
-    .map(function(block){
-      return(
-        <th key={block.start}>{block.start}</th>
-      );
-    });
+      .map(function(block){
+	return(
+            <th key={block.start}>{block.start}</th>
+	);
+      });
     return(
-      <thead>
+	<thead>
         <tr>
-          <th></th>
-          {ths}
-        </tr>
-      </thead>
+        <th></th>
+        {ths}
+      </tr>
+	</thead>
     );
   }
 });
 
 Tablebody = React.createClass({
-    render: function(){
-      var blocks= this.props.blocks;
-      var rows = _.zip(this.props.rooms, this.props.grid)
+  render: function(){
+    var blocks= this.props.blocks;
+    var rows = _.zip(this.props.rooms, this.props.grid)
       .map(function(row){
         var room = _.head(row);
         return(
-          <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name} emit={this.props.emit}></Tablerow>
+            <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name} emit={this.props.emit}></Tablerow>
         );
       }, this);
-      return(
-          <tbody>
-            {rows}
-          </tbody>
-      );
-    }
+    return(
+        <tbody>
+        {rows}
+      </tbody>
+    );
+  }
 });
 
 Tablerow = React.createClass({
   render: function(){
     var topics = _.zip(this.props.blocks, this.props.row)
-    .map(function(zip){
-      var block = zip[0];
-      var topic = zip[1];
-      return(
-        <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
-      );
-    }, this);
+      .map(function(zip){
+	var block = zip[0];
+	var topic = zip[1];
+	return(
+            <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
+	);
+      }, this);
     return(
-      <tr>
+	<tr>
         <td>{this.props.room.name}</td>
         {topics}
       </tr>
@@ -68,13 +68,9 @@ Tablecell = React.createClass({
   handleMouseOut:function(e){
     this.setState({mouseOver : false});
   },
-  handleMouseUp:function(e){
-    var topic=this.props.topic.value0;
-    var event;
-    if(!topic){
-      event = new CustomEvent('mouseUpGrid',
-                              { 'detail': { 'room': this.props.room, 'block': this.props.block}});
-    }
+  handleDragOver: function(e){
+    var event = new CustomEvent('dragOverSlot',
+				{'detail':{ 'room': this.props.room, 'block': this.props.block }});
     this.props.emit(event);
   },
   handleClick: function(e){
@@ -94,7 +90,14 @@ Tablecell = React.createClass({
     var topic=this.props.topic.value0;
     var highlight = !topic && (this.state.mouseOver || this.state.selected);
     return (
-        <td onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut} onClick={this.handleClick} onMouseUp={this.handleMouseUp} className={highlight ? 'highlight' : ''}>{topic ? topic.description : ''} </td>
+        <td
+      className={highlight ? 'highlight' : ''}
+      onMouseOver={this.handleMouseOver}
+      onMouseOut={this.handleMouseOut}
+      onClick={this.handleClick}
+      onDragOver={this.handleDragOver} >
+	{topic ? topic.description : ''}
+      </td>
     );
   }
 });
@@ -105,10 +108,10 @@ Grid = React.createClass({
   },
   render: function(){
     return(
-      <Table striped bordered condensed id='gridContainer'>
+	<Table striped bordered condensed id='gridContainer'>
         <Tableheader blocks={this.props.blocks} />
         <Tablebody {...this.props} emit={this.emit}/>
-      </Table>
+	</Table>
     );
   }
 });
