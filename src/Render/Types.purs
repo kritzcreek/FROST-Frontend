@@ -110,10 +110,9 @@ instance foreignBlock :: IsForeign Block where
 --| Actions |--
 ---------------
 
-data Action = SelectTopic Topic
-            | AddTopic Topic
+data Action = AddTopic Topic
             | DeleteTopic Topic
-            | AssignTopic Topic Slot
+            | AssignTopic Slot Topic
             | UnassignTopic Topic
             | ShowError String
 
@@ -129,7 +128,6 @@ type AppState = { topics :: [Topic]
                 , blocks :: [Block]
                 , slots :: [Slot]
                 , timeslots :: M.Map Slot Topic
-                , selectedTopic :: Maybe Topic
                 }
 
 type SanitizedTopic = { description :: String, typ :: String }
@@ -141,14 +139,13 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
                          , blocks :: [Block]
                          , slots :: [SanitizedSlot]
                          , timeslots :: [SanitizedTimeslot]
-                         , selectedTopic :: Maybe SanitizedTopic
                          }
 
  --------------------
  --| Dummy Values |--
  --------------------
 
-emptyState = {topics: [], rooms:[], blocks:[], slots: [], timeslots: [], selected: Nothing}
+emptyState = {topics: [], rooms:[], blocks:[], slots: [], timeslots: []}
 
 myRoom = Room {name: "Berlin", capacity: 100}
 myRoom1 = Room {name: "Hamburg", capacity: 80}
@@ -169,5 +166,4 @@ myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
            , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
-           , selectedTopic: Nothing :: Maybe Topic
            }

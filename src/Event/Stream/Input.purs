@@ -50,9 +50,6 @@ parseSlot fs = do
   s <- read fs :: F Slot
   return s
 
-parseTimeslotEvent :: J.JQueryEvent -> J.JQueryEvent -> Either ForeignError Timeslot
-parseTimeslotEvent se te = parseTimeslot (getDetail se) (getDetail te)
-
 parseTimeslot :: Foreign -> Foreign -> Either ForeignError Timeslot
 parseTimeslot fs ft = do
   s <- parseSlot fs
@@ -68,28 +65,16 @@ streams = do
   readSTRef appSt >>= renderApp
   renderMenu (show <$> topicTypes)
 
-  document        <- J.select "document"
   menuEmitter     <- J.select "#menuContainer"
   topicEmitter    <- J.select "#topicsContainer"
   gridEmitter     <- J.select "#gridContainer"
 
   onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
   onRemoveTopic            <- "removeTopic" `onAsObservable` menuEmitter
-  onTopicSelect            <- "selectTopic" `onAsObservable` topicEmitter
-  onSelectSlotWithTopic    <- "selectSlotWithTopic" `onAsObservable` gridEmitter
-  onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
   onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
   onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
   onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
-
-  let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
-
-  let select = (\e -> do
-                   let ft = getDetail e
-                   case parseTopic ft of
-                     Right t -> SelectTopic t
-                     Left e -> ShowError (show e)
-               ) <$> onSelect
+  onDragOverTrash          <- "dragOverTrash" `onAsObservable` menuEmitter
 
   let add = (\e -> do
                 let ft = getDetail e
@@ -105,35 +90,27 @@ streams = do
                      Left e  -> ShowError (show e)
                ) <$> onRemoveTopic
 
-  let timeTopic =
-        do fs <- getDetail <$> onSelectSlotWithoutTopic
-           ft <- getDetail <$> onTopicSelect
-           return $ parseTimeslot fs ft
+  let dragOverSlot = (\e ->
+                       case parseSlot (getDetail e) of
+                         Right s -> AssignTopic s
+                         Left e -> UnassignTopic
+                     ) <$> onDragOverSlot
 
-  let assign = (\fts -> do
-                   case fts of
-                     Right (Tuple s t) -> AssignTopic t s
-                     Left e -> ShowError (show e)
-               ) <$> timeTopic
-
-    
+  let dragOverTrash = (const DeleteTopic) <$> onDragOverTrash
+  
+  let dragOver = dragOverSlot `merge` dragOverTrash
+      
   let dragTopic =
-         do ft <- getDetail <$> onDragStartTopic
-            fs <- getDetail <$> onDragOverSlot
+        do  (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
+            action <- dragOver
             onDragEndTopic
-            return $ parseTimeslot fs ft
+            return $ action t
 
-  let drag = (\fts -> do
-                 case fts of
-                   Right (Tuple s t) -> AssignTopic t s
-                   Left e -> ShowError $ show e
-             ) <$> dragTopic
-
-  let change = select `merge` add `merge` delete `merge` assign `merge` drag
+  let change = add `merge` delete `merge` dragTopic
 
   subscribe change (\a -> do
                           (modifySTRef appSt $ evalAction a) >>= renderApp
                    )
-  
+
 
 main = runST streams

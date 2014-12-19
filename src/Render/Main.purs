@@ -11,10 +11,9 @@ import Debug.Trace
 import DOM
 
 evalAction :: Action -> AppState -> AppState
-evalAction (SelectTopic t) as   = selectTopic t as
 evalAction (AddTopic t) as      = addTopic t as
 evalAction (DeleteTopic t) as   = removeTopic t as
-evalAction (AssignTopic t s) as = addTimeslot s t as
+evalAction (AssignTopic s t) as = addTimeslot s t as
 evalAction (UnassignTopic t) as = let topicslotFilter = filter (\(Tuple _ t') -> t' /= t)
                                   in as {timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
 evalAction (ShowError e) as     = as
@@ -32,12 +31,6 @@ removeTopic t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
                    in as { topics    = delete t as.topics
                          , timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)
                          }
-
-selectTopic :: Topic -> AppState -> AppState
-selectTopic topic as = as { selectedTopic = Just topic }
-
-unselectTopic :: AppState -> AppState
-unselectTopic as = as { selectedTopic = Nothing :: Maybe Topic }
 
 sanitizeTopic :: Topic -> SanitizedTopic
 sanitizeTopic (Topic t) = t { typ = show t.typ }
@@ -57,7 +50,6 @@ sanitizeAppState as = let topicNotInGrid t = (filter (\t' -> t == t')(M.values a
                          , blocks          : as.blocks
                          , slots           : sanitizeSlot     <$> as.slots
                          , timeslots       : sanitizeTimeslot <$> (M.toList as.timeslots)
-                         , selectedTopic   : sanitizeTopic    <$> as.selectedTopic
                          }
 
 findIn :: Room -> Block -> [SanitizedTimeslot] -> Maybe SanitizedTopic
@@ -82,15 +74,15 @@ foreign import renderMenu
 """ :: forall eff. [String] -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderTopics
-"""function renderTopics(topicsAndSelected){
+"""function renderTopics(topics){
   return function(){
     React.render(
-      React.createElement(Topics, {topicsAndSelected: topicsAndSelected}),
+      React.createElement(Topics, {topics: topics}),
       document.getElementById('topics')
       )
     }
   }
-  """ :: forall eff. Tuple [SanitizedTopic] (Maybe SanitizedTopic) -> Eff( dom::DOM | eff ) Unit
+  """ :: forall eff. [SanitizedTopic] -> Eff( dom::DOM | eff ) Unit
 
 foreign import renderGrid
 """
@@ -112,5 +104,5 @@ function renderGrid(rooms){
 renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   let as' = sanitizeAppState as
-  renderTopics $ Tuple as'.topics as'.selectedTopic
+  renderTopics $ as'.topics
   renderGrid as'.rooms as'.blocks (makeGrid as')

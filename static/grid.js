@@ -60,41 +60,27 @@ Tablerow = React.createClass({
 
 Tablecell = React.createClass({
   getInitialState: function(){
-    return {mouseOver:false, selected:false};
+    return {dragOver: false};
   },
-  handleMouseOver: function(e){
-    this.setState({mouseOver : true});
+  handleDragEnter : function(e){
+    this.setState({dragOver: true});
   },
-  handleMouseOut:function(e){
-    this.setState({mouseOver : false});
+  handleDragLeave : function(e){
+    this.setState({dragOver: false});
   },
   handleDragOver: function(e){
     var event = new CustomEvent('dragOverSlot',
 				{'detail':{ 'room': this.props.room, 'block': this.props.block }});
     this.props.emit(event);
   },
-  handleClick: function(e){
-    var topic=this.props.topic.value0;
-    var event;
-    if(topic){
-      event = new CustomEvent('selectSlotWithTopic',
-                              { 'detail': {'description': topic.description, 'typ' :topic.typ}});
-    }else{
-      event = new CustomEvent('selectSlotWithoutTopic',
-                              { 'detail': { 'room': this.props.room, 'block': this.props.block}});
-      this.setState({selected : !this.state.selected});
-    }
-    this.props.emit(event);
-  },
   render: function(){
     var topic=this.props.topic.value0;
-    var highlight = !topic && (this.state.mouseOver || this.state.selected);
+    var highlight = !topic && this.state.dragOver;
     return (
         <td
       className={highlight ? 'highlight' : ''}
-      onMouseOver={this.handleMouseOver}
-      onMouseOut={this.handleMouseOut}
-      onClick={this.handleClick}
+      onDragEnter={this.handleDragEnter}
+      onDragLeave={this.handleDragLeave}
       onDragOver={this.handleDragOver} >
 	{topic ? topic.description : ''}
       </td>
