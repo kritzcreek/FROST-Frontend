@@ -65,17 +65,18 @@ streams = do
   readSTRef appSt >>= renderApp
   renderMenu (show <$> topicTypes)
 
-  menuEmitter     <- J.select "#menuContainer"
-  topicEmitter    <- J.select "#topicsContainer"
-  gridEmitter     <- J.select "#gridContainer"
-
+  menuEmitter              <- J.select "#menuContainer"
   onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
-  onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
-  onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
-  onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
-  onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
   onDragOverTrash          <- "dragOverTrash" `onAsObservable` menuEmitter
   onDragLeaveTrash         <- "dragLeaveTrash" `onAsObservable` menuEmitter
+
+  topicEmitter             <- J.select "#topicsContainer"
+  onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
+  onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
+
+  gridEmitter              <- J.select "#gridContainer"
+  onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
+  onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
 
   let add = (\e -> do
                 let ft = getDetail e
@@ -84,31 +85,28 @@ streams = do
                   Left e -> ShowError (show e)
             ) <$> onAddTopic
   
-  let dragOverSlot = (\e ->
-                       case parseSlot (getDetail e) of
+  let dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left e -> UnassignTopic
                      ) <$> onDragOverSlot
 
   let dragOverTrash = (const DeleteTopic) <$> onDragOverTrash
 
-  --HTML 5 fires dragLeave before dragEnd occurs
+  -- HTML 5 fires dragLeave before dragEnd occurs
   -- TODO: Find a cleaner solution
   let dragLeave = delay 30 $ (const UnassignTopic) <$> (onDragLeaveSlot `merge` onDragLeaveTrash)
   
   let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash 
       
   let dragTopic =
-        do  (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
-            action <- dragOver
-            onDragEndTopic
-            return $ action t
+        do (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
+           action <- dragOver
+           onDragEndTopic
+           return $ action t
 
   let change = add `merge` dragTopic
 
-  subscribe change (\a -> do
-                          (modifySTRef appSt $ evalAction a) >>= renderApp
-                   )
+  subscribe change (\a -> modifySTRef appSt (evalAction a) >>= renderApp )
 
 
-main = runST streams
+main = streams
