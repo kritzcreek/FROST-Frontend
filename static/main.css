@@ -1,23 +1,61 @@
 .topic {
-  float:left;
-  padding: 10px;
-  border: 1px solid #a80002;
-  border-radius: 5px;
-  background-image: -webkit-gradient(linear, center top, center bottom, from(#d5575b), to(#c43033));
-  background-image: -webkit-linear-gradient(top, #d5575b, #c43033);
-  background-image: -moz-linear-gradient(top, #d5575b, #c43033);
-  background-image: -o-linear-gradient(top, #d5575b, #c43033);
-  background-image: -ms-linear-gradient(top, #d5575b, #c43033);
-  background-image: linear-gradient(to bottom, #d5575b, #c43033);
-  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
+    float:left;
+    padding: 10px;
+    border: 1px solid #a80002;
+    border-radius: 5px;
+    background-image: -webkit-gradient(linear, center top, center bottom, from(#d5575b), to(#c43033));
+    background-image: -webkit-linear-gradient(top, #d5575b, #c43033);
+    background-image: -moz-linear-gradient(top, #d5575b, #c43033);
+    background-image: -o-linear-gradient(top, #d5575b, #c43033);
+    background-image: -ms-linear-gradient(top, #d5575b, #c43033);
+    background-image: linear-gradient(to bottom, #d5575b, #c43033);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
+    -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.21);
 
 }
 .topic.selected {
-  border: 1px solid #031ece;
+    border: 1px solid #031ece;
 }
 
 td.highlight {
-  background-color: #70e01b;
+    background-color: #70e01b;
+}
+
+span.glyphicon-plus {
+    color: #000000;
+    font-size: 3.5em;
+    text-align: center;
+    padding: 10px;
+    border: 3px solid #000000;
+    border-radius: 5px;
+}
+
+span.glyphicon-trash {
+    font-size: 3.5em;
+    text-align: center;
+    padding: 10px 10px 10px 9px;
+    border: 3px solid #000000;
+    border-radius: 5px;
+}
+
+span.glyphicon-trash.highlight {
+    color: #FF0000;
+    border: 5px solid #FF0000;
+}
+
+#menuContainer {
+    text-align: center;
+}
+
+.notice {
+    font-size: 3em;
+}
+span.glyphicon-arrow-right {
+    padding-right: 10px;
+    padding-left: 5px;
+}
+span.glyphicon-arrow-left {
+    padding-right: 5px;
+    padding-left: 10px;
 }

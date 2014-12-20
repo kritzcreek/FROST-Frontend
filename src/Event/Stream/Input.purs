@@ -50,9 +50,6 @@ parseSlot fs = do
   s <- read fs :: F Slot
   return s
 
-parseTimeslotEvent :: J.JQueryEvent -> J.JQueryEvent -> Either ForeignError Timeslot
-parseTimeslotEvent se te = parseTimeslot (getDetail se) (getDetail te)
-
 parseTimeslot :: Foreign -> Foreign -> Either ForeignError Timeslot
 parseTimeslot fs ft = do
   s <- parseSlot fs
@@ -68,28 +65,18 @@ streams = do
   readSTRef appSt >>= renderApp
   renderMenu (show <$> topicTypes)
 
-  document        <- J.select "document"
-  menuEmitter     <- J.select "#menuContainer"
-  topicEmitter    <- J.select "#topicsContainer"
-  gridEmitter     <- J.select "#gridContainer"
-
+  menuEmitter              <- J.select "#menuContainer"
   onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
-  onRemoveTopic            <- "removeTopic" `onAsObservable` menuEmitter
-  onTopicSelect            <- "selectTopic" `onAsObservable` topicEmitter
-  onSelectSlotWithTopic    <- "selectSlotWithTopic" `onAsObservable` gridEmitter
-  onSelectSlotWithoutTopic <- "selectSlotWithoutTopic" `onAsObservable` gridEmitter
+  onDragOverTrash          <- "dragOverTrash" `onAsObservable` menuEmitter
+  onDragLeaveTrash         <- "dragLeaveTrash" `onAsObservable` menuEmitter
+
+  topicEmitter             <- J.select "#topicsContainer"
   onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
   onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
+
+  gridEmitter              <- J.select "#gridContainer"
   onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
-
-  let onSelect = onTopicSelect `merge` onSelectSlotWithTopic
-
-  let select = (\e -> do
-                   let ft = getDetail e
-                   case parseTopic ft of
-                     Right t -> SelectTopic t
-                     Left e -> ShowError (show e)
-               ) <$> onSelect
+  onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
 
   let add = (\e -> do
                 let ft = getDetail e
@@ -97,43 +84,29 @@ streams = do
                   Right t -> AddTopic t
                   Left e -> ShowError (show e)
             ) <$> onAddTopic
-
-  let delete = (\e -> do
-                   let ft = getDetail e
-                   case parseTopic ft of
-                     Right t -> DeleteTopic t
-                     Left e  -> ShowError (show e)
-               ) <$> onRemoveTopic
-
-  let timeTopic =
-        do fs <- getDetail <$> onSelectSlotWithoutTopic
-           ft <- getDetail <$> onTopicSelect
-           return $ parseTimeslot fs ft
-
-  let assign = (\fts -> do
-                   case fts of
-                     Right (Tuple s t) -> AssignTopic t s
-                     Left e -> ShowError (show e)
-               ) <$> timeTopic
-
-    
-  let dragTopic =
-         do ft <- getDetail <$> onDragStartTopic
-            fs <- getDetail <$> onDragOverSlot
-            onDragEndTopic
-            return $ parseTimeslot fs ft
-
-  let drag = (\fts -> do
-                 case fts of
-                   Right (Tuple s t) -> AssignTopic t s
-                   Left e -> ShowError $ show e
-             ) <$> dragTopic
-
-  let change = select `merge` add `merge` delete `merge` assign `merge` drag
-
-  subscribe change (\a -> do
-                          (modifySTRef appSt $ evalAction a) >>= renderApp
-                   )
   
+  let dragOverSlot = (\e -> case parseSlot (getDetail e) of
+                         Right s -> AssignTopic s
+                         Left e -> UnassignTopic
+                     ) <$> onDragOverSlot
 
-main = runST streams
+  let dragOverTrash = (const DeleteTopic) <$> onDragOverTrash
+
+  -- HTML 5 fires dragLeave before dragEnd occurs
+  -- TODO: Find a cleaner solution
+  let dragLeave = delay 30 $ (const UnassignTopic) <$> (onDragLeaveSlot `merge` onDragLeaveTrash)
+  
+  let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash 
+      
+  let dragTopic =
+        do (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
+           action <- dragOver
+           onDragEndTopic
+           return $ action t
+
+  let change = add `merge` dragTopic
+
+  subscribe change (\a -> modifySTRef appSt (evalAction a) >>= renderApp )
+
+
+main = streams
