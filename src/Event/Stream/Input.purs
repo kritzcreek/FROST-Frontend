@@ -18,27 +18,55 @@ import DOM
 import Render.Types
 import Render.Main
 
-
-foreign import readTopic
-"""
-function readTopic (){
-  return { description : $('#topicInput').val(), typ: $('#typInput').val() };
-}
-""" :: forall eff. Eff( dom :: DOM | eff ) Foreign
-
-foreign import readSlot
-"""
-function readSlot (){
-  return { room: $('#roomInput').val(), time: parseFloat($('#timeInput').val(), 10) };
-}
-""" :: forall eff. Eff( dom :: DOM | eff ) Foreign
-
 foreign import getDetail
 """
 function getDetail (e){
     return e.originalEvent.detail;
 }
 """ :: forall eff. J.JQueryEvent -> Foreign
+
+foreign import getSocket
+"""
+function getSocket(url){
+  return function(){
+    return io(url);
+  }
+}
+""" :: forall eff. String -> Eff (dom::DOM | eff) J.JQuery
+
+foreign import socketObserver
+"""
+function socketObserver(channel){
+  return function(socket){
+    return function(){
+      var __slice = [].slice;
+      var subj;
+      subj = new Rx.Subject();
+      subj.callback = function(msg) {
+       return subj.onNext(msg);
+      };
+      socket.on(channel, subj.callback);
+      return subj;
+    }
+  }
+}
+""" :: forall eff. String -> J.JQuery -> Eff (dom :: DOM | eff) (Observable Foreign)
+
+foreign import emitAction
+"""
+function emitAction(socket){
+  return function (action){
+    return function(){
+      socket.emit('message', action)
+    }
+  }
+}
+""" :: forall eff. J.JQuery -> Foreign -> Eff (dom :: DOM | eff) Unit
+
+parseAction :: Foreign -> Either ForeignError Action
+parseAction fa = do
+  a <- read fa :: F Action
+  return a
 
 parseTopic :: Foreign -> Either ForeignError Topic
 parseTopic ft = do
@@ -78,6 +106,9 @@ streams = do
   onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
   onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
 
+  sockEmitter              <- getSocket "http://localhost:3000"
+  onReceive                <- "message" `socketObserver` sockEmitter
+  
   let add = (\e -> do
                 let ft = getDetail e
                 case parseTopic ft of
@@ -104,9 +135,17 @@ streams = do
            onDragEndTopic
            return $ action t
 
+  let receive = (\ f -> case parseAction f of
+                    Right a -> a
+                    Left e -> ShowError (show e)
+                ) <$> onReceive
+
   let change = add `merge` dragTopic
 
-  subscribe change (\a -> modifySTRef appSt (evalAction a) >>= renderApp )
-
-
+  subscribe receive (\a -> do modifySTRef appSt (evalAction a) >>= renderApp)
+  
+  subscribe change (\a -> do modifySTRef appSt (evalAction a) >>= renderApp
+                             emitAction sockEmitter (serialize a)
+                   )
+  
 main = streams
