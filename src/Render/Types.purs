@@ -116,7 +116,56 @@ data Action = AddTopic Topic
             | UnassignTopic Topic
             | ShowError String
 
+instance foreignAction :: IsForeign Action where
+read val = case readProp "action" val of
+  Right "AddTopic" -> do
+    t <- readProp "topic" val :: F Topic
+    return $ AddTopic t
+  Right "DeleteTopic" -> do
+    t <- readProp "topic" val :: F Topic
+    return $ DeleteTopic t
+  Right "AssignTopic" -> do
+    s <- readProp "slot" val :: F Slot
+    t <- readProp "topic" val :: F Topic
+    return $ AssignTopic s t
+  Right "UnassignTopic" -> do
+    t <- readProp "topic" val :: F Topic
+    return $ UnassignTopic t
+  Right "ShowError" -> do
+    m <- readProp "message" val :: F String
+    return $ ShowError m
+  Left e -> Right $ ShowError (show e) 
 
+class AsForeign a where
+  serialize :: a -> Foreign
+
+instance actionAsForeign :: AsForeign Action where
+  serialize (AddTopic (Topic t)) = toForeign { action: "AddTopic"
+                                             , topic: { description: t.description
+                                                      , typ: show t.typ
+                                                      }
+                                             }
+  serialize (DeleteTopic (Topic t)) = toForeign { action: "DeleteTopic"
+                                                , topic: { description: t.description
+                                                         , typ: show t.typ
+                                                         }
+                                                }
+  serialize (AssignTopic s (Topic t)) = toForeign { action: "AssignTopic"
+                                                        , topic: { description: t.description
+                                                                 , typ: show t.typ
+                                                                 }
+                                                        , slot: s
+                                                        }
+
+  serialize (UnassignTopic (Topic t)) = toForeign { action: "UnassignTopic"
+                                                  , topic: { description: t.description
+                                                           , typ: show t.typ
+                                                           }
+                                                  }
+
+  serialize (ShowError s) = toForeign { action: "ShowError"
+                                      , message: s
+                                      }                                        
 -------------------------
 --| Gesamter AppState |--
 -------------------------
