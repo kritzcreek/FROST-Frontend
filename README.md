@@ -20,3 +20,11 @@ grunt browser
 ```
 
 Point your browser at **localhost:9001/static**
+
+## Websocket support
+
+In order to use the websocket features you first need to start https://github.com/kRITZCREEK/open-space-socket.
+
+Once it's up and running your actions get shared across multiple sessions. Open up two Browsertabs and see them synchronize.
+
+**This is still in the experimental Phase**
