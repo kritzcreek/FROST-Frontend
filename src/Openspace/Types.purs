@@ -1,4 +1,4 @@
-module Render.Types where
+module Openspace.Types where
 
 import Data.Tuple
 import Data.Maybe
@@ -134,7 +134,7 @@ read val = case readProp "action" val of
   Right "ShowError" -> do
     m <- readProp "message" val :: F String
     return $ ShowError m
-  Left e -> Right $ ShowError (show e) 
+  Left e -> Right $ ShowError (show e)
 
 class AsForeign a where
   serialize :: a -> Foreign
@@ -165,9 +165,9 @@ instance actionAsForeign :: AsForeign Action where
 
   serialize (ShowError s) = toForeign { action: "ShowError"
                                       , message: s
-                                      }                                        
+                                      }
 -------------------------
---| Gesamter AppState |--
+--| Entire AppState |--
 -------------------------
 
 type Timeslot = Tuple Slot Topic

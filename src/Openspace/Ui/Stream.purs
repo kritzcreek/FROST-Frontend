@@ -1,4 +1,4 @@
-module Event.Stream.Input where
+module Openspace.Ui.Stream where
 
 import Rx.JQuery
 import Rx.Observable
@@ -15,8 +15,10 @@ import qualified Control.Monad.JQuery as J
 import Debug.Trace
 import DOM
 
-import Render.Types
-import Render.Main
+import Openspace.Ui.Render
+import Openspace.Types
+import Openspace.Engine
+import Openspace.Network.Socket
 
 foreign import getDetail
 """
@@ -24,44 +26,6 @@ function getDetail (e){
     return e.originalEvent.detail;
 }
 """ :: forall eff. J.JQueryEvent -> Foreign
-
-foreign import getSocket
-"""
-function getSocket(url){
-  return function(){
-    return io(url);
-  }
-}
-""" :: forall eff. String -> Eff (dom::DOM | eff) J.JQuery
-
-foreign import socketObserver
-"""
-function socketObserver(channel){
-  return function(socket){
-    return function(){
-      var __slice = [].slice;
-      var subj;
-      subj = new Rx.Subject();
-      subj.callback = function(msg) {
-       return subj.onNext(msg);
-      };
-      socket.on(channel, subj.callback);
-      return subj;
-    }
-  }
-}
-""" :: forall eff. String -> J.JQuery -> Eff (dom :: DOM | eff) (Observable Foreign)
-
-foreign import emitAction
-"""
-function emitAction(socket){
-  return function (action){
-    return function(){
-      socket.emit('message', action)
-    }
-  }
-}
-""" :: forall eff. J.JQuery -> Foreign -> Eff (dom :: DOM | eff) Unit
 
 parseAction :: Foreign -> Either ForeignError Action
 parseAction fa = do
@@ -84,7 +48,7 @@ parseTimeslot fs ft = do
   t <- parseTopic ft
   return $ Tuple s t
 
-type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h | eff ) Unit
+type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h, net :: Net | eff ) Unit
 
 streams :: forall h eff. Stream AppState h eff
 streams = do
@@ -106,16 +70,16 @@ streams = do
   onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
   onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
 
-  sockEmitter              <- getSocket "http://localhost:3000"
+  let sockEmitter = getSocket "http://localhost:3000"
   onReceive                <- "message" `socketObserver` sockEmitter
-  
+
   let add = (\e -> do
                 let ft = getDetail e
                 case parseTopic ft of
                   Right t -> AddTopic t
                   Left e -> ShowError (show e)
             ) <$> onAddTopic
-  
+
   let dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left e -> UnassignTopic
@@ -126,9 +90,9 @@ streams = do
   -- HTML 5 fires dragLeave before dragEnd occurs
   -- TODO: Find a cleaner solution
   let dragLeave = delay 30 $ (const UnassignTopic) <$> (onDragLeaveSlot `merge` onDragLeaveTrash)
-  
-  let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash 
-      
+
+  let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash
+
   let dragTopic =
         do (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
            action <- dragOver
@@ -143,9 +107,9 @@ streams = do
   let change = add `merge` dragTopic
 
   subscribe receive (\a -> do modifySTRef appSt (evalAction a) >>= renderApp)
-  
+
   subscribe change (\a -> do modifySTRef appSt (evalAction a) >>= renderApp
                              emitAction sockEmitter (serialize a)
                    )
-  
+
 main = streams
