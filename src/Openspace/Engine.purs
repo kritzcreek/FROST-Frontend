@@ -14,6 +14,7 @@ evalAction (AssignTopic s t) as = addTimeslot s t as
 evalAction (UnassignTopic t) as = let topicslotFilter = filter (\(Tuple _ t') -> t' /= t)
                                   in as {timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
 evalAction (ShowError e) as     = as
+evalAction NOP as               = as
 
 addTimeslot :: Slot -> Topic -> AppState -> AppState
 addTimeslot s t as = as { timeslots = M.insert s t as.timeslots }

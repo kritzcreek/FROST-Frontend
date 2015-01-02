@@ -115,6 +115,7 @@ data Action = AddTopic Topic
             | AssignTopic Slot Topic
             | UnassignTopic Topic
             | ShowError String
+            | NOP
 
 instance foreignAction :: IsForeign Action where
 read val = case readProp "action" val of
