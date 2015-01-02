@@ -15,7 +15,7 @@ import Openspace.Network.Socket
 
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do
-  onReceive <- "message" `socketObserver` socket
+  onReceive <- "message" `socketObserver'` socket
   return $ (\ f -> case parseAction f of
                Right a -> a
                Left e -> ShowError (show e)
@@ -53,7 +53,9 @@ uiStream = do
 
 main = do
   -- TODO: getSocket :: Either SockErr Socket
-  let sockEmitter = getSocket "http://localhost:3000"
+  -- let sockEmitter = getSocket "http://localhost:3000"
+  --| until Websocket support is given by the server
+  let sockEmitter = EmptySocket
   -- Initial State
   appSt <- newSTRef myState1
   -- Initial Render

@@ -6,7 +6,7 @@ import Data.Either
 import Rx.Observable
 
 
-data Socket = Socket
+data Socket = Socket | EmptySocket -- TODO: remove the need for EmptySocket
 data SocketError = SocketError
 
 foreign import data Net :: !
@@ -17,6 +17,9 @@ function getSocket(url){
     return io(url);
 }
 """ :: String -> Socket
+
+socketObserver' _ EmptySocket = return empty
+socketObserver' str sock = socketObserver str sock
 
 foreign import socketObserver
 """
