@@ -1,115 +1,69 @@
 module Openspace.Ui.Stream where
 
-import Rx.JQuery
 import Rx.Observable
-
 import Data.Either
-import Data.Foreign
-import Data.Foreign.Class
-import Data.Tuple hiding(zip)
-import Data.Maybe
-
 import Control.Monad.Eff
 import Control.Monad.ST
-import qualified Control.Monad.JQuery as J
-import Debug.Trace
 import DOM
 
 import Openspace.Ui.Render
+import Openspace.Ui.Emitter
+import Openspace.Ui.Parser
 import Openspace.Types
 import Openspace.Engine
 import Openspace.Network.Socket
 
-foreign import getDetail
-"""
-function getDetail (e){
-    return e.originalEvent.detail;
-}
-""" :: forall eff. J.JQueryEvent -> Foreign
+netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
+netStream socket = do
+  onReceive <- "message" `socketObserver` socket
+  return $ (\ f -> case parseAction f of
+               Right a -> a
+               Left e -> ShowError (show e)
+           ) <$> onReceive
 
-parseAction :: Foreign -> Either ForeignError Action
-parseAction fa = do
-  a <- read fa :: F Action
-  return a
-
-parseTopic :: Foreign -> Either ForeignError Topic
-parseTopic ft = do
-  t <- read ft :: F Topic
-  return t
-
-parseSlot :: Foreign -> Either ForeignError Slot
-parseSlot fs = do
-  s <- read fs :: F Slot
-  return s
-
-parseTimeslot :: Foreign -> Foreign -> Either ForeignError Timeslot
-parseTimeslot fs ft = do
-  s <- parseSlot fs
-  t <- parseTopic ft
-  return $ Tuple s t
-
-type Stream a h eff = Eff( dom :: DOM, trace :: Trace, st :: ST h, net :: Net | eff ) Unit
-
-streams :: forall h eff. Stream AppState h eff
-streams = do
-
-  appSt <- newSTRef myState1
-  readSTRef appSt >>= renderApp
-  renderMenu (show <$> topicTypes)
-
-  menuEmitter              <- J.select "#menuContainer"
-  onAddTopic               <- "addTopic" `onAsObservable` menuEmitter
-  onDragOverTrash          <- "dragOverTrash" `onAsObservable` menuEmitter
-  onDragLeaveTrash         <- "dragLeaveTrash" `onAsObservable` menuEmitter
-
-  topicEmitter             <- J.select "#topicsContainer"
-  onDragStartTopic         <- "dragStartTopic" `onAsObservable` topicEmitter
-  onDragEndTopic           <- "dragEndTopic" `onAsObservable` topicEmitter
-
-  gridEmitter              <- J.select "#gridContainer"
-  onDragOverSlot           <- "dragOverSlot" `onAsObservable` gridEmitter
-  onDragLeaveSlot          <- "dragLeaveSlot" `onAsObservable` gridEmitter
-
-  let sockEmitter = getSocket "http://localhost:3000"
-  onReceive                <- "message" `socketObserver` sockEmitter
-
+uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
+uiStream = do
+  emitters <- getEmitters
+  let lookup = emitterLookup emitters
   let add = (\e -> do
                 let ft = getDetail e
                 case parseTopic ft of
                   Right t -> AddTopic t
                   Left e -> ShowError (show e)
-            ) <$> onAddTopic
+            ) <$> lookup "addTopic"
 
   let dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left e -> UnassignTopic
-                     ) <$> onDragOverSlot
+                     ) <$> lookup "dragOverSlot"
 
-  let dragOverTrash = (const DeleteTopic) <$> onDragOverTrash
+  let dragOverTrash = (const DeleteTopic) <$> (lookup "dragOverTrash")
 
   -- HTML 5 fires dragLeave before dragEnd occurs
   -- TODO: Find a cleaner solution
-  let dragLeave = delay 30 $ (const UnassignTopic) <$> (onDragLeaveSlot `merge` onDragLeaveTrash)
+  let dragLeave = delay 30 $ (const UnassignTopic) <$> ((lookup "dragLeaveSlot") `merge` (lookup "dragLeaveTrash"))
 
   let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash
 
-  let dragTopic =
-        do (Right t) <- (parseTopic <<< getDetail) <$> onDragStartTopic
-           action <- dragOver
-           onDragEndTopic
-           return $ action t
+  let dragTopic = do (Right t) <- (parseTopic <<< getDetail) <$> lookup "dragStartTopic"
+                     action <- dragOver
+                     lookup "dragEndTopic"
+                     return $ action t
+  return $ add `merge` dragTopic
 
-  let receive = (\ f -> case parseAction f of
-                    Right a -> a
-                    Left e -> ShowError (show e)
-                ) <$> onReceive
-
-  let change = add `merge` dragTopic
-
-  subscribe receive (\a -> do modifySTRef appSt (evalAction a) >>= renderApp)
-
-  subscribe change (\a -> do modifySTRef appSt (evalAction a) >>= renderApp
-                             emitAction sockEmitter (serialize a)
-                   )
-
-main = streams
+main = do
+  -- TODO: getSocket :: Either SockErr Socket
+  let sockEmitter = getSocket "http://localhost:3000"
+  -- Initial State
+  appSt <- newSTRef myState1
+  -- Initial Render
+  renderMenu (show <$> topicTypes)
+  readSTRef appSt >>= renderApp
+  -- Observable Action
+  ui  <- uiStream
+  net <- netStream sockEmitter
+  -- Broadcast the UI Observable
+  unwrap $ (\a -> emitAction sockEmitter (serialize a)) <$> ui
+  -- Evaluate Action Observables
+  let actions = ui `merge` net
+  subscribe actions (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
