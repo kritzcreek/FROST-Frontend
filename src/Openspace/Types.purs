@@ -112,6 +112,10 @@ instance foreignBlock :: IsForeign Block where
 
 data Action = AddTopic Topic
             | DeleteTopic Topic
+            | AddRoom Room
+            | DeleteRoom Room
+            | AddBlock Block
+            | DeleteBlock Block
             | AssignTopic Slot Topic
             | UnassignTopic Topic
             | ShowError String
