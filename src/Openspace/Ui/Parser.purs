@@ -18,6 +18,14 @@ function getDetail (e){
 }
 """ :: JQueryEvent -> Foreign
 
+type Parser a = Foreign -> F a
+
+actionFromForeign :: forall a. Parser a -> (a -> Action) -> Foreign -> Action
+actionFromForeign parser actionConstructor f =
+  case parser f of
+    Right a -> actionConstructor a
+    Left e -> ShowError (show e)
+
 parseAction :: Foreign -> F Action
 parseAction fa = do
   a <- read fa :: F Action
@@ -27,6 +35,16 @@ parseTopic :: Foreign -> F Topic
 parseTopic ft = do
   t <- read ft :: F Topic
   return t
+
+parseRoom :: Foreign -> F Room
+parseRoom fr = do
+  r <- read fr :: F Room
+  return r
+
+parseBlock :: Foreign -> F Block
+parseBlock fb = do
+  b <- read fb :: F Block
+  return b
 
 parseSlot :: Foreign -> F Slot
 parseSlot fs = do

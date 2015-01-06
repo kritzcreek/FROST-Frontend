@@ -49,7 +49,14 @@ uiStream = do
                      action <- dragOver
                      lookup "dragEndTopic"
                      return $ action t
-  return $ add `merge` dragTopic
+
+  let addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail <$> lookup "addRoom"
+  let removeRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail <$> lookup "deleteRoom"
+  let addBlock    = (actionFromForeign parseBlock AddBlock) <<< getDetail <$> lookup "addBlock"
+  let deleteBlock = (actionFromForeign parseBlock DeleteBlock) <<< getDetail <$> lookup "deleteBlock"
+
+  let changeGrid = addRoom `merge` removeRoom `merge` addBlock `merge` deleteBlock
+  return $ add `merge` dragTopic `merge` changeGrid
 
 main = do
   -- TODO: getSocket :: Either SockErr Socket

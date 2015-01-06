@@ -1,22 +1,111 @@
 var Grid, Tableheader, Tablebody, Tablerow, Tablecell;
 
 var Table = ReactBootstrap.Table;
+var Button = ReactBootstrap.Button;
+var ModalTrigger = ReactBootstrap.ModalTrigger;
+var Modal = ReactBootstrap.Modal;
+var Input = ReactBootstrap.Input;
+
+AddRoomModal = React.createClass({
+  handleClick: function() {
+    var event = new CustomEvent('addRoom',
+                                {
+                                  'detail': {
+                                  name: $('#nameInput').val(),
+                                  capacity: parseInt($('#capacityInput').val())
+                                  }
+                                });
+    this.props.emit(event);
+    this.props.onRequestHide();
+  },
+  render: function() {
+    return (
+        <Modal {...this.props} title="New Room" animation={true}>
+          <div className="modal-body">
+            <form role="form">
+              <div className="form-group">
+                <Input type="text" label="Room" id="nameInput"/>
+              </div>
+              <div className="form-group">
+                <Input type="number" label="Capacity" id="capacityInput"> </Input>
+              </div>
+            </form>
+          </div>
+          <div className="modal-footer">
+            <Button onClick={this.props.onRequestHide}>Close</Button>
+            <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
+          </div>
+        </Modal>
+    );
+  }
+});
+
+OpenAddRoomModal = React.createClass({
+  render : function (){
+    return (
+        <ModalTrigger modal={<AddRoomModal {...this.props}/>}>
+          <Button className="btn-block" bsStyle="success">New Room</Button>
+        </ModalTrigger>
+    );
+  }
+});
+
+AddBlockModal = React.createClass({
+  handleClick: function() {
+    var event = new CustomEvent('addBlock',
+                                {
+                                  'detail': {
+                                    start: $('#startInput').val()
+                                  }
+                                });
+    this.props.emit(event);
+    this.props.onRequestHide();
+  },
+  render: function() {
+    return (
+        <Modal {...this.props} title="New Block" animation={true}>
+          <div className="modal-body">
+            <form role="form">
+              <div className="form-group">
+                <Input type="text" label="Start" id="startInput"/>
+              </div>
+            </form>
+          </div>
+          <div className="modal-footer">
+            <Button onClick={this.props.onRequestHide}>Close</Button>
+            <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
+          </div>
+        </Modal>
+    );
+  }
+});
+
+OpenAddBlockModal = React.createClass({
+  render : function (){
+    return (
+        <ModalTrigger modal={<AddBlockModal {...this.props}/>}>
+          <Button className="btn-block" bsStyle="success">New Block</Button>
+        </ModalTrigger>
+    );
+  }
+});
 
 Tableheader = React.createClass({
   render: function(){
     var ths = this.props.blocks
       .map(function(block){
-	return(
+        return(
             <th key={block.start}>{block.start}</th>
-	);
+        );
       });
     return(
-	<thead>
+      <thead>
         <tr>
         <th></th>
         {ths}
+        <th><OpenAddBlockModal emit={this.props.emit}/></th>
       </tr>
-	</thead>
+    </thead>
     );
   }
 });
@@ -34,6 +123,11 @@ Tablebody = React.createClass({
     return(
         <tbody>
         {rows}
+        <tr>
+          <td>
+            <OpenAddRoomModal emit={this.props.emit}/>
+          </td>
+        </tr>
       </tbody>
     );
   }
@@ -42,15 +136,15 @@ Tablebody = React.createClass({
 Tablerow = React.createClass({
   render: function(){
     var topics = _.zip(this.props.blocks, this.props.row)
-      .map(function(zip){
-	var block = zip[0];
-	var topic = zip[1];
-	return(
-            <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
-	);
+          .map(function(zip){
+            var block = zip[0];
+            var topic = zip[1];
+            return(
+                <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
+            );
       }, this);
     return(
-	<tr>
+      <tr>
         <td>{this.props.room.name}</td>
         {topics}
       </tr>
@@ -72,19 +166,21 @@ Tablecell = React.createClass({
   },
   handleDragOver: function(e){
     var event = new CustomEvent('dragOverSlot',
-				{'detail':{ 'room': this.props.room, 'block': this.props.block }});
+                                {'detail':{ 'room': this.props.room, 'block': this.props.block }});
     this.props.emit(event);
   },
   render: function(){
     var topic=this.props.topic.value0;
-    var highlight = !topic && this.state.dragOver;
+    var highlight = this.state.dragOver;
     return (
-        <td
-      className={highlight ? 'highlight' : ''}
-      onDragEnter={this.handleDragEnter}
-      onDragLeave={this.handleDragLeave}
-      onDragOver={this.handleDragOver} >
-	{topic ? topic.description : ''}
+      <td>
+      <div
+        className={highlight ? 'tabletopic highlight' : 'tabletopic'}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDragOver={this.handleDragOver} >
+          {topic ? topic.description : ''}
+      </div>
       </td>
     );
   }
@@ -96,10 +192,10 @@ Grid = React.createClass({
   },
   render: function(){
     return(
-	<Table striped bordered condensed id='gridContainer'>
-        <Tableheader blocks={this.props.blocks} />
-        <Tablebody {...this.props} emit={this.emit}/>
-	</Table>
+        <Table striped bordered condensed id='gridContainer'>
+          <Tableheader blocks={this.props.blocks} emit={this.emit}/>
+          <Tablebody {...this.props} emit={this.emit}/>
+        </Table>
     );
   }
 });

@@ -29,13 +29,15 @@ mkObservable emitter event = (Tuple event) <$> (event `onAsObservable` emitter)
 getEmitters = do
     menuEmitter <- J.select "#menuContainer"
     let menu = mkObservable menuEmitter <$> ["addTopic", "dragOverTrash", "dragLeaveTrash"]
-                
+
     topicEmitter <- J.select "#topicsContainer"
     let topic = mkObservable topicEmitter <$> ["dragStartTopic", "dragEndTopic"]
-       
+
     gridEmitter <- J.select "#gridContainer"
-    let grid = mkObservable gridEmitter <$> ["dragOverSlot", "dragLeaveSlot"]
-       
+    let grid = mkObservable gridEmitter <$> ["dragOverSlot", "dragLeaveSlot"
+                                            , "addRoom", "deleteRoom"
+                                            , "addBlock", "deleteBlock"]
+
     M.fromList <$> (sequence $ menu `append` topic `append` grid)
 
 emitterLookup :: Emitters -> String -> Observable J.JQueryEvent

@@ -9,24 +9,25 @@ var Input = ReactBootstrap.Input;
 AddModal = React.createClass({
   handleClick: function() {
     var event = new CustomEvent('addTopic',
-				{ 'detail': {
-				  description: $('#topicInput').val(),
-				  typ: $('#topicTypeInput').val()
-				}
-				});
+                                {
+                                  'detail': {
+                                  description: $('#topicInput').val(),
+                                  typ: $('#topicTypeInput').val()
+                                  }
+                                });
     this.props.emit(event);
     this.props.onRequestHide();
   },
   render: function() {
     var options = this.props.topicTypes
-      .map(function(topicType){
-	return (
-            <option key={topicType} value={topicType}>{topicType}</option>
-	);
-      });
+          .map(function(topicType){
+            return (
+                <option key={topicType} value={topicType}>{topicType}</option>
+            );
+          });
     return (
-	<Modal {...this.props} title="Neues Thema" animation={true}>
-	<div className="modal-body">
+        <Modal {...this.props} title="Neues Thema" animation={true}>
+        <div className="modal-body">
         <form role="form">
         <div className="form-group">
         <label htmlFor="topicInput">Thema: </label>
@@ -40,12 +41,12 @@ AddModal = React.createClass({
       </Input>
         </div>
         </form>
-	</div>
-	<div className="modal-footer">
+        </div>
+        <div className="modal-footer">
         <Button onClick={this.props.onRequestHide}>Close</Button>
         <Button bsStyle="success" onClick={this.handleClick}> Hinzufügen </Button>
-	</div>
-	</Modal>
+        </div>
+        </Modal>
     );
   }
 });
@@ -53,10 +54,10 @@ AddModal = React.createClass({
 OpenAddModal = React.createClass({
   render : function (){
     return (
-	<ModalTrigger modal={<AddModal {...this.props}/>}>
-	<span className={"glyphicon glyphicon-plus"}>
-	</span>
-	</ModalTrigger>
+        <ModalTrigger modal={<AddModal {...this.props}/>}>
+          <span className={"glyphicon glyphicon-plus"}>
+          </span>
+        </ModalTrigger>
     );
   }
 });
@@ -83,7 +84,7 @@ RemoveButton = React.createClass({
   },
   render: function(){
     return (
-	<span 
+      <span
       className={"glyphicon glyphicon-trash" + (this.state.dragOver? " highlight" : "")}
       onClick={this.handleClick}
       onDragEnter={this.handleDragEnter}
