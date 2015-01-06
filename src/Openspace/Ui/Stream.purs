@@ -21,17 +21,10 @@ netStream socket = do
                Left e -> ShowError (show e)
            ) <$> onReceive
 
-uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
-uiStream = do
+dragStream :: forall eff. Eff( dom :: DOM| eff) (Observable Action)
+dragStream = do
   emitters <- getEmitters
   let lookup = emitterLookup emitters
-  let add = (\e -> do
-                let ft = getDetail e
-                case parseTopic ft of
-                  Right t -> AddTopic t
-                  Left e -> ShowError (show e)
-            ) <$> lookup "addTopic"
-
   let dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left e -> UnassignTopic
@@ -49,14 +42,20 @@ uiStream = do
                      action <- dragOver
                      lookup "dragEndTopic"
                      return $ action t
+  return dragTopic
 
+uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
+uiStream = do
+  emitters <- getEmitters
+  let lookup = emitterLookup emitters
+  let addTopic    = (actionFromForeign parseTopic AddTopic) <<< getDetail <$> lookup "addTopic"
   let addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail <$> lookup "addRoom"
   let removeRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail <$> lookup "deleteRoom"
   let addBlock    = (actionFromForeign parseBlock AddBlock) <<< getDetail <$> lookup "addBlock"
   let deleteBlock = (actionFromForeign parseBlock DeleteBlock) <<< getDetail <$> lookup "deleteBlock"
-
   let changeGrid = addRoom `merge` removeRoom `merge` addBlock `merge` deleteBlock
-  return $ add `merge` dragTopic `merge` changeGrid
+  dragTopic <- dragStream
+  return $ addTopic `merge` dragTopic `merge` changeGrid
 
 main = do
   -- TODO: getSocket :: Either SockErr Socket
