@@ -39,10 +39,14 @@ addRoom :: Room -> AppState -> AppState
 addRoom r as = as { rooms = r : as.rooms }
 
 deleteRoom :: Room -> AppState -> AppState
-deleteRoom r as = as { rooms = filter (\r' -> r' /= r ) as.rooms }
+deleteRoom r as = as { rooms = filter (\r' -> r' /= r ) as.rooms
+                     , timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
+  where topicslotFilter = filter (\(Tuple (Slot s) _) -> s.room /= r)
 
 addBlock :: Block -> AppState -> AppState
 addBlock b as = as { blocks = b : as.blocks }
 
 deleteBlock :: Block -> AppState -> AppState
-deleteBlock b as = as { blocks = filter (\b' -> b' /= b ) as.blocks }
+deleteBlock b as = as { blocks = filter (\b' -> b' /= b ) as.blocks
+                      , timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
+  where topicslotFilter = filter (\(Tuple (Slot s) _) -> s.block /= b)
