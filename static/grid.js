@@ -6,17 +6,17 @@ Tableheader = React.createClass({
   render: function(){
     var ths = this.props.blocks
       .map(function(block){
-	return(
+        return(
             <th key={block.start}>{block.start}</th>
-	);
+        );
       });
     return(
-	<thead>
+      <thead>
         <tr>
         <th></th>
         {ths}
       </tr>
-	</thead>
+    </thead>
     );
   }
 });
@@ -42,15 +42,15 @@ Tablebody = React.createClass({
 Tablerow = React.createClass({
   render: function(){
     var topics = _.zip(this.props.blocks, this.props.row)
-      .map(function(zip){
-	var block = zip[0];
-	var topic = zip[1];
-	return(
-            <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
-	);
+          .map(function(zip){
+            var block = zip[0];
+            var topic = zip[1];
+            return(
+                <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
+            );
       }, this);
     return(
-	<tr>
+      <tr>
         <td>{this.props.room.name}</td>
         {topics}
       </tr>
@@ -72,19 +72,19 @@ Tablecell = React.createClass({
   },
   handleDragOver: function(e){
     var event = new CustomEvent('dragOverSlot',
-				{'detail':{ 'room': this.props.room, 'block': this.props.block }});
+                                {'detail':{ 'room': this.props.room, 'block': this.props.block }});
     this.props.emit(event);
   },
   render: function(){
     var topic=this.props.topic.value0;
     var highlight = !topic && this.state.dragOver;
     return (
-        <td
-      className={highlight ? 'highlight' : ''}
-      onDragEnter={this.handleDragEnter}
-      onDragLeave={this.handleDragLeave}
-      onDragOver={this.handleDragOver} >
-	{topic ? topic.description : ''}
+      <td
+        className={highlight ? 'highlight' : ''}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDragOver={this.handleDragOver} >
+          {topic ? topic.description : ''}
       </td>
     );
   }
