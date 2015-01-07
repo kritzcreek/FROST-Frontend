@@ -156,6 +156,17 @@ Tablecell = React.createClass({
   getInitialState: function(){
     return {dragOver: false};
   },
+  handleDragStart: function() {
+    console.log("dragstart", this.props.topic.value0)
+    var event = new CustomEvent('dragStartGridTopic',
+                                {'detail': this.props.topic.value0})
+    this.props.emit(event);
+  },
+  handleDragEnd: function(e) {
+    var event = new CustomEvent('dragEndGridTopic',
+                                {'detail': this.props.topic.value0});
+    this.props.emit(event);
+  },
   handleDragEnter : function(e){
     this.setState({dragOver: true});
   },
@@ -176,6 +187,9 @@ Tablecell = React.createClass({
       <td>
       <div
         className={highlight ? 'tabletopic highlight' : 'tabletopic'}
+        draggable={topic ? "true" : "false"}
+        onDragStart={this.handleDragStart}
+        onDragEnd={this.handleDragEnd}
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
         onDragOver={this.handleDragOver} >

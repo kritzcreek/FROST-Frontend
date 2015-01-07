@@ -11,32 +11,30 @@ import Data.Maybe
 import Data.Tuple hiding(zip)
 import Data.Traversable
 import Data.Array (append)
-import qualified Data.Map as M 
+import qualified Data.Map as M
 
 import DOM
 
 type Emitter = Tuple String (Observable J.JQueryEvent)
 type Emitters = M.Map String (Observable J.JQueryEvent)
 
-mkObservable :: forall eff. J.JQuery -> String -> Eff( dom::DOM | eff) (Tuple String (Observable J.JQueryEvent))
+mkObservable :: forall eff. J.JQuery -> String -> Eff(dom :: DOM | eff) (Tuple String (Observable J.JQueryEvent))
 mkObservable emitter event = (Tuple event) <$> (event `onAsObservable` emitter)
 
---getEmitters' :: forall eff. Tuple String [String] -> Eff( dom::DOM | eff) [Emitter]
---getEmitters' (Tuple container events) = sequence $ do c <- J.select container
---                                                      mkObservable c <$> events
-
---getEmitters :: forall eff. [Tuple String [String]] -> Eff( dom :: DOM | eff) Emitters
+getEmitters :: forall eff. Eff(dom :: DOM | eff) Emitters
 getEmitters = do
     menuEmitter <- J.select "#menuContainer"
-    let menu = mkObservable menuEmitter <$> ["addTopic", "dragOverTrash", "dragLeaveTrash"]
+    let menu = mkObservable menuEmitter <$> ["addTopic", "dragOverTrash"
+                                            , "dragLeaveTrash"]
 
     topicEmitter <- J.select "#topicsContainer"
     let topic = mkObservable topicEmitter <$> ["dragStartTopic", "dragEndTopic"]
 
     gridEmitter <- J.select "#gridContainer"
-    let grid = mkObservable gridEmitter <$> ["dragOverSlot", "dragLeaveSlot"
+    let grid = mkObservable gridEmitter <$> [ "dragOverSlot", "dragLeaveSlot"
                                             , "addRoom", "deleteRoom"
-                                            , "addBlock", "deleteBlock"]
+                                            , "addBlock", "deleteBlock"
+                                            , "dragStartGridTopic", "dragEndGridTopic"]
 
     M.fromList <$> (sequence $ menu `append` topic `append` grid)
 
