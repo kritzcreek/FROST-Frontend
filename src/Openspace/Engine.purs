@@ -21,7 +21,8 @@ evalAction (ShowError e) as     = as
 evalAction NOP as               = as
 
 addTimeslot :: Slot -> Topic -> AppState -> AppState
-addTimeslot s t as = as { timeslots = M.insert s t as.timeslots }
+addTimeslot s t as = let topicslotFilter = filter (\(Tuple s t') -> t' /= t)
+                     in as { timeslots = M.insert s t $ M.fromList $ topicslotFilter (M.toList as.timeslots) }
 
 deleteTimeslot :: Slot -> AppState -> AppState
 deleteTimeslot s as = as { timeslots = M.delete s as.timeslots }
