@@ -22,24 +22,24 @@ dragStream :: forall eff. Eff( dom :: DOM| eff) (Observable Action)
 dragStream = do
   emitters <- getEmitters
   let lookup = emitterLookup emitters
-  let dragOverSlot = (\e -> case parseSlot (getDetail e) of
+      dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left e -> UnassignTopic
                      ) <$> lookup "dragOverSlot"
 
-  let dragOverTrash = (const DeleteTopic) <$> (lookup "dragOverTrash")
+      dragOverTrash = (const DeleteTopic) <$> (lookup "dragOverTrash")
 
   -- HTML 5 fires dragLeave before dragEnd occurs
   -- TODO: Find a cleaner solution
-  let dragLeave = delay 30 $ (const UnassignTopic)
+      dragLeave = delay 30 $ (const UnassignTopic)
                   <$> ((lookup "dragLeaveSlot") `merge` (lookup "dragLeaveTrash"))
 
-  let dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash
+      dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash
 
-  let dragStart = (parseTopic <<< getDetail)
+      dragStart = (parseTopic <<< getDetail)
                   <$> (lookup "dragStartTopic" `merge` lookup "dragStartGridTopic")
 
-  let dragTopic = do Right t <- dragStart
+      dragTopic = do Right t <- dragStart
                      action <- dragOver
                      lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
                      return $ action t
@@ -49,17 +49,17 @@ uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
 uiStream = do
   emitters <- getEmitters
   let lookup = emitterLookup emitters
-  let addTopic    = (actionFromForeign parseTopic AddTopic) <<< getDetail
+      addTopic    = (actionFromForeign parseTopic AddTopic) <<< getDetail
                     <$> lookup "addTopic"
-  let addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail
+      addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail
                     <$> lookup "addRoom"
-  let removeRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail
+      removeRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail
                     <$> lookup "deleteRoom"
-  let addBlock    = (actionFromForeign parseBlock AddBlock) <<< getDetail
+      addBlock    = (actionFromForeign parseBlock AddBlock) <<< getDetail
                     <$> lookup "addBlock"
-  let deleteBlock = (actionFromForeign parseBlock DeleteBlock) <<< getDetail
+      deleteBlock = (actionFromForeign parseBlock DeleteBlock) <<< getDetail
                     <$> lookup "deleteBlock"
-  let changeGrid = addRoom `merge` removeRoom `merge` addBlock `merge` deleteBlock
+      changeGrid = addRoom `merge` removeRoom `merge` addBlock `merge` deleteBlock
   dragTopic <- dragStream
   return $ addTopic `merge` dragTopic `merge` changeGrid
 
