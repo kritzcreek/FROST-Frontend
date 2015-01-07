@@ -27,17 +27,17 @@ dragStream = do
                          Left e -> UnassignTopic
                      ) <$> lookup "dragOverSlot"
 
-      dragOverTrash = (const DeleteTopic) <$> (lookup "dragOverTrash")
+      dragOverTrash = const DeleteTopic <$> lookup "dragOverTrash"
 
-  -- HTML 5 fires dragLeave before dragEnd occurs
-  -- TODO: Find a cleaner solution
-      dragLeave = delay 30 $ (const UnassignTopic)
-                  <$> ((lookup "dragLeaveSlot") `merge` (lookup "dragLeaveTrash"))
+      -- HTML 5 fires dragLeave before dragEnd occurs
+      -- TODO: Find a cleaner solution
+      dragLeave = delay 30 $ const UnassignTopic
+                  <$> lookup "dragLeaveSlot" `merge` lookup "dragLeaveTrash"
 
       dragOver = dragLeave `merge` dragOverSlot `merge` dragOverTrash
 
-      dragStart = (parseTopic <<< getDetail)
-                  <$> (lookup "dragStartTopic" `merge` lookup "dragStartGridTopic")
+      dragStart = parseTopic <<< getDetail
+                  <$> lookup "dragStartTopic" `merge` lookup "dragStartGridTopic"
 
       dragTopic = do Right t <- dragStart
                      action <- dragOver
