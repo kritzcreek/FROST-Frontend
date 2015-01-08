@@ -57,6 +57,7 @@ instance foreignTopic :: IsForeign Topic where
 ------------
 
 newtype Slot = Slot { room :: Room, block :: Block }
+
 instance eqSlot :: Eq Slot where
   (==) (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
   (/=) (Slot s1) (Slot s2) = s1.room /= s2.room || s1.block /= s2.block
@@ -73,23 +74,24 @@ instance foreignSlot :: IsForeign Slot where
     block <- readProp "block" val :: F Block
     return $ Slot {room: room, block: block}
 
-
 ------------
 --| Room |--
 ------------
 
 newtype Room = Room { name :: String, capacity :: Number }
+
 instance showRoom :: Show Room where
   show (Room r) = r.name
+
 instance eqRoom :: Eq Room where
   (==) (Room r1) (Room r2) = r1.name == r2.name
   (/=) (Room r1) (Room r2) = r1.name /= r2.name
+
 instance foreignRoom :: IsForeign Room where
   read val = do
     name     <- readProp "name" val     :: F String
     capacity <- readProp "capacity" val :: F Number
     return $ Room {name: name, capacity: capacity}
-
 
 -------------
 --| Block |--
@@ -129,6 +131,18 @@ read val = case readProp "action" val of
   Right "DeleteTopic" -> do
     t <- readProp "topic" val :: F Topic
     return $ DeleteTopic t
+  Right "AddRoom" -> do
+    r <- readProp "room" val :: F Room
+    return $ AddRoom r
+  Right "DeleteRoom" -> do
+    r <- readProp "room" val :: F Room
+    return $ DeleteRoom r
+  Right "AddBlock" -> do
+    b <- readProp "block" val :: F Block
+    return $ AddBlock b
+  Right "DeleteBlock" -> do
+    b <- readProp "block" val :: F Block
+    return $ DeleteBlock b
   Right "AssignTopic" -> do
     s <- readProp "slot" val :: F Slot
     t <- readProp "topic" val :: F Topic
@@ -150,11 +164,24 @@ instance actionAsForeign :: AsForeign Action where
                                                       , typ: show t.typ
                                                       }
                                              }
+
   serialize (DeleteTopic (Topic t)) = toForeign { action: "DeleteTopic"
                                                 , topic: { description: t.description
                                                          , typ: show t.typ
                                                          }
                                                 }
+  serialize (AddRoom (Room r)) = toForeign { action: "AddRoom"
+                                           , room: r }
+
+  serialize (DeleteRoom (Room r)) = toForeign { action: "DeleteRoom"
+                                              , room: r }
+
+  serialize (AddBlock (Block b)) = toForeign { action: "AddBlock"
+                                             , room: b }
+
+  serialize (DeleteBlock (Block b)) = toForeign { action: "DeleteBlock"
+                                                , room: b }
+
   serialize (AssignTopic s (Topic t)) = toForeign { action: "AssignTopic"
                                                         , topic: { description: t.description
                                                                  , typ: show t.typ
@@ -214,8 +241,11 @@ mySlot1 = Slot {room:myRoom1, block:myBlock1}
 myTopic = Topic {description:"Purescript is great", typ:Workshop}
 myTopic1 = Topic {description:"Reactive Design", typ:Presentation}
 myTopic2 = Topic {description:"Functional Javascript", typ:Discussion}
+myTopic3 = Topic {description:"Enemy of the State", typ:Presentation}
+myTopic4 = Topic {description:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
+myTopic5 = Topic {description:"fix", typ:Discussion}
 
-myState1 = { topics: [myTopic, myTopic1, myTopic2]
+myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
            , slots : [mySlot, mySlot1]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
