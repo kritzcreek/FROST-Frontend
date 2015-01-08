@@ -6,6 +6,7 @@ import qualified Data.Map as M
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
+import Data.Foreign.Index
 
 -----------------
 --| TopicType |--
@@ -96,17 +97,29 @@ instance foreignRoom :: IsForeign Room where
 -------------
 --| Block |--
 -------------
+type Timerange = { start :: String, end :: String }
 
-newtype Block = Block { start :: String }
+newtype Block = Block { description :: String
+                      , range       :: Timerange }
+
 instance showBlock :: Show Block where
-  show (Block b) = b.start
+  show (Block b) = b.description
+
 instance eqBlock :: Eq Block where
-  (==) (Block b1) (Block b2) = b1.start == b2.start
-  (/=) (Block b1) (Block b2) = b1.start /= b2.start
+  (==) (Block b1) (Block b2) = b1.description == b2.description
+                               && b1.range.start == b2.range.start
+                               && b1.range.end == b2.range.end
+  (/=) b1 b2 = not (b1 == b2)
+
 instance foreignBlock :: IsForeign Block where
   read val = do
-    start <- readProp "start" val     :: F String
-    return $ Block {start: start}
+    description <- readProp "description" val
+    start <- prop "range" val >>= readProp "start"
+    end <- prop "range" val >>= readProp "end"
+    return $ Block {description: description
+                   , range:{ start: start
+                           , end: end }
+                   }
 
 ---------------
 --| Actions |--
@@ -217,7 +230,7 @@ type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 
 type SanitizedAppState = { topics :: [SanitizedTopic]
                          , rooms :: [Room]
-                         , blocks :: [Block]
+                         , blocks :: [String]
                          , slots :: [SanitizedSlot]
                          , timeslots :: [SanitizedTimeslot]
                          }
@@ -232,8 +245,8 @@ myRoom = Room {name: "Berlin", capacity: 100}
 myRoom1 = Room {name: "Hamburg", capacity: 80}
 myRoom2 = Room {name: "Köln", capacity: 30}
 
-myBlock = Block {start: "8:00am"}
-myBlock1 = Block {start: "12:00am"}
+myBlock = Block { description:"First", range:{ start: "8:00am", end: "10:00am"} }
+myBlock1 = Block { description:"Second", range:{ start: "10:00am", end: "12:00am"} }
 
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}

@@ -27,20 +27,19 @@ sanitizeAppState :: AppState -> SanitizedAppState
 sanitizeAppState as = let topicNotInGrid t = (filter (\t' -> t == t')(M.values as.timeslots)) == []
                       in { topics          : sanitizeTopic    <$> filter topicNotInGrid as.topics
                          , rooms           : as.rooms
-                         , blocks          : as.blocks
+                         , blocks          : show <$> as.blocks
                          , slots           : sanitizeSlot     <$> as.slots
                          , timeslots       : sanitizeTimeslot <$> (M.toList as.timeslots)
                          }
 
-findIn :: Room -> Block -> [SanitizedTimeslot] -> Maybe SanitizedTopic
-findIn r b tss = let filteredtss = filter (\(Tuple s _) -> s.room == show r && s.block == show b) tss
-                  in case filteredtss of
-                    [] -> Nothing
-                    [(Tuple _ t)] -> Just t
-                    _ -> Nothing
+findIn :: Room -> Block -> M.Map Slot Topic -> Maybe SanitizedTopic
+findIn r b timeslots = M.lookup (Slot {block:b, room:r}) timeslots
+                       <#> sanitizeTopic
 
-makeGrid :: SanitizedAppState -> [[Maybe SanitizedTopic]]
-makeGrid as' = (\r -> (\b -> findIn r b as'.timeslots ) <$> as'.blocks ) <$> as'.rooms
+makeGrid :: AppState -> [[Maybe SanitizedTopic]]
+makeGrid as = (\r ->
+                (\b -> findIn r b as.timeslots ) <$> as.blocks
+              ) <$> as.rooms
 
 foreign import renderMenu
   """function renderMenu(topicTypes){
@@ -84,4 +83,4 @@ renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   let as' = sanitizeAppState as
   renderTopics $ as'.topics
-  renderGrid as'.rooms as'.blocks (makeGrid as')
+  renderGrid as.rooms as.blocks (makeGrid as)

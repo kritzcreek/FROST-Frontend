@@ -55,7 +55,11 @@ AddBlockModal = React.createClass({
     var event = new CustomEvent('addBlock',
                                 {
                                   'detail': {
-                                    start: $('#startInput').val()
+                                    'description': $('#descriptionInput').val(),
+                                    'range': {
+                                      'start':  $('#startInput').val(),
+                                      'end'  :  $('#endInput').val()
+                                    }
                                   }
                                 });
     this.props.emit(event);
@@ -67,7 +71,9 @@ AddBlockModal = React.createClass({
           <div className="modal-body">
             <form role="form">
               <div className="form-group">
+                <Input type="text" label="Description" id="descriptionInput"/>
                 <Input type="text" label="Start" id="startInput"/>
+                <Input type="text" label="End" id="endInput"/>
               </div>
             </form>
           </div>
@@ -95,7 +101,7 @@ Tableheader = React.createClass({
     var ths = this.props.blocks
       .map(function(block){
         return(
-            <th key={block.start}>{block.start}</th>
+            <th key={block.description}>{block.description}</th>
         );
       });
     return(
