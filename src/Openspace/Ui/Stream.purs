@@ -77,7 +77,7 @@ main = do
   ui  <- uiStream
   net <- netStream sockEmitter
   -- Broadcast the UI Observable
-  unwrap $ (\a -> emitAction sockEmitter (serialize a)) <$> ui
+  subscribe ui (\a -> emitAction sockEmitter (serialize a))
   -- Evaluate Action Observables
   let actions = ui `merge` net
   subscribe actions (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
