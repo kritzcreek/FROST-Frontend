@@ -177,10 +177,10 @@ instance actionAsForeign :: AsForeign Action where
                                               , room: r }
 
   serialize (AddBlock (Block b)) = toForeign { action: "AddBlock"
-                                             , room: b }
+                                             , block: b }
 
   serialize (DeleteBlock (Block b)) = toForeign { action: "DeleteBlock"
-                                                , room: b }
+                                                , block: b }
 
   serialize (AssignTopic s (Topic t)) = toForeign { action: "AssignTopic"
                                                         , topic: { description: t.description
