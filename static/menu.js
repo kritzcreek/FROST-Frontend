@@ -11,7 +11,7 @@ AddModal = React.createClass({
     var event = new CustomEvent('addTopic',
                                 {
                                   'detail': {
-                                  description: $('#topicInput').val(),
+                                  topic: $('#topicInput').val(),
                                   typ: $('#topicTypeInput').val()
                                   }
                                 });

@@ -199,7 +199,7 @@ Tablecell = React.createClass({
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
         onDragOver={this.handleDragOver} >
-          {topic ? topic.description : ''}
+          {topic ? topic.topic : ''}
       </div>
       </td>
     );

@@ -65,9 +65,9 @@ uiStream = do
 
 main = do
   -- TODO: getSocket :: Either SockErr Socket
-  -- let sockEmitter = getSocket "http://localhost:3000"
+  let sockEmitter = getSocket ""
   -- until Websocket support is given by the server
-  let sockEmitter = EmptySocket
+  -- let sockEmitter = EmptySocket
   -- Initial State
   appSt <- newSTRef myState1
   -- Initial Render

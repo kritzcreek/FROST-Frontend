@@ -9,7 +9,6 @@ Topic = React.createClass({
     this.props.emit(event);
   },
   handleDragStart: function(e) {
-    console.log(this.props.topic)
     var event = new CustomEvent('dragStartTopic',
                                 { 'detail': this.props.topic});
     this.props.emit(event);
@@ -28,7 +27,7 @@ Topic = React.createClass({
       onDragStart={this.handleDragStart}
       onDragEnd={this.handleDragEnd}
     >
-        <div className="description"> Thema: {this.props.topic.description}</div>
+        <div className="description"> Thema: {this.props.topic.topic}</div>
         <div className="typ"> Typ: {this.props.topic.typ}</div>
     </div>
     );
@@ -43,7 +42,7 @@ Topics = React.createClass({
     var topics = this.props.topics
       .map(function(topic){
         return (
-            <Topic topic={topic} key={topic.description} emit={this.emit} />
+            <Topic topic={topic} key={topic.topic} emit={this.emit} />
         );
       },this);
     return (

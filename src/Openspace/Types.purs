@@ -40,17 +40,17 @@ topicTypes = [Discussion, Presentation, Workshop]
 --| Topics |--
 --------------
 
-newtype Topic = Topic { description :: String, typ :: TopicType }
+newtype Topic = Topic { topic :: String, typ :: TopicType }
 
 instance eqTopic :: Eq Topic where
-  (==) (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
-  (/=) (Topic t1) (Topic t2) = t1.description /= t2.description || t1.typ /= t2.typ
+  (==) (Topic t1) (Topic t2) = t1.topic == t2.topic && t1.typ == t2.typ
+  (/=) (Topic t1) (Topic t2) = t1.topic /= t2.topic || t1.typ /= t2.typ
 
 instance foreignTopic :: IsForeign Topic where
     read val = do
-      description <- readProp "description" val :: F String
-      typ         <- readProp "typ"         val :: F TopicType
-      return $ Topic {description: description, typ: typ}
+      topic <- readProp "topic" val :: F String
+      typ   <- readProp "typ"   val :: F TopicType
+      return $ Topic {topic: topic, typ: typ}
 
 
 ------------
@@ -137,7 +137,7 @@ data Action = AddTopic Topic
             | NOP
 
 instance foreignAction :: IsForeign Action where
-read val = case readProp "action" val of
+read val = case readProp "tag" val of
   Right "AddTopic" -> do
     t <- readProp "topic" val :: F Topic
     return $ AddTopic t
@@ -172,38 +172,41 @@ class AsForeign a where
   serialize :: a -> Foreign
 
 instance actionAsForeign :: AsForeign Action where
-  serialize (AddTopic (Topic t)) = toForeign { action: "AddTopic"
-                                             , topic: { description: t.description
-                                                      , typ: show t.typ
-                                                      }
-                                             }
-
-  serialize (DeleteTopic (Topic t)) = toForeign { action: "DeleteTopic"
-                                                , topic: { description: t.description
+  serialize (AddTopic (Topic t)) = toForeign { tag: "AddTopic"
+                                             , contents: { topic: t.topic
                                                          , typ: show t.typ
                                                          }
+                                             }
+
+  serialize (DeleteTopic (Topic t)) = toForeign { tag: "DeleteTopic"
+                                                , contents: { topic: t.topic
+                                                            , typ: show t.typ
+                                                            }
                                                 }
-  serialize (AddRoom (Room r)) = toForeign { action: "AddRoom"
-                                           , room: r }
+  serialize (AddRoom (Room r)) = toForeign { tag: "AddRoom"
+                                           , contents: r }
 
-  serialize (DeleteRoom (Room r)) = toForeign { action: "DeleteRoom"
-                                              , room: r }
+  serialize (DeleteRoom (Room r)) = toForeign { tag: "DeleteRoom"
+                                              , contents: r }
 
-  serialize (AddBlock (Block b)) = toForeign { action: "AddBlock"
-                                             , block: b }
+  serialize (AddBlock (Block b)) = toForeign { tag: "AddBlock"
+                                             , contents: b }
 
-  serialize (DeleteBlock (Block b)) = toForeign { action: "DeleteBlock"
-                                                , block: b }
+  serialize (DeleteBlock (Block b)) = toForeign { tag: "DeleteBlock"
+                                                , contents: b }
 
-  serialize (AssignTopic s (Topic t)) = toForeign { action: "AssignTopic"
-                                                        , topic: { description: t.description
-                                                                 , typ: show t.typ
-                                                                 }
-                                                        , slot: s
-                                                        }
+  serialize (AssignTopic s (Topic t)) = toForeign { tag: "AssignTopic"
+                                                  , contents:[
+                                                    {
+                                                      topic: t.topic
+                                                    , typ: show t.typ
+                                                    }
+                                                    , s
+                                                    ]
+                                                  }
 
   serialize (UnassignTopic (Topic t)) = toForeign { action: "UnassignTopic"
-                                                  , topic: { description: t.description
+                                                  , topic: { topic: t.topic
                                                            , typ: show t.typ
                                                            }
                                                   }
@@ -224,7 +227,7 @@ type AppState = { topics :: [Topic]
                 , timeslots :: M.Map Slot Topic
                 }
 
-type SanitizedTopic = { description :: String, typ :: String }
+type SanitizedTopic = { topic :: String, typ :: String }
 type SanitizedSlot =  { room :: String, block :: String }
 type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 
@@ -251,12 +254,12 @@ myBlock1 = Block { description:"Second", range:{ start: "10:00am", end: "12:00am
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}
 
-myTopic = Topic {description:"Purescript is great", typ:Workshop}
-myTopic1 = Topic {description:"Reactive Design", typ:Presentation}
-myTopic2 = Topic {description:"Functional Javascript", typ:Discussion}
-myTopic3 = Topic {description:"Enemy of the State", typ:Presentation}
-myTopic4 = Topic {description:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
-myTopic5 = Topic {description:"fix", typ:Discussion}
+myTopic = Topic  {topic:"Purescript is great", typ:Workshop}
+myTopic1 = Topic {topic:"Reactive Design", typ:Presentation}
+myTopic2 = Topic {topic:"Functional Javascript", typ:Discussion}
+myTopic3 = Topic {topic:"Enemy of the State", typ:Presentation}
+myTopic4 = Topic {topic:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
+myTopic5 = Topic {topic:"fix", typ:Discussion}
 
 myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
            , slots : [mySlot, mySlot1]
