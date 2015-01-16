@@ -139,29 +139,30 @@ data Action = AddTopic Topic
 instance foreignAction :: IsForeign Action where
 read val = case readProp "tag" val of
   Right "AddTopic" -> do
-    t <- readProp "topic" val :: F Topic
+    t <- readProp "contents" val :: F Topic
     return $ AddTopic t
   Right "DeleteTopic" -> do
-    t <- readProp "topic" val :: F Topic
+    t <- readProp "contents" val :: F Topic
     return $ DeleteTopic t
   Right "AddRoom" -> do
-    r <- readProp "room" val :: F Room
+    r <- readProp "contents" val :: F Room
     return $ AddRoom r
   Right "DeleteRoom" -> do
-    r <- readProp "room" val :: F Room
+    r <- readProp "contents" val :: F Room
     return $ DeleteRoom r
   Right "AddBlock" -> do
-    b <- readProp "block" val :: F Block
+    b <- readProp "contents" val :: F Block
     return $ AddBlock b
   Right "DeleteBlock" -> do
-    b <- readProp "block" val :: F Block
+    b <- readProp "contents" val :: F Block
     return $ DeleteBlock b
   Right "AssignTopic" -> do
-    s <- readProp "slot" val :: F Slot
-    t <- readProp "topic" val :: F Topic
+    let val' = parseAssignTopic val
+    s <- readProp "slot" val' :: F Slot
+    t <- readProp "topic" val' :: F Topic
     return $ AssignTopic s t
   Right "UnassignTopic" -> do
-    t <- readProp "topic" val :: F Topic
+    t <- readProp "contents" val :: F Topic
     return $ UnassignTopic t
   Right "ShowError" -> do
     m <- readProp "message" val :: F String
@@ -172,48 +173,70 @@ class AsForeign a where
   serialize :: a -> Foreign
 
 instance actionAsForeign :: AsForeign Action where
-  serialize (AddTopic (Topic t)) = toForeign { tag: "AddTopic"
-                                             , contents: { topic: t.topic
-                                                         , typ: show t.typ
-                                                         }
-                                             }
+  serialize (AddTopic (Topic t)) =
+    toForeign { tag: "AddTopic"
+              , contents: { topic: t.topic
+                          , typ: show t.typ
+                          }
+              }
 
-  serialize (DeleteTopic (Topic t)) = toForeign { tag: "DeleteTopic"
-                                                , contents: { topic: t.topic
-                                                            , typ: show t.typ
-                                                            }
-                                                }
-  serialize (AddRoom (Room r)) = toForeign { tag: "AddRoom"
-                                           , contents: r }
+  serialize (DeleteTopic (Topic t)) =
+    toForeign { tag: "DeleteTopic"
+              , contents: { topic: t.topic
+                          , typ: show t.typ
+                          }
+              }
+  serialize (AddRoom (Room r)) =
+    toForeign { tag: "AddRoom"
+              , contents: r }
 
-  serialize (DeleteRoom (Room r)) = toForeign { tag: "DeleteRoom"
-                                              , contents: r }
+  serialize (DeleteRoom (Room r)) =
+    toForeign { tag: "DeleteRoom"
+              , contents: r }
 
-  serialize (AddBlock (Block b)) = toForeign { tag: "AddBlock"
-                                             , contents: b }
+  serialize (AddBlock (Block b)) =
+    toForeign { tag: "AddBlock"
+              , contents: b }
 
-  serialize (DeleteBlock (Block b)) = toForeign { tag: "DeleteBlock"
-                                                , contents: b }
+  serialize (DeleteBlock (Block b)) =
+    toForeign { tag: "DeleteBlock"
+              , contents: b }
 
-  serialize (AssignTopic s (Topic t)) = toForeign { tag: "AssignTopic"
-                                                  , contents:[
-                                                    {
-                                                      topic: t.topic
-                                                    , typ: show t.typ
-                                                    }
-                                                    , s
-                                                    ]
-                                                  }
+  serialize (AssignTopic s t) = serializeAssignTopic s t
+  serialize (UnassignTopic (Topic t)) =
+    toForeign { tag: "UnassignTopic"
+              , contents: { topic: t.topic
+                          , typ: show t.typ
+                          }
+              }
 
-  serialize (UnassignTopic (Topic t)) = toForeign { action: "UnassignTopic"
-                                                  , topic: { topic: t.topic
-                                                           , typ: show t.typ
-                                                           }
-                                                  }
+foreign import parseAssignTopic """
+  function parseAssignTopic(foreign) {
+  return {
+    topic : foreign.contents[1],
+    slot : foreign.contents[0]
+    }
+  }
+""" :: Foreign -> Foreign
 
-  serialize (ShowError s) = toForeign { action: "ShowError"
-                                      , message: s
-                                      }
+
+foreign import serializeAssignTopic """
+  function serializeAssignTopic(slot) {
+  return function(topic){
+    return { tag: "AssignTopic",
+             contents:[
+               slot,
+               {
+                 topic: topic.topic
+                 , typ: Prelude.show(showTopicType)(topic.typ)
+               }
+             ]
+           }
+  }
+}
+
+""" :: Slot -> Topic -> Foreign
+
 -------------------------
 --| Entire AppState |--
 -------------------------
