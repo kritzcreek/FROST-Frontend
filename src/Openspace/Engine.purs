@@ -2,6 +2,7 @@ module Openspace.Engine where
 
 import Openspace.Types
 import Data.Maybe
+import Data.Foldable
 import qualified Data.Map as M
 import Data.Tuple
 import Data.Array
@@ -51,3 +52,6 @@ deleteBlock :: Block -> AppState -> AppState
 deleteBlock b as = as { blocks = filter (\b' -> b' /= b ) as.blocks
                       , timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
   where topicslotFilter = filter (\(Tuple (Slot s) _) -> s.block /= b)
+
+generateState :: [Action] -> AppState
+generateState as = foldl (flip evalAction) emptyState as
