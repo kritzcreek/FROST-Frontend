@@ -49,3 +49,10 @@ function emitAction(socket){
   }
 }
 """ :: forall eff. Socket -> Foreign -> Eff (net :: Net | eff) Unit
+
+foreign import emitRefresh
+"""
+function emitRefresh(socket){
+  socket.emit('state')
+}
+""" :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit

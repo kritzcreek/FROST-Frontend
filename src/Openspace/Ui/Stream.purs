@@ -2,6 +2,7 @@ module Openspace.Ui.Stream where
 
 import Rx.Observable
 import Data.Either
+import Data.Foreign
 import Control.Monad.Eff
 import Control.Monad.ST
 import DOM
@@ -12,6 +13,16 @@ import Openspace.Ui.Parser
 import Openspace.Types
 import Openspace.Engine
 import Openspace.Network.Socket
+
+refreshStream :: forall eff. Socket -> Eff ( net :: Net | eff) (Observable ([Action]))
+refreshStream socket = do
+  onReceive <- "state" `socketObserver` socket
+  return $ (<$>) (actionFromForeign parseAction id)
+    <$> ((\far -> case readArray far of
+               Right ar -> ar
+               Left e -> []
+        )
+    <$> onReceive)
 
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do
@@ -69,10 +80,17 @@ main = do
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State
-  appSt <- newSTRef myState1
+  refresh <- refreshStream sockEmitter
+  -- Refresh entire State
+  appSt <- newSTRef emptyState
+  subscribe refresh (\as -> modifySTRef appSt (generateState as) >>= renderApp)
   -- Initial Render
   renderMenu (show <$> topicTypes)
   readSTRef appSt >>= renderApp
+
+  --Request Initial State
+  emitRefresh sockEmitter
+
   -- Observable Action
   ui  <- uiStream
   net <- netStream sockEmitter
