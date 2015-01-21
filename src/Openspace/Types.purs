@@ -246,7 +246,6 @@ type Timeslot = Tuple Slot Topic
 type AppState = { topics :: [Topic]
                 , rooms :: [Room]
                 , blocks :: [Block]
-                , slots :: [Slot]
                 , timeslots :: M.Map Slot Topic
                 }
 
@@ -257,7 +256,6 @@ type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 type SanitizedAppState = { topics :: [SanitizedTopic]
                          , rooms :: [Room]
                          , blocks :: [String]
-                         , slots :: [SanitizedSlot]
                          , timeslots :: [SanitizedTimeslot]
                          }
 
@@ -265,7 +263,7 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
  --| Dummy Values |--
  --------------------
 
-emptyState = {topics: [], rooms:[], blocks:[], slots: [], timeslots: []}
+emptyState = {topics: [], rooms:[], blocks:[], timeslots: (M.empty) :: M.Map Slot Topic }
 
 myRoom = Room {name: "Berlin", capacity: 100}
 myRoom1 = Room {name: "Hamburg", capacity: 80}
@@ -285,7 +283,6 @@ myTopic4 = Topic {topic:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
 myTopic5 = Topic {topic:"fix", typ:Discussion}
 
 myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
-           , slots : [mySlot, mySlot1]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
            , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]

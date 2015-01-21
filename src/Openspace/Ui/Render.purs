@@ -28,7 +28,6 @@ sanitizeAppState as = let topicNotInGrid t = (filter (\t' -> t == t')(M.values a
                       in { topics          : sanitizeTopic    <$> filter topicNotInGrid as.topics
                          , rooms           : as.rooms
                          , blocks          : show <$> as.blocks
-                         , slots           : sanitizeSlot     <$> as.slots
                          , timeslots       : sanitizeTimeslot <$> (M.toList as.timeslots)
                          }
 
