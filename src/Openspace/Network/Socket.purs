@@ -53,6 +53,8 @@ function emitAction(socket){
 foreign import emitRefresh
 """
 function emitRefresh(socket){
-  socket.emit('state')
+  return function(){
+    socket.emit('state')
+  }
 }
 """ :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit

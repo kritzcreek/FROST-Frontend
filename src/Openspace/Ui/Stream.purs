@@ -83,7 +83,7 @@ main = do
   refresh <- refreshStream sockEmitter
   -- Refresh entire State
   appSt <- newSTRef emptyState
-  subscribe refresh (\as -> modifySTRef appSt (generateState as) >>= renderApp)
+  subscribe refresh (\as -> writeSTRef appSt (generateState as) >>= renderApp)
   -- Initial Render
   renderMenu (show <$> topicTypes)
   readSTRef appSt >>= renderApp
