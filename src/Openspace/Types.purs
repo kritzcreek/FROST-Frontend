@@ -40,17 +40,18 @@ topicTypes = [Discussion, Presentation, Workshop]
 --| Topics |--
 --------------
 
-newtype Topic = Topic { topic :: String, typ :: TopicType }
+newtype Topic = Topic { topic :: String
+                      , typ   :: TopicType }
 
 instance eqTopic :: Eq Topic where
   (==) (Topic t1) (Topic t2) = t1.topic == t2.topic && t1.typ == t2.typ
-  (/=) (Topic t1) (Topic t2) = t1.topic /= t2.topic || t1.typ /= t2.typ
+  (/=) t1 t2 = not (t1 == t2)
 
 instance foreignTopic :: IsForeign Topic where
     read val = do
       topic <- readProp "topic" val :: F String
       typ   <- readProp "typ"   val :: F TopicType
-      return $ Topic {topic: topic, typ: typ}
+      return $ Topic { topic: topic, typ: typ }
 
 
 ------------
@@ -234,7 +235,6 @@ foreign import serializeAssignTopic """
            }
   }
 }
-
 """ :: Slot -> Topic -> Foreign
 
 -------------------------
