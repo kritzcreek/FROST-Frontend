@@ -211,18 +211,20 @@ instance actionAsForeign :: AsForeign Action where
                           }
               }
 
-foreign import parseAssignTopic """
-  function parseAssignTopic(foreign) {
+foreign import parseAssignTopic
+""" 
+function parseAssignTopic(foreign) {
   return {
     topic : foreign.contents[1],
     slot : foreign.contents[0]
     }
   }
-""" :: Foreign -> Foreign
+  """ :: Foreign -> Foreign
 
 
-foreign import serializeAssignTopic """
-  function serializeAssignTopic(slot) {
+foreign import serializeAssignTopic
+"""
+function serializeAssignTopic(slot) {
   return function(topic){
     return { tag: "AssignTopic",
              contents:[
