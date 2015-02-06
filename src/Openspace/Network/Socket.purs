@@ -23,17 +23,35 @@ socketObserver' str sock = socketObserver str sock
 
 foreign import socketObserver
 """
-function socketObserver(channel){
-  return function(socket){
-    return function(){
-      var __slice = [].slice;
-      var subj;
-      subj = new Rx.Subject();
-      subj.callback = function(msg) {
-        return subj.onNext(msg);
-      };
-      socket.on(channel, subj.callback);
-      return subj;
+function socketObserver(address){
+  return function(protocol){
+    return function(openObserver) {
+      var ws = new WebSocket(address, protocol);
+
+      var observer = Rx.Observer.create(function (data) {
+        if (ws.readyState === WebSocket.OPEN) { ws.send(data); }
+      });
+
+      // Handle the data
+      var observable = Rx.Observable.create (function (obs) {
+        // Handle open
+        if (openObserver) {
+          ws.onopen = function (e) {
+            openObserver.onNext(e);
+            openObserver.onCompleted();
+          };
+        }
+
+        // Handle messages
+        ws.onmessage = obs.onNext.bind(obs);
+        ws.onerror = obs.onError.bind(obs);
+        ws.onclose = obs.onCompleted.bind(obs);
+
+        // Return way to unsubscribe
+        return ws.close.bind(ws);
+      });
+
+      return Rx.Subject.create(observer, observable);
     }
   }
 }
