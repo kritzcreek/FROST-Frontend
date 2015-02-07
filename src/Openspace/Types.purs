@@ -251,7 +251,7 @@ type AppState = { topics :: [Topic]
                 , timeslots :: M.Map Slot Topic
                 }
 
-type SanitizedTopic = { topic :: String, typ :: String }
+type SanitizedTopic = { topicDescription :: String, topicTyp :: String }
 type SanitizedSlot =  { room :: String, block :: String }
 type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 

@@ -13,7 +13,7 @@ import Openspace.Types
 
 
 sanitizeTopic :: Topic -> SanitizedTopic
-sanitizeTopic (Topic t) = t { typ = show t.typ }
+sanitizeTopic (Topic t) = t { topicTyp = show t.topicTyp }
 
 sanitizeSlot :: Slot -> SanitizedSlot
 sanitizeSlot (Slot s) = { room  : show s.room
