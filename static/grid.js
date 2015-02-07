@@ -11,8 +11,8 @@ AddRoomModal = React.createClass({
     var event = new CustomEvent('addRoom',
                                 {
                                   'detail': {
-                                  name: $('#nameInput').val(),
-                                  capacity: parseInt($('#capacityInput').val())
+                                  roomName: $('#nameInput').val(),
+                                  roomCapacity: parseInt($('#capacityInput').val())
                                   }
                                 });
     this.props.emit(event);
@@ -55,11 +55,9 @@ AddBlockModal = React.createClass({
     var event = new CustomEvent('addBlock',
                                 {
                                   'detail': {
-                                    'description': $('#descriptionInput').val(),
-                                    'range': {
-                                      'start':  $('#startInput').val(),
-                                      'end'  :  $('#endInput').val()
-                                    }
+                                    'blockDescription': $('#descriptionInput').val(),
+                                    'blockStart':  $('#startInput').val(),
+                                    'blockEnd'  :  $('#endInput').val()
                                   }
                                 });
     this.props.emit(event);
@@ -101,7 +99,7 @@ Tableheader = React.createClass({
     var ths = this.props.blocks
       .map(function(block){
         return(
-            <th key={block.description}>{block.description}</th>
+            <th key={block.blockDescription}>{block.blockDescription}</th>
         );
       });
     return(
@@ -123,7 +121,7 @@ Tablebody = React.createClass({
       .map(function(row){
         var room = _.head(row);
         return(
-            <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.name} emit={this.props.emit}></Tablerow>
+            <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.roomName} emit={this.props.emit}></Tablerow>
         );
       }, this);
     return(
@@ -151,7 +149,7 @@ Tablerow = React.createClass({
       }, this);
     return(
       <tr>
-        <td>{this.props.room.name}</td>
+        <td>{this.props.room.roomName}</td>
         {topics}
       </tr>
     );
@@ -199,7 +197,7 @@ Tablecell = React.createClass({
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
         onDragOver={this.handleDragOver} >
-          {topic ? topic.topic : ''}
+          {topic ? topic.topicDescription : ''}
       </div>
       </td>
     );

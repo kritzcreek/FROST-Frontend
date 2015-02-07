@@ -10,59 +10,47 @@ data Socket = Socket | EmptySocket -- TODO: remove the need for EmptySocket
 data SocketError = SocketError
 
 foreign import data Net :: !
+foreign import data Message :: *
 
 foreign import getSocket
 """
 function getSocket(url){
-    return io(url);
+    return new WebSocket(url);
 }
 """ :: String -> Socket
 
-socketObserver' _ EmptySocket = return empty
-socketObserver' str sock = socketObserver str sock
+socketObserver' EmptySocket = return empty
+socketObserver' sock = socketObserver sock
 
 foreign import socketObserver
 """
-function socketObserver(address){
-  return function(protocol){
-    return function(openObserver) {
-      var ws = new WebSocket(address, protocol);
-
-      var observer = Rx.Observer.create(function (data) {
-        if (ws.readyState === WebSocket.OPEN) { ws.send(data); }
-      });
-
-      // Handle the data
-      var observable = Rx.Observable.create (function (obs) {
-        // Handle open
-        if (openObserver) {
-          ws.onopen = function (e) {
-            openObserver.onNext(e);
-            openObserver.onCompleted();
-          };
-        }
-
-        // Handle messages
-        ws.onmessage = obs.onNext.bind(obs);
-        ws.onerror = obs.onError.bind(obs);
-        ws.onclose = obs.onCompleted.bind(obs);
-
-        // Return way to unsubscribe
-        return ws.close.bind(ws);
-      });
-
-      return Rx.Subject.create(observer, observable);
-    }
+function socketObserver(ws){
+  return function (){
+    return Rx.Observable.create (function (obs) {
+      // Handle messages
+      ws.onmessage = obs.onNext.bind(obs)
+      ws.onerror = obs.onError.bind(obs)
+      ws.onclose = obs.onCompleted.bind(obs)
+      // Return way to unsubscribe
+      return ws.close.bind(ws)
+    })
   }
 }
-""" :: forall eff. String -> Socket -> Eff (net :: Net | eff) (Observable Foreign)
+""" :: forall eff. Socket -> Eff (net :: Net | eff) (Observable Message)
+
+foreign import parseMessage
+"""
+function parseMessage(msg){
+  return JSON.parse(msg.data)
+}
+""" :: Message -> Foreign
 
 foreign import emitAction
 """
 function emitAction(socket){
   return function (action){
     return function(){
-      socket.emit('message', action)
+      if(socket.readyState == WebSocket.OPEN){ socket.send(JSON.stringify(action)) }
     }
   }
 }
@@ -72,7 +60,7 @@ foreign import emitRefresh
 """
 function emitRefresh(socket){
   return function(){
-    socket.emit('state')
+    if(socket.readyState == WebSocket.OPEN){socket.send('refresh')}
   }
 }
 """ :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit
