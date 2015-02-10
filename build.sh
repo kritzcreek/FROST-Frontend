@@ -6,6 +6,7 @@ mkdir build/js/lib
 mkdir build/css
 mkdir build/fonts
 
+grunt
 pulp browserify --to build/js/index.js --main Openspace.Ui.Stream
 
 jsx static/ build/js/
