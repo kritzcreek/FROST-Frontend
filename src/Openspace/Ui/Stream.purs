@@ -14,16 +14,6 @@ import Openspace.Types
 import Openspace.Engine
 import Openspace.Network.Socket
 
-refreshStream :: forall eff. Socket -> Eff ( net :: Net | eff) (Observable ([Action]))
-refreshStream socket = do
-  onReceive <- socketObserver socket
-  return $ (<$>) (actionFromForeign parseAction id)
-    <$> ((\far -> case readArray far of
-               Right ar -> ar
-               Left e -> []
-        )
-    <$> (parseMessage <$> onReceive))
-
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do
   onReceive <- socketObserver socket
@@ -80,10 +70,7 @@ main = do
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State
-  refresh <- refreshStream sockEmitter
-  -- Refresh entire State
   appSt <- newSTRef emptyState
-  subscribe refresh (\as -> writeSTRef appSt (generateState as) >>= renderApp)
   -- Initial Render
   renderMenu (show <$> topicTypes)
   readSTRef appSt >>= renderApp

@@ -134,6 +134,7 @@ data Action = AddTopic Topic
             | DeleteBlock Block
             | AssignTopic Slot Topic
             | UnassignTopic Topic
+            | ReplayActions [Action]
             | ShowError String
             | NOP
 
@@ -165,6 +166,9 @@ read val = case readProp "tag" val of
   Right "UnassignTopic" -> do
     t <- readProp "contents" val :: F Topic
     return $ UnassignTopic t
+  Right "ReplayActions" -> do
+    actions <- readProp "contents" val :: F [Action]
+    return $ ReplayActions actions
   Right "ShowError" -> do
     m <- readProp "message" val :: F String
     return $ ShowError m
@@ -230,8 +234,8 @@ function serializeAssignTopic(slot) {
              contents:[
                slot,
                {
-                 topicDescription: topic.topic
-                 , topicTyp: Prelude.show(showTopicType)(topic.typ)
+                 topicDescription: topic.topicDescription
+                 , topicTyp: Prelude.show(showTopicType)(topic.topicTyp)
                }
              ]
            }

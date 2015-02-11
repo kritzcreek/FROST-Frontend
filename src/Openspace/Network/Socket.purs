@@ -1,3 +1,4 @@
+
 module Openspace.Network.Socket where
 
 import Control.Monad.Eff
@@ -29,7 +30,8 @@ function socketObserver(ws){
     return Rx.Observable.create (function (obs) {
       // Handle messages
       ws.onmessage = obs.onNext.bind(obs)
-      ws.onerror = obs.onError.bind(obs)
+      //TODO: Handle ServerNotAvailable
+      //ws.onerror = obs.onError.bind(obs)
       ws.onclose = obs.onCompleted.bind(obs)
       // Return way to unsubscribe
       return ws.close.bind(ws)
@@ -60,7 +62,13 @@ foreign import emitRefresh
 """
 function emitRefresh(socket){
   return function(){
-    if(socket.readyState == WebSocket.OPEN){socket.send('refresh')}
+    //UGLY HACK!
+    if(socket.readyState == WebSocket.OPEN){
+      socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
+    }else{
+      var f = function(){socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))}
+      setTimeout(f, 2000)
+    }
   }
 }
 """ :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit
