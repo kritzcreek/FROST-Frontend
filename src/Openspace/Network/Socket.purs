@@ -20,9 +20,6 @@ function getSocket(url){
 }
 """ :: String -> Socket
 
-socketObserver' EmptySocket = return empty
-socketObserver' sock = socketObserver sock
-
 foreign import socketObserver
 """
 function socketObserver(ws){

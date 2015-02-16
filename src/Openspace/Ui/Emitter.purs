@@ -6,6 +6,7 @@ import Rx.JQuery
 import Rx.Observable
 
 import qualified Control.Monad.JQuery as J
+import Control.Plus
 
 import Data.Maybe
 import Data.Tuple hiding(zip)
