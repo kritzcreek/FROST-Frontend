@@ -100,26 +100,42 @@ instance foreignRoom :: IsForeign Room where
 -------------
 
 newtype Block = Block { blockDescription :: String
-                      , blockStart  :: String
-                      , blockEnd  :: String}
+                      , blockStartHours :: Number
+                      , blockStartMinutes :: Number
+                      , blockEndHours :: Number
+                      , blockEndMinutes :: Number}
 
 instance showBlock :: Show Block where
   show (Block b) = b.blockDescription
 
 instance eqBlock :: Eq Block where
   (==) (Block b1) (Block b2) = b1.blockDescription == b2.blockDescription
-                               && b1.blockStart == b2.blockStart
-                               && b1.blockEnd == b2.blockEnd
+                               && b1.blockStartHours == b2.blockStartHours
+                               && b1.blockStartMinutes == b2.blockStartMinutes
+                               && b1.blockEndHours == b2.blockEndHours
+                               && b1.blockEndMinutes == b2.blockEndMinutes
+
   (/=) b1 b2 = not (b1 == b2)
+
+instance ordBlock :: Ord Block where
+  compare (Block b1) (Block b2) = compare (hourDiff * 60 + minDiff) 0
+    where hourDiff = b1.blockStartHours - b2.blockStartHours
+          minDiff = b1.blockStartMinutes - b2.blockStartMinutes
+
+
 
 instance foreignBlock :: IsForeign Block where
   read val = do
     description <- readProp "blockDescription" val
-    start <- readProp "blockStart" val
-    end <- readProp "blockEnd" val
+    startHours <- readProp "blockStartHours" val
+    startMinutes <- readProp "blockStartMinutes" val
+    endHours <- readProp "blockEndHours" val
+    endMinutes <- readProp "blockEndMinutes" val
     return $ Block { blockDescription: description
-                   , blockStart: start
-                   , blockEnd: end
+                   , blockStartHours: startHours
+                   , blockStartMinutes: startMinutes
+                   , blockEndHours: endHours
+                   , blockEndMinutes: endMinutes
                    }
 
 ---------------
@@ -275,8 +291,18 @@ myRoom = Room {roomName: "Berlin", roomCapacity: 100}
 myRoom1 = Room {roomName: "Hamburg", roomCapacity: 80}
 myRoom2 = Room {roomName: "Köln", roomCapacity: 30}
 
-myBlock = Block { blockDescription:"First", blockStart: "8:00am", blockEnd: "10:00am" }
-myBlock1 = Block { blockDescription:"Second", blockStart: "10:00am", blockEnd: "12:00am" }
+myBlock = Block {
+  blockDescription:"First",
+  blockStartHours: 8,
+  blockStartMinutes: 0,
+  blockEndHours: 10,
+  blockEndMinutes: 0}
+myBlock1 = Block {
+  blockDescription:"Second",
+  blockStartHours: 8,
+  blockStartMinutes: 0,
+  blockEndHours: 10,
+  blockEndMinutes: 0}
 
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}

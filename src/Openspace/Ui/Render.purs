@@ -38,7 +38,7 @@ findIn r b timeslots = M.lookup (Slot {block:b, room:r}) timeslots
 
 makeGrid :: AppState -> [[Maybe SanitizedTopic]]
 makeGrid as = (\r ->
-                (\b -> findIn r b as.timeslots ) <$> as.blocks
+                (\b -> findIn r b as.timeslots ) <$> (sort as.blocks)
               ) <$> as.rooms
 
 foreign import renderMenu
@@ -83,4 +83,4 @@ renderApp :: forall eff. AppState -> Eff( dom::DOM | eff ) Unit
 renderApp as = do
   let as' = sanitizeAppState as
   renderTopics $ as'.topics
-  renderGrid as.rooms as.blocks (makeGrid as)
+  renderGrid as.rooms (sort as.blocks) (makeGrid as)
