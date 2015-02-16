@@ -166,7 +166,7 @@ read val = case readProp "tag" val of
   Right "UnassignTopic" -> do
     t <- readProp "contents" val :: F Topic
     return $ UnassignTopic t
-  Right "ReplayActions" -> do
+  Right "ReplayEvents" -> do
     actions <- readProp "contents" val :: F [Action]
     return $ ReplayActions actions
   Right "ShowError" -> do

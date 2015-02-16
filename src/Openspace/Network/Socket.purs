@@ -66,8 +66,9 @@ function emitRefresh(socket){
     if(socket.readyState == WebSocket.OPEN){
       socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
     }else{
-      var f = function(){socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))}
-      setTimeout(f, 2000)
+      socket.onopen = function(){
+        socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
+      }
     }
   }
 }

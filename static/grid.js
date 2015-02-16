@@ -161,7 +161,6 @@ Tablecell = React.createClass({
     return {dragOver: false};
   },
   handleDragStart: function() {
-    console.log("dragstart", this.props.topic.value0)
     var event = new CustomEvent('dragStartGridTopic',
                                 {'detail': this.props.topic.value0})
     this.props.emit(event);
