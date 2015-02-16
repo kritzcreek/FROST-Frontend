@@ -18,6 +18,7 @@ evalAction (DeleteBlock b) as   = deleteBlock b as
 evalAction (AssignTopic s t) as = addTimeslot s t as
 evalAction (UnassignTopic t) as = let topicslotFilter = filter (\(Tuple _ t') -> t' /= t)
                                   in as {timeslots = M.fromList $ topicslotFilter (M.toList as.timeslots)}
+evalAction (ReplayActions actions) _ = generateState actions
 evalAction (ShowError e) as     = as
 evalAction NOP as               = as
 

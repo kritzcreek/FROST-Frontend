@@ -11,8 +11,8 @@ AddModal = React.createClass({
     var event = new CustomEvent('addTopic',
                                 {
                                   'detail': {
-                                  topic: $('#topicInput').val(),
-                                  typ: $('#topicTypeInput').val()
+                                  topicDescription: $('#descriptionInput').val(),
+                                  topicTyp: $('#topicTypeInput').val()
                                   }
                                 });
     this.props.emit(event);
@@ -30,8 +30,8 @@ AddModal = React.createClass({
         <div className="modal-body">
         <form role="form">
         <div className="form-group">
-        <label htmlFor="topicInput">Thema: </label>
-        <input className="form-control" type="text"   id="topicInput"/>
+        <label htmlFor="descriptionInput">Thema: </label>
+        <input className="form-control" type="text"   id="descriptionInput"/>
         </div>
         <div className="form-group">
         <Input type="select" label='Typ'
@@ -101,22 +101,22 @@ Menu = React.createClass({
   },
   render: function(){
     return (
-	<div id="menuContainer">
-	<span className="notice">
-	  <span> Drop a Topic </span>
-	  <span className="glyphicon glyphicon-arrow-right"/>
-	</span>
+        <div id="menuContainer">
+        <span className="notice">
+        <span> Drop a Topic </span>
+        <span className="glyphicon glyphicon-arrow-right"/>
+        </span>
 
         <RemoveButton emit={this.emit}></RemoveButton>
-	<OpenAddModal topicTypes={this.props.topicTypes} emit={this.emit}></OpenAddModal>
+        <OpenAddModal topicTypes={this.props.topicTypes} emit={this.emit}></OpenAddModal>
 
-	<span className="notice">
-	  <span className="glyphicon glyphicon-arrow-left"/>
-	  <span>
-	    Click to add a Topic
-          </span>
-	</span>
-	</div>
+        <span className="notice">
+        <span className="glyphicon glyphicon-arrow-left"/>
+        <span>
+          Click to add a Topic
+        </span>
+        </span>
+        </div>
     );
   }
 });

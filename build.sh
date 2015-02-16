@@ -6,6 +6,7 @@ mkdir build/js/lib
 mkdir build/css
 mkdir build/fonts
 
+grunt
 pulp browserify --to build/js/index.js --main Openspace.Ui.Stream
 
 jsx static/ build/js/
@@ -27,4 +28,4 @@ cp bower_components/jquery/dist/jquery.js build/js/lib/
 cp bower_components/rxjs/dist/rx.all.js build/js/lib/
 cp bower_components/rxjs-jquery/rx.jquery.js build/js/lib/
 cp bower_components/lodash/dist/lodash.js build/js/lib/
-cp bower_components/socket.io-client/socket.io.js build/js/lib/
+#cp bower_components/socket.io-client/socket.io.js build/js/lib/

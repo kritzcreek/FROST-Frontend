@@ -40,18 +40,18 @@ topicTypes = [Discussion, Presentation, Workshop]
 --| Topics |--
 --------------
 
-newtype Topic = Topic { topic :: String
-                      , typ   :: TopicType }
+newtype Topic = Topic { topicDescription :: String
+                      , topicTyp   :: TopicType }
 
 instance eqTopic :: Eq Topic where
-  (==) (Topic t1) (Topic t2) = t1.topic == t2.topic && t1.typ == t2.typ
+  (==) (Topic t1) (Topic t2) = t1.topicDescription == t2.topicDescription && t1.topicTyp == t2.topicTyp
   (/=) t1 t2 = not (t1 == t2)
 
 instance foreignTopic :: IsForeign Topic where
     read val = do
-      topic <- readProp "topic" val :: F String
-      typ   <- readProp "typ"   val :: F TopicType
-      return $ Topic { topic: topic, typ: typ }
+      topic <- readProp "topicDescription" val :: F String
+      typ   <- readProp "topicTyp"   val :: F TopicType
+      return $ Topic { topicDescription: topic, topicTyp: typ }
 
 
 ------------
@@ -80,46 +80,46 @@ instance foreignSlot :: IsForeign Slot where
 --| Room |--
 ------------
 
-newtype Room = Room { name :: String, capacity :: Number }
+newtype Room = Room { roomName :: String, roomCapacity :: Number }
 
 instance showRoom :: Show Room where
-  show (Room r) = r.name
+  show (Room r) = r.roomName
 
 instance eqRoom :: Eq Room where
-  (==) (Room r1) (Room r2) = r1.name == r2.name
-  (/=) (Room r1) (Room r2) = r1.name /= r2.name
+  (==) (Room r1) (Room r2) = r1.roomName == r2.roomName
+  (/=) (Room r1) (Room r2) = r1.roomName /= r2.roomName
 
 instance foreignRoom :: IsForeign Room where
   read val = do
-    name     <- readProp "name" val     :: F String
-    capacity <- readProp "capacity" val :: F Number
-    return $ Room {name: name, capacity: capacity}
+    name     <- readProp "roomName" val     :: F String
+    capacity <- readProp "roomCapacity" val :: F Number
+    return $ Room {roomName: name, roomCapacity: capacity}
 
 -------------
 --| Block |--
 -------------
-type Timerange = { start :: String, end :: String }
 
-newtype Block = Block { description :: String
-                      , range       :: Timerange }
+newtype Block = Block { blockDescription :: String
+                      , blockStart  :: String
+                      , blockEnd  :: String}
 
 instance showBlock :: Show Block where
-  show (Block b) = b.description
+  show (Block b) = b.blockDescription
 
 instance eqBlock :: Eq Block where
-  (==) (Block b1) (Block b2) = b1.description == b2.description
-                               && b1.range.start == b2.range.start
-                               && b1.range.end == b2.range.end
+  (==) (Block b1) (Block b2) = b1.blockDescription == b2.blockDescription
+                               && b1.blockStart == b2.blockStart
+                               && b1.blockEnd == b2.blockEnd
   (/=) b1 b2 = not (b1 == b2)
 
 instance foreignBlock :: IsForeign Block where
   read val = do
-    description <- readProp "description" val
-    start <- prop "range" val >>= readProp "start"
-    end <- prop "range" val >>= readProp "end"
-    return $ Block {description: description
-                   , range:{ start: start
-                           , end: end }
+    description <- readProp "blockDescription" val
+    start <- readProp "blockStart" val
+    end <- readProp "blockEnd" val
+    return $ Block { blockDescription: description
+                   , blockStart: start
+                   , blockEnd: end
                    }
 
 ---------------
@@ -134,6 +134,7 @@ data Action = AddTopic Topic
             | DeleteBlock Block
             | AssignTopic Slot Topic
             | UnassignTopic Topic
+            | ReplayActions [Action]
             | ShowError String
             | NOP
 
@@ -165,6 +166,9 @@ read val = case readProp "tag" val of
   Right "UnassignTopic" -> do
     t <- readProp "contents" val :: F Topic
     return $ UnassignTopic t
+  Right "ReplayEvents" -> do
+    actions <- readProp "contents" val :: F [Action]
+    return $ ReplayActions actions
   Right "ShowError" -> do
     m <- readProp "message" val :: F String
     return $ ShowError m
@@ -176,15 +180,15 @@ class AsForeign a where
 instance actionAsForeign :: AsForeign Action where
   serialize (AddTopic (Topic t)) =
     toForeign { tag: "AddTopic"
-              , contents: { topic: t.topic
-                          , typ: show t.typ
+              , contents: { topicDescription: t.topicDescription
+                          , topicTyp: show t.topicTyp
                           }
               }
 
   serialize (DeleteTopic (Topic t)) =
     toForeign { tag: "DeleteTopic"
-              , contents: { topic: t.topic
-                          , typ: show t.typ
+              , contents: { topicDescription: t.topicDescription
+                          , topicTyp: show t.topicTyp
                           }
               }
   serialize (AddRoom (Room r)) =
@@ -206,13 +210,13 @@ instance actionAsForeign :: AsForeign Action where
   serialize (AssignTopic s t) = serializeAssignTopic s t
   serialize (UnassignTopic (Topic t)) =
     toForeign { tag: "UnassignTopic"
-              , contents: { topic: t.topic
-                          , typ: show t.typ
+              , contents: { topicDescription: t.topicDescription
+                          , topicTyp: show t.topicTyp
                           }
               }
 
 foreign import parseAssignTopic
-""" 
+"""
 function parseAssignTopic(foreign) {
   return {
     topic : foreign.contents[1],
@@ -230,8 +234,8 @@ function serializeAssignTopic(slot) {
              contents:[
                slot,
                {
-                 topic: topic.topic
-                 , typ: Prelude.show(showTopicType)(topic.typ)
+                 topicDescription: topic.topicDescription
+                 , topicTyp: Prelude.show(showTopicType)(topic.topicTyp)
                }
              ]
            }
@@ -251,7 +255,7 @@ type AppState = { topics :: [Topic]
                 , timeslots :: M.Map Slot Topic
                 }
 
-type SanitizedTopic = { topic :: String, typ :: String }
+type SanitizedTopic = { topicDescription :: String, topicTyp :: String }
 type SanitizedSlot =  { room :: String, block :: String }
 type SanitizedTimeslot = Tuple SanitizedSlot SanitizedTopic
 
@@ -267,22 +271,22 @@ type SanitizedAppState = { topics :: [SanitizedTopic]
 
 emptyState = {topics: [], rooms:[], blocks:[], timeslots: (M.empty) :: M.Map Slot Topic }
 
-myRoom = Room {name: "Berlin", capacity: 100}
-myRoom1 = Room {name: "Hamburg", capacity: 80}
-myRoom2 = Room {name: "Köln", capacity: 30}
+myRoom = Room {roomName: "Berlin", roomCapacity: 100}
+myRoom1 = Room {roomName: "Hamburg", roomCapacity: 80}
+myRoom2 = Room {roomName: "Köln", roomCapacity: 30}
 
-myBlock = Block { description:"First", range:{ start: "8:00am", end: "10:00am"} }
-myBlock1 = Block { description:"Second", range:{ start: "10:00am", end: "12:00am"} }
+myBlock = Block { blockDescription:"First", blockStart: "8:00am", blockEnd: "10:00am" }
+myBlock1 = Block { blockDescription:"Second", blockStart: "10:00am", blockEnd: "12:00am" }
 
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}
 
-myTopic = Topic  {topic:"Purescript is great", typ:Workshop}
-myTopic1 = Topic {topic:"Reactive Design", typ:Presentation}
-myTopic2 = Topic {topic:"Functional Javascript", typ:Discussion}
-myTopic3 = Topic {topic:"Enemy of the State", typ:Presentation}
-myTopic4 = Topic {topic:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
-myTopic5 = Topic {topic:"fix", typ:Discussion}
+myTopic = Topic  {topicDescription:"Purescript is great", topicTyp:Workshop}
+myTopic1 = Topic {topicDescription:"Reactive Design", topicTyp:Presentation}
+myTopic2 = Topic {topicDescription:"Functional Javascript", topicTyp:Discussion}
+myTopic3 = Topic {topicDescription:"Enemy of the State", topicTyp:Presentation}
+myTopic4 = Topic {topicDescription:"Wayyyyyyy too long name for a Topic.", topicTyp:Workshop}
+myTopic5 = Topic {topicDescription:"fix", topicTyp:Discussion}
 
 myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
            , rooms : [myRoom, myRoom1, myRoom2]

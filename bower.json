@@ -23,8 +23,7 @@
     "lodash"                          : "*",
     "react"                           : "*",
     "bootstrap"                       : "*",
-    "react-bootstrap"                 : "*",
-    "socket.io-client"                : "*"
+    "react-bootstrap"                 : "*"
   },
   "devDependencies": {
     "purescript-math"                 : "*",

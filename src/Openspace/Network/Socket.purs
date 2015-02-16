@@ -1,3 +1,4 @@
+
 module Openspace.Network.Socket where
 
 import Control.Monad.Eff
@@ -10,41 +11,48 @@ data Socket = Socket | EmptySocket -- TODO: remove the need for EmptySocket
 data SocketError = SocketError
 
 foreign import data Net :: !
+foreign import data Message :: *
 
 foreign import getSocket
 """
 function getSocket(url){
-    return io(url);
+    return new WebSocket(url);
 }
 """ :: String -> Socket
 
-socketObserver' _ EmptySocket = return empty
-socketObserver' str sock = socketObserver str sock
+socketObserver' EmptySocket = return empty
+socketObserver' sock = socketObserver sock
 
 foreign import socketObserver
 """
-function socketObserver(channel){
-  return function(socket){
-    return function(){
-      var __slice = [].slice;
-      var subj;
-      subj = new Rx.Subject();
-      subj.callback = function(msg) {
-        return subj.onNext(msg);
-      };
-      socket.on(channel, subj.callback);
-      return subj;
-    }
+function socketObserver(ws){
+  return function (){
+    return Rx.Observable.create (function (obs) {
+      // Handle messages
+      ws.onmessage = obs.onNext.bind(obs)
+      //TODO: Handle ServerNotAvailable
+      //ws.onerror = obs.onError.bind(obs)
+      ws.onclose = obs.onCompleted.bind(obs)
+      // Return way to unsubscribe
+      return ws.close.bind(ws)
+    })
   }
 }
-""" :: forall eff. String -> Socket -> Eff (net :: Net | eff) (Observable Foreign)
+""" :: forall eff. Socket -> Eff (net :: Net | eff) (Observable Message)
+
+foreign import parseMessage
+"""
+function parseMessage(msg){
+  return JSON.parse(msg.data)
+}
+""" :: Message -> Foreign
 
 foreign import emitAction
 """
 function emitAction(socket){
   return function (action){
     return function(){
-      socket.emit('message', action)
+      if(socket.readyState == WebSocket.OPEN){ socket.send(JSON.stringify(action)) }
     }
   }
 }
@@ -54,7 +62,14 @@ foreign import emitRefresh
 """
 function emitRefresh(socket){
   return function(){
-    socket.emit('state')
+    //UGLY HACK!
+    if(socket.readyState == WebSocket.OPEN){
+      socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
+    }else{
+      socket.onopen = function(){
+        socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
+      }
+    }
   }
 }
 """ :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit

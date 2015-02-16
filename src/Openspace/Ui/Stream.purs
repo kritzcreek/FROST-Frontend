@@ -14,20 +14,10 @@ import Openspace.Types
 import Openspace.Engine
 import Openspace.Network.Socket
 
-refreshStream :: forall eff. Socket -> Eff ( net :: Net | eff) (Observable ([Action]))
-refreshStream socket = do
-  onReceive <- "state" `socketObserver` socket
-  return $ (<$>) (actionFromForeign parseAction id)
-    <$> ((\far -> case readArray far of
-               Right ar -> ar
-               Left e -> []
-        )
-    <$> onReceive)
-
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do
-  onReceive <- "message" `socketObserver'` socket
-  return $ actionFromForeign parseAction id <$> onReceive
+  onReceive <- socketObserver socket
+  return $ actionFromForeign parseAction id <$> (parseMessage <$> onReceive)
 
 dragStream :: forall eff. Eff( dom :: DOM| eff) (Observable Action)
 dragStream = do
@@ -76,14 +66,11 @@ uiStream = do
 
 main = do
   -- TODO: getSocket :: Either SockErr Socket
-  let sockEmitter = getSocket ""
+  let sockEmitter = getSocket "ws://localhost:8000/socket"
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State
-  refresh <- refreshStream sockEmitter
-  -- Refresh entire State
   appSt <- newSTRef emptyState
-  subscribe refresh (\as -> writeSTRef appSt (generateState as) >>= renderApp)
   -- Initial Render
   renderMenu (show <$> topicTypes)
   readSTRef appSt >>= renderApp
@@ -97,5 +84,5 @@ main = do
   -- Broadcast the UI Observable
   subscribe ui (\a -> emitAction sockEmitter (serialize a))
   -- Evaluate Action Observables
-  let actions = ui `merge` net
+  let actions = net --ui `merge` net
   subscribe actions (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
