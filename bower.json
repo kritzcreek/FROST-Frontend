@@ -1,7 +1,9 @@
 {
   "name": "state-psc",
   "description": "An empty PureScript project.",
-  "keywords": ["purescript"],
+  "keywords": [
+    "purescript"
+  ],
   "ignore": [
     "**/.*",
     "bower_components",
@@ -15,18 +17,20 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-arrays"               : "*",
-    "purescript-maybe"                : "*",
-    "purescript-maps"                 : "*",
-    "purescript-rx"                   : "*",
-    "purescript-foreign"              : "*",
-    "lodash"                          : "*",
-    "react"                           : "*",
-    "bootstrap"                       : "*",
-    "react-bootstrap"                 : "*"
+    "purescript-arrays": "*",
+    "purescript-maybe": "*",
+    "purescript-maps": "*",
+    "purescript-rx": "*",
+    "purescript-foreign": "*",
+    "lodash": "*",
+    "react": "*",
+    "bootstrap": "*",
+    "react-bootstrap": "*",
+    "moment": "*",
+    "eonasdan-bootstrap-datetimepicker": "~4.0.0"
   },
   "devDependencies": {
-    "purescript-math"                 : "*",
-    "purescript-quickcheck"           : "*"
+    "purescript-math": "*",
+    "purescript-quickcheck": "*"
   }
 }

@@ -51,13 +51,59 @@ OpenAddRoomModal = React.createClass({
 });
 
 AddBlockModal = React.createClass({
+  getInitialState: function() {
+    return {
+      start: {
+        hours: 0, minutes: 0
+      },
+      end: {
+        hours: 0, minutes: 0
+      }};
+  },
+  componentDidMount : function() {
+    var self = this
+    var start = $('#start');
+    start.datetimepicker({
+      format: 'LT',
+      stepping: 15
+    });
+
+    start.on('dp.change', function(event) {
+      self.setState(
+        {
+          start: {
+            hours: event.date.hours(),
+            minutes: event.date.minutes()
+          }
+        });
+    });
+
+    var end = $('#end');
+    end.datetimepicker({
+      format: 'LT',
+      stepping: 15
+    });
+
+    end.on('dp.change', function(event) {
+      self.setState(
+        {
+          end: {
+            hours: event.date.hours(),
+            minutes: event.date.minutes()
+          }
+        });
+    });
+
+  },
   handleClick: function() {
     var event = new CustomEvent('addBlock',
                                 {
                                   'detail': {
-                                    'blockDescription': $('#descriptionInput').val(),
-                                    'blockStart':  $('#startInput').val(),
-                                    'blockEnd'  :  $('#endInput').val()
+                                    'blockDescription' : $('#descriptionInput').val(),
+                                    'blockStartHours'  : this.state.start.hours,
+                                    'blockStartMinutes': this.state.start.minutes,
+                                    'blockEndHours'    : this.state.end.hours,
+                                    'blockEndMinutes'  : this.state.end.minutes
                                   }
                                 });
     this.props.emit(event);
@@ -70,8 +116,20 @@ AddBlockModal = React.createClass({
             <form role="form">
               <div className="form-group">
                 <Input type="text" label="Description" id="descriptionInput"/>
-                <Input type="text" label="Start" id="startInput"/>
-                <Input type="text" label="End" id="endInput"/>
+                <label htmlFor="start">Start</label>
+                <div className='input-group date' id="start">
+                    <Input type='text' className="form-control" />
+                    <span className="input-group-addon">
+                      <span className="glyphicon glyphicon-time"></span>
+                    </span>
+                </div>
+                <label htmlFor="end">End</label>
+                <div className='input-group date' id="end">
+                  <Input type='text' className="form-control" />
+                  <span className="input-group-addon">
+                    <span className="glyphicon glyphicon-time"></span>
+                  </span>
+                </div>
               </div>
             </form>
           </div>
@@ -99,7 +157,16 @@ Tableheader = React.createClass({
     var ths = this.props.blocks
       .map(function(block){
         return(
-            <th key={block.blockDescription}>{block.blockDescription}</th>
+            <th key={block.blockDescription}>
+            <div>
+              {block.blockDescription}
+            </div>
+            <div>
+              {moment(block.blockStartHours + ':' + block.blockStartMinutes, "HH:mm").format("LT")}
+              {" - "}
+              {moment(block.blockEndHours + ':' + block.blockEndMinutes, "HH:mm").format("LT")}
+            </div>
+            </th>
         );
       });
     return(
