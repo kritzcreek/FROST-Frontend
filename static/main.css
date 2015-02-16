@@ -18,7 +18,7 @@ td > div.highlight {
     background-color: #a80002;
 }
 
-span.glyphicon-plus {
+#menuContainer > span.glyphicon-plus {
     color: #000000;
     font-size: 3.5em;
     text-align: center;
@@ -27,7 +27,7 @@ span.glyphicon-plus {
     border-radius: 5px;
 }
 
-span.glyphicon-trash {
+#menuContainer > span.glyphicon-trash {
     font-size: 3.5em;
     text-align: center;
     padding: 10px 10px 10px 9px;
@@ -35,9 +35,18 @@ span.glyphicon-trash {
     border-radius: 5px;
 }
 
-span.glyphicon-trash.highlight {
+#menuContainer > span.glyphicon-trash.highlight {
     color: #FF0000;
     border: 5px solid #FF0000;
+}
+
+td > span.glyphicon-trash {
+    font-size: 1.5em;
+    float: right;
+}
+th > span.glyphicon-trash {
+    font-size: 1.5em;
+    float: right;
 }
 
 #menuContainer {

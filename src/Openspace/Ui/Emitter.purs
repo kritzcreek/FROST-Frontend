@@ -35,7 +35,8 @@ getEmitters = do
     let grid = mkObservable gridEmitter <$> [ "dragOverSlot", "dragLeaveSlot"
                                             , "addRoom", "deleteRoom"
                                             , "addBlock", "deleteBlock"
-                                            , "dragStartGridTopic", "dragEndGridTopic"]
+                                            , "dragStartGridTopic", "dragEndGridTopic"
+                                            , "removeBlock", "removeRoom"]
 
     M.fromList <$> (sequence $ menu `append` topic `append` grid)
 

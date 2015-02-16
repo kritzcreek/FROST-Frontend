@@ -153,22 +153,33 @@ OpenAddBlockModal = React.createClass({
 });
 
 Tableheader = React.createClass({
+  handleDelete: function(block, event) {
+    console.log(block)
+    var event = new CustomEvent('deleteBlock', {'detail': block});
+    this.props.emit(event);
+  },
   render: function(){
     var ths = this.props.blocks
       .map(function(block){
+        var timeStart = moment(block.blockStartHours + ':' + block.blockStartMinutes
+                               , "HH:mm").format("LT")
+        var timeEnd = moment(block.blockEndHours + ':' + block.blockEndMinutes
+                             , "HH:mm").format("LT")
         return(
             <th key={block.blockDescription}>
             <div>
-              {block.blockDescription}
+              <div>
+                {block.blockDescription}
+              </div>
+              <div>
+                {timeStart + " - " + timeEnd}
+              </div>
             </div>
-            <div>
-              {moment(block.blockStartHours + ':' + block.blockStartMinutes, "HH:mm").format("LT")}
-              {" - "}
-              {moment(block.blockEndHours + ':' + block.blockEndMinutes, "HH:mm").format("LT")}
-            </div>
+            <span className="glyphicon glyphicon-trash"
+            onClick={this.handleDelete.bind(this, block)}></span>
             </th>
         );
-      });
+      }, this);
     return(
       <thead>
         <tr>
@@ -205,18 +216,28 @@ Tablebody = React.createClass({
 });
 
 Tablerow = React.createClass({
+  handleDelete : function(e){
+    var event = new CustomEvent('deleteRoom', {'detail': this.props.room})
+    this.props.emit(event);
+  },
   render: function(){
     var topics = _.zip(this.props.blocks, this.props.row)
           .map(function(zip){
             var block = zip[0];
             var topic = zip[1];
             return(
-                <Tablecell key={block.start} room={this.props.room} block={block} topic={topic} emit={this.props.emit} />
+                <Tablecell key={block.start} room={this.props.room}
+                 block={block} topic={topic} emit={this.props.emit} />
             );
       }, this);
     return(
       <tr>
-        <td>{this.props.room.roomName}</td>
+        <td>
+          {this.props.room.roomName}
+          <span className="glyphicon glyphicon-trash"
+          onClick={this.handleDelete}>
+          </span>
+        </td>
         {topics}
       </tr>
     );
@@ -247,7 +268,8 @@ Tablecell = React.createClass({
   },
   handleDragOver: function(e){
     var event = new CustomEvent('dragOverSlot',
-                                {'detail':{ 'room': this.props.room, 'block': this.props.block }});
+                                {'detail':{ 'room': this.props.room,
+                                            'block': this.props.block }});
     this.props.emit(event);
   },
   render: function(){

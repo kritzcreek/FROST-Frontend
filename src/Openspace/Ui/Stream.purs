@@ -54,13 +54,13 @@ uiStream = do
                     <$> lookup "addTopic"
       addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail
                     <$> lookup "addRoom"
-      removeRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail
+      deleteRoom  = (actionFromForeign parseRoom DeleteRoom) <<< getDetail
                     <$> lookup "deleteRoom"
       addBlock    = (actionFromForeign parseBlock AddBlock) <<< getDetail
                     <$> lookup "addBlock"
       deleteBlock = (actionFromForeign parseBlock DeleteBlock) <<< getDetail
                     <$> lookup "deleteBlock"
-      changeGrid = addRoom `merge` removeRoom `merge` addBlock `merge` deleteBlock
+      changeGrid = addRoom `merge` deleteRoom `merge` addBlock `merge` deleteBlock
   dragTopic <- dragStream
   return $ addTopic `merge` dragTopic `merge` changeGrid
 
