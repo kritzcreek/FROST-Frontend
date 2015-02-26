@@ -55,6 +55,16 @@ function emitAction(socket){
 }
 """ :: forall eff. Socket -> Foreign -> Eff (net :: Net | eff) Unit
 
+foreign import getHost
+"""
+  function getHost() {
+    return function() {
+      return window.location.host;
+    }
+  }
+""" :: forall eff. Eff( net :: Net |eff ) String
+
+
 foreign import emitRefresh
 """
 function emitRefresh(socket){
