@@ -11,6 +11,7 @@ Topic = React.createClass({
   handleDragStart: function(e) {
     var event = new CustomEvent('dragStartTopic',
                                 { 'detail': this.props.topic});
+     e.dataTransfer.setData("text/html", "F**k Firefox");
     this.props.emit(event);
   },
   handleDragEnd: function(e) {
@@ -21,7 +22,7 @@ Topic = React.createClass({
   render: function(){
     return (
     <div
-      className={"topic"}
+      className={"topic draggable"}
       onClick={this.handleClick}
       draggable="true"
       onDragStart={this.handleDragStart}

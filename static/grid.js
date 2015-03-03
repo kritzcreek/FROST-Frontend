@@ -248,9 +248,10 @@ Tablecell = React.createClass({
   getInitialState: function(){
     return {dragOver: false};
   },
-  handleDragStart: function() {
+  handleDragStart: function(e) {
     var event = new CustomEvent('dragStartGridTopic',
                                 {'detail': this.props.topic.value0})
+    e.dataTransfer.setData("text/html", "F**k Firefox");
     this.props.emit(event);
   },
   handleDragEnd: function(e) {
@@ -275,20 +276,33 @@ Tablecell = React.createClass({
   render: function(){
     var topic=this.props.topic.value0;
     var highlight = this.state.dragOver;
-    return (
-      <td>
-      <div
-        className={highlight ? 'tabletopic highlight' : 'tabletopic'}
-        draggable={topic ? "true" : "false"}
+    if(topic){
+      return (
+        <td>
+        <div
+        className={highlight ? 'tabletopic highlight draggable' : 'tabletopic draggable'}
+        draggable={'true'}
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
         onDragOver={this.handleDragOver} >
-          {topic ? topic.topicDescription : ''}
-      </div>
-      </td>
+          {topic.topicDescription}
+        </div>
+        </td>
+      );
+    }else{
+    return (
+      <td
+        className={highlight ? 'highlight' : ''}
+        draggable={'false'}
+        onDragEnd={this.handleDragEnd}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDragOver={this.handleDragOver}
+      />
     );
+    }
   }
 });
 

@@ -14,7 +14,7 @@ td > div.tabletopic {
     display: inline-block;
 }
 
-td > div.highlight {
+.highlight {
     background-color: #a80002;
 }
 
@@ -63,4 +63,15 @@ span.glyphicon-arrow-right {
 span.glyphicon-arrow-left {
     padding-right: 5px;
     padding-left: 10px;
+}
+
+.draggable {
+    cursor: move;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Required to make elements draggable in old WebKit */
+    -khtml-user-drag: element;
+    -webkit-user-drag: element;
 }
