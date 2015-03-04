@@ -11,8 +11,8 @@ AddRoomModal = React.createClass({
     var event = new CustomEvent('addRoom',
                                 {
                                   'detail': {
-                                  roomName: $('#nameInput').val(),
-                                  roomCapacity: parseInt($('#capacityInput').val())
+                                    roomName: $('#nameInput').val(),
+                                    roomCapacity: parseInt($('#capacityInput').val())
                                   }
                                 });
     this.props.emit(event);
