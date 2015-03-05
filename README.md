@@ -1,4 +1,4 @@
-# reactive-psc
+# FROST - Frontend
 
 React.js View >>= RX Binding >>= Purescript Controller.
 
@@ -9,22 +9,16 @@ There is a hosted version at [OpenSpace](http://178.62.90.204/build/). Since thi
  - [npm](http://nodejs.org/)
  - [bower](http://bower.io/)
  - [grunt](http://gruntjs.com/)
+ - [react-tools](https://www.npmjs.com/package/react-tools)
 
 ## Building
 
 ```
 npm install
 bower update
-grunt
-grunt browser
+./build.sh
 ```
 
-Point your browser at **localhost:9001/static**
+## Running
 
-## Websocket support
-
-In order to use the websocket features you first need to start https://github.com/kRITZCREEK/open-space-socket.
-
-Once it's up and running your actions get shared across multiple sessions. Open up two Browsertabs and see them synchronize.
-
-**This is still in the experimental Phase**
+The Result of the build process is supposed to be run with the FROST-Backend.
