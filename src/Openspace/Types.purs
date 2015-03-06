@@ -21,7 +21,7 @@ instance eqTopicType :: Eq TopicType where
 (/=) tt1 tt2 = show tt1 /= show tt2
 
 instance showTopicType :: Show TopicType where
-  show Discussion = "Diskussion"
+  show Discussion = "Discussion"
   show Presentation = "Presentation"
   show Workshop = "Workshop"
 

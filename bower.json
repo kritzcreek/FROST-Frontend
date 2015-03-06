@@ -29,8 +29,9 @@
     "moment": "*",
     "eonasdan-bootstrap-datetimepicker": "~4.0.0"
   },
-  "devDependencies": {
-    "purescript-math": "*",
-    "purescript-quickcheck": "*"
+  "devDependencies": {},
+  "resolutions": {
+    "purescript-tuples": "0.3.0",
+    "purescript-monoid": "~0.2.0"
   }
 }
