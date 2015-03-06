@@ -1,18 +1,17 @@
 module Openspace.Ui.Stream where
 
-import Rx.Observable
-import Data.Either
-import Data.Foreign
 import Control.Monad.Eff
 import Control.Monad.ST
 import DOM
-
-import Openspace.Ui.Render
-import Openspace.Ui.Emitter
-import Openspace.Ui.Parser
-import Openspace.Types
+import Data.Either
+import Data.Foreign
 import Openspace.Engine
 import Openspace.Network.Socket
+import Openspace.Types
+import Openspace.Ui.Emitter
+import Openspace.Ui.Parser
+import Openspace.Ui.Render
+import Rx.Observable
 
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do

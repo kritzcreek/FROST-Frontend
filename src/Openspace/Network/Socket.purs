@@ -1,9 +1,8 @@
-
 module Openspace.Network.Socket where
 
 import Control.Monad.Eff
-import Data.Foreign
 import Data.Either
+import Data.Foreign
 import Rx.Observable
 
 

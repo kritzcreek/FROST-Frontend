@@ -154,8 +154,7 @@ OpenAddBlockModal = React.createClass({
 
 Tableheader = React.createClass({
   handleDelete: function(block, event) {
-    console.log(block)
-    var event = new CustomEvent('deleteBlock', {'detail': block});
+     var event = new CustomEvent('deleteBlock', {'detail': block});
     this.props.emit(event);
   },
   render: function(){
@@ -217,7 +216,7 @@ Tablebody = React.createClass({
 
 Tablerow = React.createClass({
   handleDelete : function(e){
-    var event = new CustomEvent('deleteRoom', {'detail': this.props.room})
+    var event = new CustomEvent('deleteRoom', {'detail': this.props.room});
     this.props.emit(event);
   },
   render: function(){
@@ -250,7 +249,7 @@ Tablecell = React.createClass({
   },
   handleDragStart: function(e) {
     var event = new CustomEvent('dragStartGridTopic',
-                                {'detail': this.props.topic.value0})
+                                {'detail': this.props.topic.value0});
     e.dataTransfer.setData('text/plain','F**k Firefox');
     this.props.emit(event);
   },

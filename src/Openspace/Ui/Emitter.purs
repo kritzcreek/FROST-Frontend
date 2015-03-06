@@ -1,20 +1,17 @@
 module Openspace.Ui.Emitter where
 
-import Control.Monad.Eff
-
-import Rx.JQuery
-import Rx.Observable
-
+import           Control.Monad.Eff
 import qualified Control.Monad.JQuery as J
-import Control.Plus
-
-import Data.Maybe
-import Data.Tuple hiding(zip)
-import Data.Traversable
-import Data.Array (append)
+import           Control.Plus
+import           Data.Array (append)
 import qualified Data.Map as M
+import           Data.Maybe
+import           Data.Traversable
+import Data.Tuple hiding(zip)
+import           Rx.JQuery
+import           Rx.Observable
 
-import DOM
+import           DOM
 
 type Emitter = Tuple String (Observable J.JQueryEvent)
 type Emitters = M.Map String (Observable J.JQueryEvent)

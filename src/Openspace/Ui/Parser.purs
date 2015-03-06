@@ -1,15 +1,12 @@
 module Openspace.Ui.Parser where
 
-import Rx.Observable
-
-import Openspace.Types
-
+import Control.Monad.JQuery
+import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
-
-import Data.Either
 import Data.Tuple hiding (zip)
-import Control.Monad.JQuery
+import Openspace.Types
+import Rx.Observable
 
 foreign import getDetail
 """

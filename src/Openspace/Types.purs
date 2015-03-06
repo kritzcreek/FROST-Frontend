@@ -1,12 +1,12 @@
 module Openspace.Types where
 
-import Data.Tuple
-import Data.Maybe
+import           Data.Either
+import           Data.Foreign
+import           Data.Foreign.Class
+import           Data.Foreign.Index
 import qualified Data.Map as M
-import Data.Either
-import Data.Foreign
-import Data.Foreign.Class
-import Data.Foreign.Index
+import           Data.Maybe
+import           Data.Tuple
 
 -----------------
 --| TopicType |--

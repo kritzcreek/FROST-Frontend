@@ -1,14 +1,12 @@
 module Openspace.Ui.Render where
 
+import           Control.Monad.Eff
+import           DOM
+import           Data.Array
 import qualified Data.Map as M
-import Data.Tuple
-import Data.Array
-import Data.Maybe
-
-import Control.Monad.Eff
-import DOM
-
-import Openspace.Types
+import           Data.Maybe
+import           Data.Tuple
+import           Openspace.Types
 
 
 

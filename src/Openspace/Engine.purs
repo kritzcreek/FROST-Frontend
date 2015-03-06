@@ -1,11 +1,11 @@
 module Openspace.Engine where
 
-import Openspace.Types
-import Data.Maybe
-import Data.Foldable
+import           Data.Array
+import           Data.Foldable
 import qualified Data.Map as M
-import Data.Tuple
-import Data.Array
+import           Data.Maybe
+import           Data.Tuple
+import           Openspace.Types
 
 
 evalAction :: Action -> AppState -> AppState
