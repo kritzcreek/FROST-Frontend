@@ -25,10 +25,11 @@ cp bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff build/font
 cp bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2 build/fonts/
 
 #JS
-cp bower_components/react/react.js build/js/lib/react.js
+cp bower_components/react/react.min.js build/js/lib/
 cp bower_components/react-bootstrap/react-bootstrap.js build/js/lib/
 cp bower_components/jquery/dist/jquery.js build/js/lib/
-cp bower_components/rxjs/dist/rx.all.js build/js/lib/
+cp bower_components/rxjs/dist/rx.lite.min.js build/js/lib/
+cp bower_components/rxjs/dist/rx.lite.map build/js/lib/
 cp bower_components/rxjs-jquery/rx.jquery.js build/js/lib/
 cp bower_components/lodash/lodash.js build/js/lib/
 cp bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js build/js/lib/
