@@ -6,8 +6,8 @@ mkdir build/js/lib
 mkdir build/css
 mkdir build/fonts
 
-grunt
-pulp browserify --to build/js/index.js --main Openspace.Ui.Stream
+#grunt
+pulp browserify --source-map -O --main "Openspace.Ui.Stream" --to build/js/index.js
 
 jsx static/ build/js/
 
@@ -22,6 +22,7 @@ cp bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-dateti
 
 #FONTS
 cp bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff build/fonts/
+cp bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2 build/fonts/
 
 #JS
 cp bower_components/react/react.js build/js/lib/react.js

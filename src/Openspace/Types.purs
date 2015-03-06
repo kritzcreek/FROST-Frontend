@@ -21,7 +21,7 @@ instance eqTopicType :: Eq TopicType where
 (/=) tt1 tt2 = show tt1 /= show tt2
 
 instance showTopicType :: Show TopicType where
-  show Discussion = "Discussion"
+  show Discussion = "Diskussion"
   show Presentation = "Presentation"
   show Workshop = "Workshop"
 
@@ -33,7 +33,6 @@ instance foreignTopicType :: IsForeign TopicType where
     _                    -> Left $ JSONError "Cant read TopicType"
 
 -- Used to fill Dropdowns etc.
--- TODO: Find a proper way to enumerate Union Datatypes
 topicTypes = [Discussion, Presentation, Workshop]
 
 --------------

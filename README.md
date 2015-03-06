@@ -8,7 +8,7 @@ There is a hosted version at [OpenSpace](http://178.62.90.204/build/). Since thi
  - [psc/psc-make](http://www.purescript.org/)
  - [npm](http://nodejs.org/)
  - [bower](http://bower.io/)
- - [grunt](http://gruntjs.com/)
+ - [pulp](https://github.com/bodil/pulp)
  - [react-tools](https://www.npmjs.com/package/react-tools)
 
 ## Building
