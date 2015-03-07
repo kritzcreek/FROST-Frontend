@@ -6,7 +6,7 @@
   "private": false,
   "author": "kRITZCREEK",
   "license": "MIT",
-  "dev-dependencies": {
+  "devDependencies": {
     "pulp": "~2.0.0",
     "bower": "*"
   }
