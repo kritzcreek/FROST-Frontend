@@ -26,7 +26,7 @@ cp bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2 build/fon
 
 #JS
 cp bower_components/react/react.min.js build/js/lib/
-cp bower_components/react-bootstrap/react-bootstrap.js build/js/lib/
+cp bower_components/react-bootstrap/react-bootstrap.min.js build/js/lib/
 cp bower_components/jquery/dist/jquery.js build/js/lib/
 cp bower_components/rxjs/dist/rx.lite.min.js build/js/lib/
 cp bower_components/rxjs/dist/rx.lite.map build/js/lib/

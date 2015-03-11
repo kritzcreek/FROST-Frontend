@@ -1,6 +1,6 @@
 {
-  "name": "state-psc",
-  "description": "An empty PureScript project.",
+  "name": "FROST-Frontend",
+  "description": "The Frontend for the F",
   "keywords": [
     "purescript"
   ],
@@ -14,24 +14,34 @@
     "tmp",
     "bower.json",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "test"
   ],
   "dependencies": {
-    "purescript-arrays": "*",
-    "purescript-maybe": "*",
-    "purescript-maps": "*",
-    "purescript-rx": "*",
-    "purescript-foreign": "*",
-    "lodash": "*",
-    "react": "*",
-    "bootstrap": "*",
-    "react-bootstrap": "*",
-    "moment": "*",
-    "eonasdan-bootstrap-datetimepicker": "~4.0.0"
+    "purescript-arrays": "0.3.3",
+    "purescript-maybe": "0.2.1",
+    "purescript-maps": "0.3.2",
+    "purescript-rx": "0.3.0",
+    "purescript-foreign": "0.4.0",
+    "lodash": "^3.5.0",
+    "react": "0.13.0",
+    "bootstrap": "~3.3.0",
+    "react-bootstrap": "0.16.1",
+    "moment": "^2.9.0",
+    "eonasdan-bootstrap-datetimepicker": "^4.7.0"
   },
-  "devDependencies": {},
+  "version": "0.1.0",
+  "homepage": "https://github.com/kRITZCREEK/FROST-Frontend",
+  "authors": [
+    "kRITZCREEK <christoph.hegemann@gmx.net>"
+  ],
+  "main": "src/Openspace/Ui/Render.purs",
+  "license": "MIT",
+  "private": true,
   "resolutions": {
     "purescript-tuples": "0.3.0",
-    "purescript-monoid": "~0.2.0"
+    "purescript-foldable-traversable": "0.3.0",
+    "purescript-monoid": "~0.2.0",
+    "purescript-foreign": "0.4.0"
   }
 }

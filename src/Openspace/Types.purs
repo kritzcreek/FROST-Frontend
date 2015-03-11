@@ -288,7 +288,7 @@ emptyState = {topics: [], rooms:[], blocks:[], timeslots: (M.empty) :: M.Map Slo
 
 myRoom = Room {roomName: "Berlin", roomCapacity: 100}
 myRoom1 = Room {roomName: "Hamburg", roomCapacity: 80}
-myRoom2 = Room {roomName: "Köln", roomCapacity: 30}
+myRoom2 = Room {roomName: "Koeln", roomCapacity: 30}
 
 myBlock = Block {
   blockDescription:"First",

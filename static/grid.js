@@ -61,7 +61,7 @@ AddBlockModal = React.createClass({
       }};
   },
   componentDidMount : function() {
-    var self = this
+    var self = this;
     var start = $('#start');
     start.datetimepicker({
       format: 'LT',
@@ -153,17 +153,17 @@ OpenAddBlockModal = React.createClass({
 });
 
 Tableheader = React.createClass({
-  handleDelete: function(block, event) {
-     var event = new CustomEvent('deleteBlock', {'detail': block});
+  handleDelete: function(block, e) {
+    var event = new CustomEvent('deleteBlock', {'detail': block});
     this.props.emit(event);
   },
   render: function(){
     var ths = this.props.blocks
       .map(function(block){
-        var timeStart = moment(block.blockStartHours + ':' + block.blockStartMinutes
-                               , "HH:mm").format("LT")
-        var timeEnd = moment(block.blockEndHours + ':' + block.blockEndMinutes
-                             , "HH:mm").format("LT")
+        var timeStart = moment(block.blockStartHours + ':' + block.blockStartMinutes,
+         "HH:mm").format("LT");
+        var timeEnd = moment(block.blockEndHours + ':' + block.blockEndMinutes,
+         "HH:mm").format("LT");
         return(
             <th key={block.blockDescription}>
             <div>
