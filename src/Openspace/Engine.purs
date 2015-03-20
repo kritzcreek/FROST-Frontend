@@ -3,8 +3,7 @@ module Openspace.Engine where
 import           Data.Array
 import           Data.Foldable
 import qualified Data.Map as M
-import           Data.Maybe
-import           Data.Tuple
+import           Data.Tuple (Tuple(..))
 import           Openspace.Types
 
 

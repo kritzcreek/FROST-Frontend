@@ -57,9 +57,7 @@ function emitAction(socket){
 foreign import getHost
 """
   function getHost() {
-    return function() {
       return window.location.host;
-    }
   }
 """ :: forall eff. Eff( net :: Net |eff ) String
 
