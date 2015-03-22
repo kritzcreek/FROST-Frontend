@@ -11,6 +11,7 @@ import           Data.Tuple
 import           Openspace.Types
 
 type Grid = [[Maybe SanitizedTopic]]
+type SanitizedTopic = { topicDescription :: String, topicTyp :: String }
 
 sanitizeTopic :: Topic -> SanitizedTopic
 sanitizeTopic (Topic t) = { topicDescription: t.topicDescription,
