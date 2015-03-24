@@ -23,10 +23,7 @@
     "purescript-maps": "0.3.2",
     "purescript-rx": "0.3.0",
     "purescript-foreign": "0.4.0",
-    "lodash": "^3.5.0",
-    "react": "0.13.0",
     "bootstrap": "~3.3.0",
-    "react-bootstrap": "0.16.1",
     "moment": "^2.9.0",
     "eonasdan-bootstrap-datetimepicker": "^4.7.0"
   },
@@ -39,8 +36,8 @@
   "license": "MIT",
   "private": true,
   "resolutions": {
-    "purescript-tuples": "0.3.0",
-    "purescript-foldable-traversable": "0.3.0",
+    "purescript-tuples": "0.3.2",
+    "purescript-foldable-traversable": "~0.3.0",
     "purescript-monoid": "~0.2.0",
     "purescript-foreign": "0.4.0"
   }

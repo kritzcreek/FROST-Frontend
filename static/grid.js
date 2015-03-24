@@ -1,12 +1,9 @@
-var Grid, Tableheader, Tablebody, Tablerow, Tablecell;
+import React from 'react'
+import {Table, Button, ModalTrigger, Modal, Input} from 'react-bootstrap'
+import moment from 'moment'
+import _ from 'lodash'
 
-var Table = ReactBootstrap.Table;
-var Button = ReactBootstrap.Button;
-var ModalTrigger = ReactBootstrap.ModalTrigger;
-var Modal = ReactBootstrap.Modal;
-var Input = ReactBootstrap.Input;
-
-AddRoomModal = React.createClass({
+var AddRoomModal = React.createClass({
   handleClick: function() {
     var event = new CustomEvent('addRoom',
                                 {
@@ -40,8 +37,8 @@ AddRoomModal = React.createClass({
   }
 });
 
-OpenAddRoomModal = React.createClass({
-  render : function (){
+var OpenAddRoomModal = React.createClass({
+  render: function (){
     return (
         <ModalTrigger modal={<AddRoomModal {...this.props}/>}>
           <Button className="btn-block" bsStyle="success">New Room</Button>
@@ -50,7 +47,7 @@ OpenAddRoomModal = React.createClass({
   }
 });
 
-AddBlockModal = React.createClass({
+var AddBlockModal = React.createClass({
   getInitialState: function() {
     return {
       start: {
@@ -60,7 +57,7 @@ AddBlockModal = React.createClass({
         hours: 0, minutes: 0
       }};
   },
-  componentDidMount : function() {
+  componentDidMount: function() {
     var self = this;
     var start = $('#start');
     start.datetimepicker({
@@ -99,11 +96,11 @@ AddBlockModal = React.createClass({
     var event = new CustomEvent('addBlock',
                                 {
                                   'detail': {
-                                    'blockDescription' : $('#descriptionInput').val(),
-                                    'blockStartHours'  : this.state.start.hours,
+                                    'blockDescription': $('#descriptionInput').val(),
+                                    'blockStartHours': this.state.start.hours,
                                     'blockStartMinutes': this.state.start.minutes,
-                                    'blockEndHours'    : this.state.end.hours,
-                                    'blockEndMinutes'  : this.state.end.minutes
+                                    'blockEndHours': this.state.end.hours,
+                                    'blockEndMinutes': this.state.end.minutes
                                   }
                                 });
     this.props.emit(event);
@@ -142,8 +139,8 @@ AddBlockModal = React.createClass({
   }
 });
 
-OpenAddBlockModal = React.createClass({
-  render : function (){
+var OpenAddBlockModal = React.createClass({
+  render: function (){
     return (
         <ModalTrigger modal={<AddBlockModal {...this.props}/>}>
           <Button className="btn-block" bsStyle="success">New Block</Button>
@@ -152,8 +149,8 @@ OpenAddBlockModal = React.createClass({
   }
 });
 
-Tableheader = React.createClass({
-  handleDelete: function(block, e) {
+var Tableheader = React.createClass({
+  handleDelete: function(block) {
     var event = new CustomEvent('deleteBlock', {'detail': block});
     this.props.emit(event);
   },
@@ -161,17 +158,17 @@ Tableheader = React.createClass({
     var ths = this.props.blocks
       .map(function(block){
         var timeStart = moment(block.blockStartHours + ':' + block.blockStartMinutes,
-         "HH:mm").format("LT");
+         'HH:mm').format('LT');
         var timeEnd = moment(block.blockEndHours + ':' + block.blockEndMinutes,
-         "HH:mm").format("LT");
-        return(
+         'HH:mm').format('LT');
+        return (
             <th key={block.blockDescription}>
             <div>
               <div>
                 {block.blockDescription}
               </div>
               <div>
-                {timeStart + " - " + timeEnd}
+                {timeStart + ' - ' + timeEnd}
               </div>
             </div>
             <span className="glyphicon glyphicon-trash"
@@ -179,7 +176,7 @@ Tableheader = React.createClass({
             </th>
         );
       }, this);
-    return(
+    return (
       <thead>
         <tr>
         <th></th>
@@ -191,17 +188,18 @@ Tableheader = React.createClass({
   }
 });
 
-Tablebody = React.createClass({
+var Tablebody = React.createClass({
   render: function(){
-    var blocks= this.props.blocks;
+    var blocks = this.props.blocks;
     var rows = _.zip(this.props.rooms, this.props.grid)
       .map(function(row){
         var room = _.head(row);
-        return(
-            <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]} key={room.roomName} emit={this.props.emit}></Tablerow>
+        return (
+            <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]}
+              key={room.roomName} emit={this.props.emit}></Tablerow>
         );
       }, this);
-    return(
+    return (
         <tbody>
         {rows}
         <tr>
@@ -214,8 +212,8 @@ Tablebody = React.createClass({
   }
 });
 
-Tablerow = React.createClass({
-  handleDelete : function(e){
+var Tablerow = React.createClass({
+  handleDelete: function(){
     var event = new CustomEvent('deleteRoom', {'detail': this.props.room});
     this.props.emit(event);
   },
@@ -224,12 +222,12 @@ Tablerow = React.createClass({
           .map(function(zip){
             var block = zip[0];
             var topic = zip[1];
-            return(
+            return (
                 <Tablecell key={block.start} room={this.props.room}
                  block={block} topic={topic} emit={this.props.emit} />
             );
       }, this);
-    return(
+    return (
       <tr>
         <td>
           {this.props.room.roomName}
@@ -243,50 +241,49 @@ Tablerow = React.createClass({
   }
 });
 
-Tablecell = React.createClass({
+var Tablecell = React.createClass({
   getInitialState: function(){
     return {dragOver: false};
   },
   handleDragStart: function(e) {
     var event = new CustomEvent('dragStartGridTopic',
                                 {'detail': this.props.topic.value0});
-    e.dataTransfer.setData('text/plain','F**k Firefox');
+    e.dataTransfer.setData('text/plain', 'F**k Firefox');
     this.props.emit(event);
   },
-  handleDragEnd: function(e) {
+  handleDragEnd: function() {
     var event = new CustomEvent('dragEndGridTopic',
                                 {'detail': this.props.topic.value0});
     this.props.emit(event);
   },
-  handleDragEnter : function(e){
+  handleDragEnter: function(){
     this.setState({dragOver: true});
   },
-  handleDragLeave : function(e){
+  handleDragLeave: function(){
     this.setState({dragOver: false});
     var event = new CustomEvent('dragLeaveSlot');
     this.props.emit(event);
   },
-  handleDragOver: function(e){
+  handleDragOver: function(){
     var event = new CustomEvent('dragOverSlot',
-                                {'detail':{ 'room': this.props.room,
-                                            'block': this.props.block }});
+                                {'detail': { 'room': this.props.room,
+                                             'block': this.props.block }});
     this.props.emit(event);
   },
   render: function(){
-    var topic=this.props.topic.value0;
+    var topic = this.props.topic.value0;
     var highlight = this.state.dragOver;
     if(topic){
       return (
         <td>
-        <div
-        className={highlight ? 'tabletopic highlight draggable' : 'tabletopic draggable'}
-        draggable={'true'}
-        onDragStart={this.handleDragStart}
-        onDragEnd={this.handleDragEnd}
-        onDragEnter={this.handleDragEnter}
-        onDragLeave={this.handleDragLeave}
-        onDragOver={this.handleDragOver} >
-          {topic.topicDescription}
+        <div className={highlight ? 'tabletopic highlight draggable' : 'tabletopic draggable'}
+          draggable={'true'}
+          onDragStart={this.handleDragStart}
+          onDragEnd={this.handleDragEnd}
+          onDragEnter={this.handleDragEnter}
+          onDragLeave={this.handleDragLeave}
+          onDragOver={this.handleDragOver} >
+            {topic.topicDescription}
         </div>
         </td>
       );
@@ -305,12 +302,12 @@ Tablecell = React.createClass({
   }
 });
 
-Grid = React.createClass({
+var Grid = React.createClass({
   emit: function(event){
     this.getDOMNode().dispatchEvent(event);
   },
   render: function(){
-    return(
+    return (
         <Table striped bordered condensed id='gridContainer'>
           <Tableheader blocks={this.props.blocks} emit={this.emit}/>
           <Tablebody {...this.props} emit={this.emit}/>
@@ -318,3 +315,5 @@ Grid = React.createClass({
     );
   }
 });
+
+export default Grid
