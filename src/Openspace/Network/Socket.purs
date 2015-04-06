@@ -54,10 +54,11 @@ function emitAction(socket){
 }
 """ :: forall eff. Socket -> Foreign -> Eff (net :: Net | eff) Unit
 
-foreign import getHost
+foreign import getSocketUrl
 """
-  function getHost() {
-      return window.location.host;
+  function getSocketUrl() {
+      var host = window.location.host;
+      return host + window.location.pathname.replace('instance', 'socket');
   }
 """ :: forall eff. Eff( net :: Net |eff ) String
 

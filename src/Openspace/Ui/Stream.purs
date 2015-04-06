@@ -64,9 +64,8 @@ uiStream = do
   return $ addTopic `merge` dragTopic `merge` changeGrid
 
 main = do
-  -- TODO: getSocket :: Either SockErr Socket
-  hostName <- getHost
-  let sockEmitter = getSocket ("ws://" ++ hostName ++ "/socket")
+  socketUrl <- getSocketUrl
+  let sockEmitter = getSocket ("ws://" ++ socketUrl)
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State
