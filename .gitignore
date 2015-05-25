@@ -1,9 +1,6 @@
-.*
-!/.bowerrc
-!/.gitignore
-/output/
-/node_modules/
-/bower_components/
-/tmp/
-/build/
-/dist/
+output/
+node_modules/
+bower_components/
+tmp/
+build/
+dist/

@@ -1,115 +1,119 @@
-import {Button, Panel, ModalTrigger, Modal, Input} from 'react-bootstrap'
-import React from 'react'
-import _ from 'lodash'
+import {
+  Button,
+  Panel,
+  ModalTrigger,
+  Modal,
+  Input
+}
+from 'react-bootstrap';
+import React from 'react';
+import _ from 'lodash';
 
 var AddModal = React.createClass({
-  handleClick: function() {
-    var event = new CustomEvent('addTopic',
-                                {
-                                  'detail': {
-                                  description: $('#descriptionInput').val(),
-                                  typ: $('#topicTypeInput').val()
-                                  }
-                                });
+  handleClick() {
+    var event = new CustomEvent('addTopic', {
+      'detail': {
+        description: $('#descriptionInput').val(),
+        typ: $('#topicTypeInput').val()
+      }
+    });
     this.props.emit(event);
     this.props.onRequestHide();
   },
-  render: function() {
-    var options = this.props.topicTypes
-          .map(function(topicType){
-            return (
-                <option key={topicType} value={topicType}>{topicType}</option>
-            );
-          });
+  render() {
+    var options = this.props.topicTypes.map(topicType =>
+        <option key={topicType} value={topicType}>{topicType}</option>
+    );
     return (
-        <Modal {...this.props} title="Neues Thema" animation={true}>
-          <div className="modal-body">
-            <form role="form">
-              <div className="form-group">
-                <label htmlFor="descriptionInput">Thema: </label>
-                <input className="form-control" type="text" id="descriptionInput"/>
-              </div>
-              <div className="form-group">
-                <Input type="select" label='Typ'
-                  defaultValue={_.head(this.props.topicTypes)}
-                  id="topicTypeInput">
-                  {options}
-                </Input>
-              </div>
-            </form>
+      <Modal animation={true} title="Neues Thema" {...this.props}>
+        <div className="modal-body">
+          <form role="form">
+            <div className="form-group">
+              <label htmlFor="descriptionInput">Thema:
+              </label>
+              <input className="form-control" id="descriptionInput" type="text"/>
+            </div>
+            <div className="form-group">
+              <Input defaultValue={_.head(this.props.topicTypes)} id="topicTypeInput" label='Typ' type="select">
+                {options}
+              </Input>
+            </div>
+          </form>
         </div>
         <div className="modal-footer">
           <Button onClick={this.props.onRequestHide}>Close</Button>
-          <Button bsStyle="success" onClick={this.handleClick}> Hinzufügen </Button>
+          <Button bsStyle="success" onClick={this.handleClick}>
+            Hinzufügen
+          </Button>
         </div>
-        </Modal>
+      </Modal>
     );
   }
 });
 
 var OpenAddModal = React.createClass({
-  render: function (){
+  render() {
     return (
-        <ModalTrigger modal={<AddModal {...this.props}/>}>
-          <span className={"glyphicon glyphicon-plus"}>
-          </span>
-        </ModalTrigger>
+      <ModalTrigger modal={ <AddModal {...this.props}/>}>
+        <span className={"glyphicon glyphicon-plus"} />
+      </ModalTrigger>
     );
   }
 });
 
 var RemoveButton = React.createClass({
-  getInitialState: function(){
-    return {dragOver: false};
+  getInitialState() {
+    return {
+      dragOver: false
+    };
   },
-  handleDragEnter : function(){
-    this.setState({dragOver: true});
+  handleDragEnter() {
+    this.setState({
+      dragOver: true
+    });
   },
-  handleDragLeave : function(){
-    this.setState({dragOver: false});
-    var event = new CustomEvent('dragLeaveTrash');
-    this.props.emit(event);
+  handleDragLeave() {
+    this.setState({
+      dragOver: false
+    });
+    this.props.emit(new CustomEvent('dragLeaveTrash'));
   },
-  handleClick: function() {
-    var event = new CustomEvent('removeTopic');
-    this.props.emit(event);
+  handleClick() {
+    this.props.emit(new CustomEvent('removeTopic'));
   },
-  handleDragOver: function() {
-    var event = new CustomEvent('dragOverTrash');
-    this.props.emit(event);
+  handleDragOver() {
+    this.props.emit(new CustomEvent('dragOverTrash'));
   },
-  render: function(){
+  render() {
+    let classes = 'glyphicon glyphicon-trash' + (this.state.dragOver ? ' highlight' : '');
     return (
-      <span
-      className={'glyphicon glyphicon-trash' + (this.state.dragOver? ' highlight' : '')}
-      onClick={this.handleClick}
-      onDragEnter={this.handleDragEnter}
-      onDragLeave={this.handleDragLeave}
-      onDragOver={this.handleDragOver}>
-      </span>
+      <span className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} />
     );
   }
 });
 
 var Menu = React.createClass({
-  emit: function(event){
+  emit(event) {
     this.getDOMNode().dispatchEvent(event);
   },
-  render: function(){
+  render() {
     return (
-        <div id="menuContainer">
-          <span className="notice">
-            <span> Drop a Topic </span>
-            <span className="glyphicon glyphicon-arrow-right"/></span>
-            <RemoveButton emit={this.emit}></RemoveButton>
-            <OpenAddModal topicTypes={this.props.topicTypes} emit={this.emit}></OpenAddModal>
-            <span className="notice">
-              <span className="glyphicon glyphicon-arrow-left"/>
-              <span>Click to add a Topic</span>
+      <div id="menuContainer">
+        <span className="notice">
+          <span>
+            Drop a Topic
           </span>
-        </div>
+          <span className="glyphicon glyphicon-arrow-right"/>
+        </span>
+        <RemoveButton emit={this.emit} />
+        <OpenAddModal emit={this.emit} topicTypes={this.props.topicTypes} />
+        <span className="notice">
+          <span className="glyphicon glyphicon-arrow-left" />
+          <span>Click to add a Topic</span>
+        </span>
+      </div>
     );
   }
 });
 
-export default Menu
+export default Menu;
