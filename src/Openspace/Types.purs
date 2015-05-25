@@ -39,18 +39,18 @@ topicTypes = [Discussion, Presentation, Workshop]
 --| Topics |--
 --------------
 
-newtype Topic = Topic { topicDescription :: String
-                      , topicTyp   :: TopicType }
+newtype Topic = Topic { description :: String
+                      , typ   :: TopicType }
 
 instance eqTopic :: Eq Topic where
-  (==) (Topic t1) (Topic t2) = t1.topicDescription == t2.topicDescription && t1.topicTyp == t2.topicTyp
+  (==) (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
   (/=) t1 t2 = not (t1 == t2)
 
 instance foreignTopic :: IsForeign Topic where
     read val = do
-      topic <- readProp "topicDescription" val :: F String
-      typ   <- readProp "topicTyp"   val :: F TopicType
-      return $ Topic { topicDescription: topic, topicTyp: typ }
+      topic <- readProp "description" val :: F String
+      typ   <- readProp "typ"   val :: F TopicType
+      return $ Topic { description: topic, typ: typ }
 
 
 ------------
@@ -79,62 +79,62 @@ instance foreignSlot :: IsForeign Slot where
 --| Room |--
 ------------
 
-newtype Room = Room { roomName :: String, roomCapacity :: Number }
+newtype Room = Room { name :: String, capacity :: Number }
 
 instance showRoom :: Show Room where
-  show (Room r) = r.roomName
+  show (Room r) = r.name
 
 instance eqRoom :: Eq Room where
-  (==) (Room r1) (Room r2) = r1.roomName == r2.roomName
-  (/=) (Room r1) (Room r2) = r1.roomName /= r2.roomName
+  (==) (Room r1) (Room r2) = r1.name == r2.name
+  (/=) (Room r1) (Room r2) = r1.name /= r2.name
 
 instance foreignRoom :: IsForeign Room where
   read val = do
-    name     <- readProp "roomName" val     :: F String
-    capacity <- readProp "roomCapacity" val :: F Number
-    return $ Room {roomName: name, roomCapacity: capacity}
+    name     <- readProp "name" val     :: F String
+    capacity <- readProp "capacity" val :: F Number
+    return $ Room {name: name, capacity: capacity}
 
 -------------
 --| Block |--
 -------------
 
-newtype Block = Block { blockDescription :: String
-                      , blockStartHours :: Number
-                      , blockStartMinutes :: Number
-                      , blockEndHours :: Number
-                      , blockEndMinutes :: Number}
+newtype Block = Block { description :: String
+                      , startHours :: Number
+                      , startMinutes :: Number
+                      , endHours :: Number
+                      , endMinutes :: Number}
 
 instance showBlock :: Show Block where
-  show (Block b) = b.blockDescription
+  show (Block b) = b.description
 
 instance eqBlock :: Eq Block where
-  (==) (Block b1) (Block b2) = b1.blockDescription == b2.blockDescription
-                               && b1.blockStartHours == b2.blockStartHours
-                               && b1.blockStartMinutes == b2.blockStartMinutes
-                               && b1.blockEndHours == b2.blockEndHours
-                               && b1.blockEndMinutes == b2.blockEndMinutes
+  (==) (Block b1) (Block b2) = b1.description == b2.description
+                               && b1.startHours == b2.startHours
+                               && b1.startMinutes == b2.startMinutes
+                               && b1.endHours == b2.endHours
+                               && b1.endMinutes == b2.endMinutes
 
   (/=) b1 b2 = not (b1 == b2)
 
 instance ordBlock :: Ord Block where
   compare (Block b1) (Block b2) = compare (hourDiff * 60 + minDiff) 0
-    where hourDiff = b1.blockStartHours - b2.blockStartHours
-          minDiff = b1.blockStartMinutes - b2.blockStartMinutes
+    where hourDiff = b1.startHours - b2.startHours
+          minDiff = b1.startMinutes - b2.startMinutes
 
 
 
 instance foreignBlock :: IsForeign Block where
   read val = do
-    description <- readProp "blockDescription" val
-    startHours <- readProp "blockStartHours" val
-    startMinutes <- readProp "blockStartMinutes" val
-    endHours <- readProp "blockEndHours" val
-    endMinutes <- readProp "blockEndMinutes" val
-    return $ Block { blockDescription: description
-                   , blockStartHours: startHours
-                   , blockStartMinutes: startMinutes
-                   , blockEndHours: endHours
-                   , blockEndMinutes: endMinutes
+    description <- readProp "description" val
+    startHours <- readProp "startHours" val
+    startMinutes <- readProp "startMinutes" val
+    endHours <- readProp "endHours" val
+    endMinutes <- readProp "endMinutes" val
+    return $ Block { description: description
+                   , startHours: startHours
+                   , startMinutes: startMinutes
+                   , endHours: endHours
+                   , endMinutes: endMinutes
                    }
 
 ---------------
@@ -195,15 +195,15 @@ class AsForeign a where
 instance actionAsForeign :: AsForeign Action where
   serialize (AddTopic (Topic t)) =
     toForeign { tag: "AddTopic"
-              , contents: { topicDescription: t.topicDescription
-                          , topicTyp: show t.topicTyp
+              , contents: { description: t.description
+                          , typ: show t.typ
                           }
               }
 
   serialize (DeleteTopic (Topic t)) =
     toForeign { tag: "DeleteTopic"
-              , contents: { topicDescription: t.topicDescription
-                          , topicTyp: show t.topicTyp
+              , contents: { description: t.description
+                          , typ: show t.typ
                           }
               }
   serialize (AddRoom (Room r)) =
@@ -225,8 +225,8 @@ instance actionAsForeign :: AsForeign Action where
   serialize (AssignTopic s t) = serializeAssignTopic s t
   serialize (UnassignTopic (Topic t)) =
     toForeign { tag: "UnassignTopic"
-              , contents: { topicDescription: t.topicDescription
-                          , topicTyp: show t.topicTyp
+              , contents: { description: t.description
+                          , typ: show t.typ
                           }
               }
 
@@ -249,8 +249,8 @@ function serializeAssignTopic(slot) {
              contents:[
                slot,
                {
-                 topicDescription: topic.topicDescription
-                 , topicTyp: Prelude.show(showTopicType)(topic.topicTyp)
+                 description: topic.description
+                 , typ: Prelude.show(showTopicType)(topic.typ)
                }
              ]
            }
@@ -276,32 +276,32 @@ type AppState = { topics :: [Topic]
 
 emptyState = {topics: [], rooms:[], blocks:[], timeslots: (M.empty) :: M.Map Slot Topic }
 
-myRoom = Room {roomName: "Berlin", roomCapacity: 100}
-myRoom1 = Room {roomName: "Hamburg", roomCapacity: 80}
-myRoom2 = Room {roomName: "Koeln", roomCapacity: 30}
+myRoom = Room {name: "Berlin", capacity: 100}
+myRoom1 = Room {name: "Hamburg", capacity: 80}
+myRoom2 = Room {name: "Koeln", capacity: 30}
 
 myBlock = Block {
-  blockDescription:"First",
-  blockStartHours: 8,
-  blockStartMinutes: 0,
-  blockEndHours: 10,
-  blockEndMinutes: 0}
+  description:"First",
+  startHours: 8,
+  startMinutes: 0,
+  endHours: 10,
+  endMinutes: 0}
 myBlock1 = Block {
-  blockDescription:"Second",
-  blockStartHours: 8,
-  blockStartMinutes: 0,
-  blockEndHours: 10,
-  blockEndMinutes: 0}
+  description:"Second",
+  startHours: 8,
+  startMinutes: 0,
+  endHours: 10,
+  endMinutes: 0}
 
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}
 
-myTopic = Topic  {topicDescription:"Purescript is great", topicTyp:Workshop}
-myTopic1 = Topic {topicDescription:"Reactive Design", topicTyp:Presentation}
-myTopic2 = Topic {topicDescription:"Functional Javascript", topicTyp:Discussion}
-myTopic3 = Topic {topicDescription:"Enemy of the State", topicTyp:Presentation}
-myTopic4 = Topic {topicDescription:"Wayyyyyyy too long name for a Topic.", topicTyp:Workshop}
-myTopic5 = Topic {topicDescription:"fix", topicTyp:Discussion}
+myTopic = Topic  {description:"Purescript is great", typ:Workshop}
+myTopic1 = Topic {description:"Reactive Design", typ:Presentation}
+myTopic2 = Topic {description:"Functional Javascript", typ:Discussion}
+myTopic3 = Topic {description:"Enemy of the State", typ:Presentation}
+myTopic4 = Topic {description:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
+myTopic5 = Topic {description:"fix", typ:Discussion}
 
 myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
            , rooms : [myRoom, myRoom1, myRoom2]

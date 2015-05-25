@@ -11,11 +11,11 @@ import           Data.Tuple
 import           Openspace.Types
 
 type Grid = [[Maybe SanitizedTopic]]
-type SanitizedTopic = { topicDescription :: String, topicTyp :: String }
+type SanitizedTopic = { description :: String, typ :: String }
 
 sanitizeTopic :: Topic -> SanitizedTopic
-sanitizeTopic (Topic t) = { topicDescription: t.topicDescription,
-                            topicTyp: show t.topicTyp }
+sanitizeTopic (Topic t) = { description: t.description,
+                            typ: show t.typ }
 
 findIn :: Room -> Block -> M.Map Slot Topic -> Maybe SanitizedTopic
 findIn r b timeslots = M.lookup (Slot {block:b, room:r}) timeslots

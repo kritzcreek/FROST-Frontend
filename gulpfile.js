@@ -30,7 +30,9 @@ gulp.task('copy-bullshit', function() {
    gulp.src(['bower_components/jquery/dist/jquery.js',
              'bower_components/rxjs/dist/rx.lite.js',
              'bower_components/rxjs-jquery/rx.jquery.js',
-             'bower_components/moment/moment.js'])
+             'bower_components/moment/moment.js',
+             'bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'
+            ])
    .pipe(gulp.dest('./dist/js/lib'));
 });
 

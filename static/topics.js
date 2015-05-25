@@ -25,8 +25,8 @@ var Topic = React.createClass({
       draggable="true"
       onDragStart={this.handleDragStart}
       onDragEnd={this.handleDragEnd}>
-        <div className="description"> Thema: {this.props.topic.topicDescription}</div>
-        <div className="typ"> Typ: {this.props.topic.topicTyp}</div>
+        <div className="description"> Thema: {this.props.topic.description}</div>
+        <div className="typ"> Typ: {this.props.topic.typ}</div>
     </div>
     );
   }
@@ -40,7 +40,7 @@ var Topics = React.createClass({
     var topics = this.props.topics
       .map(function(topic){
         return (
-            <Topic topic={topic} key={topic.topicDescription} emit={this.emit} />
+            <Topic topic={topic} key={topic.description} emit={this.emit} />
         );
       }, this);
     return (

@@ -8,8 +8,8 @@ var AddRoomModal = React.createClass({
     var event = new CustomEvent('addRoom',
                                 {
                                   'detail': {
-                                    roomName: $('#nameInput').val(),
-                                    roomCapacity: parseInt($('#capacityInput').val())
+                                    name: $('#nameInput').val(),
+                                    capacity: parseInt($('#capacityInput').val())
                                   }
                                 });
     this.props.emit(event);
@@ -96,11 +96,11 @@ var AddBlockModal = React.createClass({
     var event = new CustomEvent('addBlock',
                                 {
                                   'detail': {
-                                    'blockDescription': $('#descriptionInput').val(),
-                                    'blockStartHours': this.state.start.hours,
-                                    'blockStartMinutes': this.state.start.minutes,
-                                    'blockEndHours': this.state.end.hours,
-                                    'blockEndMinutes': this.state.end.minutes
+                                    'description': $('#descriptionInput').val(),
+                                    'startHours': this.state.start.hours,
+                                    'startMinutes': this.state.start.minutes,
+                                    'endHours': this.state.end.hours,
+                                    'endMinutes': this.state.end.minutes
                                   }
                                 });
     this.props.emit(event);
@@ -157,15 +157,15 @@ var Tableheader = React.createClass({
   render: function(){
     var ths = this.props.blocks
       .map(function(block){
-        var timeStart = moment(block.blockStartHours + ':' + block.blockStartMinutes,
+        var timeStart = moment(block.startHours + ':' + block.startMinutes,
          'HH:mm').format('LT');
-        var timeEnd = moment(block.blockEndHours + ':' + block.blockEndMinutes,
+        var timeEnd = moment(block.endHours + ':' + block.endMinutes,
          'HH:mm').format('LT');
         return (
-            <th key={block.blockDescription}>
+            <th key={block.description}>
             <div>
               <div>
-                {block.blockDescription}
+                {block.description}
               </div>
               <div>
                 {timeStart + ' - ' + timeEnd}
@@ -196,7 +196,7 @@ var Tablebody = React.createClass({
         var room = _.head(row);
         return (
             <Tablerow room={room} blocks={blocks} row={_.tail(row)[0]}
-              key={room.roomName} emit={this.props.emit}></Tablerow>
+              key={room.name} emit={this.props.emit}></Tablerow>
         );
       }, this);
     return (
@@ -230,7 +230,7 @@ var Tablerow = React.createClass({
     return (
       <tr>
         <td>
-          {this.props.room.roomName}
+          {this.props.room.name}
           <span className="glyphicon glyphicon-trash"
           onClick={this.handleDelete}>
           </span>
@@ -283,7 +283,7 @@ var Tablecell = React.createClass({
           onDragEnter={this.handleDragEnter}
           onDragLeave={this.handleDragLeave}
           onDragOver={this.handleDragOver} >
-            {topic.topicDescription}
+            {topic.description}
         </div>
         </td>
       );
