@@ -162,7 +162,7 @@ read val = case readProp "tag" val of
   Right "AddTopic" -> AddTopic <$> readProp "contents" val
   Right "DeleteTopic" -> DeleteTopic <$> readProp "contents" val
   Right "AddRoom" -> AddRoom <$> readProp "contents" val
-  Right "DeleteRoom" -> DeletRoom <$> readProp "contents" val
+  Right "DeleteRoom" -> DeleteRoom <$> readProp "contents" val
   Right "AddBlock" -> AddBlock <$> readProp "contents" val
   Right "DeleteBlock" -> DeleteBlock <$> readProp "contents" val
   Right "AssignTopic" -> let val' = parseAssignTopic val
