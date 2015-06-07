@@ -47,11 +47,11 @@ instance eqTopic :: Eq Topic where
   (/=) t1 t2 = not (t1 == t2)
 
 instance foreignTopic :: IsForeign Topic where
-    read val = do
-      topic <- readProp "description" val :: F String
-      typ   <- readProp "typ"   val :: F TopicType
-      return $ Topic { description: topic, typ: typ }
-
+  read val = Topic <$> (
+    { description: _, typ: _ } <$>
+    readProp "description" val <*>
+    readProp "typ" val 
+    )
 
 ------------
 --| Slot |--
@@ -64,16 +64,18 @@ instance eqSlot :: Eq Slot where
   (/=) (Slot s1) (Slot s2) = s1.room /= s2.room || s1.block /= s2.block
 
 instance ordSlot :: Ord Slot where
-  compare (Slot s1) (Slot s2) = (show s1.room ++ show s1.block) `compare` (show s2.room ++ show s2.block)
+  compare (Slot s1) (Slot s2) =
+    (show s1.room ++ show s1.block) `compare` (show s2.room ++ show s2.block)
 
 instance showSlot :: Show Slot where
   show (Slot s) = "{ room: " ++ show s.room ++" block: " ++ show s.block ++ "}"
 
 instance foreignSlot :: IsForeign Slot where
-  read val = do
-    room <- readProp "room" val :: F Room
-    block <- readProp "block" val :: F Block
-    return $ Slot {room: room, block: block}
+  read val = Slot <$> (
+    { room: _, block: _} <$>
+    readProp "room" val  <*>
+    readProp "block" val
+    )
 
 ------------
 --| Room |--
@@ -89,10 +91,11 @@ instance eqRoom :: Eq Room where
   (/=) (Room r1) (Room r2) = r1.name /= r2.name
 
 instance foreignRoom :: IsForeign Room where
-  read val = do
-    name     <- readProp "name" val     :: F String
-    capacity <- readProp "capacity" val :: F Number
-    return $ Room {name: name, capacity: capacity}
+  read val = Room <$> (
+    { name: _, capacity: _} <$>
+    readProp "name" val     <*>
+    readProp "capacity" val
+    )
 
 -------------
 --| Block |--
@@ -124,18 +127,19 @@ instance ordBlock :: Ord Block where
 
 
 instance foreignBlock :: IsForeign Block where
-  read val = do
-    description <- readProp "description" val
-    startHours <- readProp "startHours" val
-    startMinutes <- readProp "startMinutes" val
-    endHours <- readProp "endHours" val
-    endMinutes <- readProp "endMinutes" val
-    return $ Block { description: description
-                   , startHours: startHours
-                   , startMinutes: startMinutes
-                   , endHours: endHours
-                   , endMinutes: endMinutes
-                   }
+  read val = Block <$> (
+    { description: _
+    , startHours: _
+    , startMinutes: _
+    , endHours: _
+    , endMinutes: _
+    } <$>
+    readProp "description" val <*>
+    readProp "startHours" val <*>
+    readProp "startMinutes" val <*>
+    readProp "endHours" val <*>
+    readProp "endMinutes" val
+    )
 
 ---------------
 --| Actions |--
@@ -155,38 +159,17 @@ data Action = AddTopic Topic
 
 instance foreignAction :: IsForeign Action where
 read val = case readProp "tag" val of
-  Right "AddTopic" -> do
-    t <- readProp "contents" val :: F Topic
-    return $ AddTopic t
-  Right "DeleteTopic" -> do
-    t <- readProp "contents" val :: F Topic
-    return $ DeleteTopic t
-  Right "AddRoom" -> do
-    r <- readProp "contents" val :: F Room
-    return $ AddRoom r
-  Right "DeleteRoom" -> do
-    r <- readProp "contents" val :: F Room
-    return $ DeleteRoom r
-  Right "AddBlock" -> do
-    b <- readProp "contents" val :: F Block
-    return $ AddBlock b
-  Right "DeleteBlock" -> do
-    b <- readProp "contents" val :: F Block
-    return $ DeleteBlock b
-  Right "AssignTopic" -> do
-    let val' = parseAssignTopic val
-    s <- readProp "slot" val' :: F Slot
-    t <- readProp "topic" val' :: F Topic
-    return $ AssignTopic s t
-  Right "UnassignTopic" -> do
-    t <- readProp "contents" val :: F Topic
-    return $ UnassignTopic t
-  Right "ReplayEvents" -> do
-    actions <- readProp "contents" val :: F [Action]
-    return $ ReplayActions actions
-  Right "ShowError" -> do
-    m <- readProp "message" val :: F String
-    return $ ShowError m
+  Right "AddTopic" -> AddTopic <$> readProp "contents" val
+  Right "DeleteTopic" -> DeleteTopic <$> readProp "contents" val
+  Right "AddRoom" -> AddRoom <$> readProp "contents" val
+  Right "DeleteRoom" -> DeletRoom <$> readProp "contents" val
+  Right "AddBlock" -> AddBlock <$> readProp "contents" val
+  Right "DeleteBlock" -> DeleteBlock <$> readProp "contents" val
+  Right "AssignTopic" -> let val' = parseAssignTopic val
+                         in AssignTopic <$> readProp "slot" val <*> readProp "topic" val
+  Right "UnassignTopic" -> UnassignTopic <$> readProp "contents" val
+  Right "ReplayEvents" -> ReplayActions <$> readProp "contents" val
+  Right "ShowError" -> ShowError <$> readProp "message" val
   Left e -> Right $ ShowError (show e)
 
 class AsForeign a where
