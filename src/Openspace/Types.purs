@@ -166,7 +166,7 @@ read val = case readProp "tag" val of
   Right "AddBlock" -> AddBlock <$> readProp "contents" val
   Right "DeleteBlock" -> DeleteBlock <$> readProp "contents" val
   Right "AssignTopic" -> let val' = parseAssignTopic val
-                         in AssignTopic <$> readProp "slot" val <*> readProp "topic" val
+                         in AssignTopic <$> readProp "slot" val' <*> readProp "topic" val'
   Right "UnassignTopic" -> UnassignTopic <$> readProp "contents" val
   Right "ReplayEvents" -> ReplayActions <$> readProp "contents" val
   Right "ShowError" -> ShowError <$> readProp "message" val
