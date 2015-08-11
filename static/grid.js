@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Table,
   Button,
-  ModalTrigger,
   Modal,
   Input
 }
@@ -19,7 +18,7 @@ var AddRoomModal = React.createClass({
       }
     });
     this.props.emit(event);
-    this.props.onRequestHide();
+    this.props.close();
   },
   render() {
     return (
@@ -35,7 +34,7 @@ var AddRoomModal = React.createClass({
           </form>
         </div>
         <div className="modal-footer">
-          <Button onClick={this.props.onRequestHide}>Close</Button>
+          <Button onClick={this.props.close}>Close</Button>
           <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
         </div>
       </Modal>
@@ -43,14 +42,25 @@ var AddRoomModal = React.createClass({
   }
 });
 
+
 var OpenAddRoomModal = React.createClass({
-  render() {
-    return (
-      <ModalTrigger modal={<AddRoomModal {...this.props} />} >
-        <Button bsStyle="success" className="btn-block">New Room</Button>
-      </ModalTrigger>
-    );
-  }
+    getInitialState(){
+        return { show: false };
+    },
+    close(){
+        this.setState({show: false});
+    },
+    open(){
+        this.setState({show: true});
+    },
+    render() {
+        return (
+                <div onClick={this.open}>
+                <AddRoomModal show={this.state.show} onHide={this.close} close={this.close} {...this.props}/>
+                <Button bsStyle="success" className="btn-block">New Room</Button>
+                </div>
+        );
+    }
 });
 
 var AddBlockModal = React.createClass({
@@ -110,7 +120,7 @@ var AddBlockModal = React.createClass({
       }
     });
     this.props.emit(event);
-    this.props.onRequestHide();
+    this.props.close();
   },
   render() {
     return (
@@ -137,7 +147,7 @@ var AddBlockModal = React.createClass({
           </form>
         </div>
         <div className="modal-footer">
-          <Button onClick={this.props.onRequestHide}>Close</Button>
+          <Button onClick={this.props.close}>Close</Button>
           <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
         </div>
       </Modal>
@@ -146,13 +156,23 @@ var AddBlockModal = React.createClass({
 });
 
 var OpenAddBlockModal = React.createClass({
-  render() {
-    return (
-      <ModalTrigger modal={ <AddBlockModal {...this.props} />} >
-        <Button bsStyle="success" className="btn-block">New Block</Button>
-      </ModalTrigger>
-    );
-  }
+    getInitialState(){
+        return { show: false };
+    },
+    close(){
+        this.setState({show: false});
+    },
+    open(){
+        this.setState({show: true});
+    },
+    render() {
+        return (
+                <div onClick={this.open}>
+                <AddBlockModal show={this.state.show} onHide={this.close} close={this.close} {...this.props}/>
+                <Button bsStyle="success" className="btn-block">New Block</Button>
+                </div>
+        );
+    }
 });
 
 var Tableheader = React.createClass({

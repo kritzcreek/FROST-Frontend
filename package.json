@@ -1,29 +1,31 @@
 {
-  "name": "FROST-Frontend",
-  "version": "0.1.0",
-  "description": "The Frontend for the FROST Application.",
-  "main": "",
-  "private": false,
-  "author": "kRITZCREEK",
-  "license": "MIT",
-  "devDependencies": {
-    "eslint": "*",
-    "babel-core": "*",
-    "babel-loader": "*",
-    "babel-eslint": "*",
-    "bower": "*",
-    "gulp": "*",
-    "gulp-purescript": "*",
-    "webpack-stream": "*",
-    "purescript": "*",
-    "purs-loader": "*",
-    "webpack": "*"
-  },
-  "dependencies": {
-    "lodash": "*",
-    "moment": "*",
-    "react": "*",
-    "react-bootstrap": "*",
-    "react-tools": "*"
-  }
+    "name": "FROST-Frontend",
+    "version": "0.1.0",
+    "description": "The Frontend for the FROST Application.",
+    "main": "",
+    "private": false,
+    "author": "kRITZCREEK",
+    "license": "MIT",
+    "devDependencies": {
+        "eslint": "*",
+        "babel-core": "*",
+        "babel-loader": "*",
+        "babel-eslint": "*",
+        "bower": "*",
+        "gulp": "*",
+        "gulp-purescript": "*",
+        "webpack-stream": "*",
+        "purescript": "*",
+        "purs-loader": "*",
+        "webpack": "*"
+    },
+    "dependencies": {
+        "lodash": "*",
+        "moment": "*",
+        "rx": "*",
+        "rx-jquery": "*",
+        "jquery": "*",
+        "react": "*",
+        "react-bootstrap": "*"
+    }
 }

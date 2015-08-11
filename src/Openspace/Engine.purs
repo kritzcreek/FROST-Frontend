@@ -1,5 +1,7 @@
 module Openspace.Engine where
 
+
+import Prelude
 import           Data.Array
 import           Data.Foldable
 import qualified Data.Map as M
@@ -7,7 +9,7 @@ import           Data.Tuple (Tuple(..), snd)
 import           Openspace.Types
 
 filterMap :: forall k v. (Ord k) => (Tuple k v -> Boolean) -> M.Map k v -> M.Map k v
-filterMap p = M.fromList <<< filter p <<< M.toList
+filterMap p = M.fromList <<< Data.List.filter p <<< M.toList
 
 getSlot :: Tuple Slot _ -> { room :: Room, block :: Block }
 getSlot (Tuple (Slot s) _) = s
@@ -55,5 +57,5 @@ deleteBlock b as = as { blocks = filter ((/=) b) as.blocks
                       , timeslots = filterMap topicslotFilter as.timeslots }
   where topicslotFilter ts = let slot = getSlot ts in b /= slot.block
 
-generateState :: [Action] -> AppState
+generateState :: Array Action -> AppState
 generateState as = foldl (flip evalAction) emptyState as

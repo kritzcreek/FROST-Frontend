@@ -11,6 +11,7 @@ import Openspace.Types
 import Openspace.Ui.Emitter
 import Openspace.Ui.Parser
 import Openspace.Ui.Render
+import Prelude
 import Rx.Observable
 
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
@@ -24,7 +25,7 @@ dragStream = do
   let lookup = emitterLookup emitters
       dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
-                         Left e -> UnassignTopic
+                         Left err -> UnassignTopic
                      ) <$> lookup "dragOverSlot"
 
       dragOverTrash = const DeleteTopic <$> lookup "dragOverTrash"
@@ -65,7 +66,7 @@ uiStream = do
 
 main = do
   socketUrl <- getSocketUrl
-  let sockEmitter = getSocket ("ws://" ++ socketUrl)
+  let sockEmitter = getSocket ("ws://" ++ "frost.kritzcreek.me/socket/ba27265e-4dad-4bc7-bce0-6d2435da0496" ) -- ++ socketUrl)
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State

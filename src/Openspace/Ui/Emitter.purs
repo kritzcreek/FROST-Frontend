@@ -1,17 +1,19 @@
 module Openspace.Ui.Emitter where
 
 import           Control.Monad.Eff
-import qualified Control.Monad.JQuery as J
+import qualified Control.Monad.Eff.JQuery as J
 import           Control.Plus
-import           Data.Array (append)
+import           DOM
+import           Data.List (toList)
 import qualified Data.Map as M
 import           Data.Maybe
+import           Data.Monoid ()
 import           Data.Traversable
-import Data.Tuple hiding(zip)
-import           Rx.JQuery
+import           Data.Tuple
+import           Prelude
 import           Rx.Observable
 
-import           DOM
+foreign import onAsObservable :: forall eff. String -> J.JQuery -> Eff(dom :: DOM | eff) (Observable J.JQueryEvent)
 
 type Emitter = Tuple String (Observable J.JQueryEvent)
 type Emitters = M.Map String (Observable J.JQueryEvent)
@@ -35,7 +37,7 @@ getEmitters = do
                                             , "dragStartGridTopic", "dragEndGridTopic"
                                             , "removeBlock", "removeRoom"]
 
-    M.fromList <$> (sequence $ menu `append` topic `append` grid)
+    M.fromList <<< toList <$> (sequence $ menu <> topic <> grid)
 
 emitterLookup :: Emitters -> String -> Observable J.JQueryEvent
 emitterLookup es s =
