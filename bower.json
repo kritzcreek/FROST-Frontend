@@ -18,14 +18,14 @@
     "test"
   ],
   "dependencies": {
-    "purescript-arrays": "0.3.3",
-    "purescript-maybe": "0.2.1",
-    "purescript-maps": "0.3.2",
-    "purescript-rx": "0.3.0",
-    "purescript-foreign": "0.4.0",
-    "bootstrap": "~3.3.0",
-    "moment": "^2.9.0",
-    "eonasdan-bootstrap-datetimepicker": "^4.7.0"
+    "purescript-arrays": "*",
+    "purescript-maybe": "*",
+    "purescript-maps": "*",
+    "purescript-rx": "*",
+    "purescript-foreign": "*",
+    "bootstrap": "*",
+    "moment": "*",
+    "eonasdan-bootstrap-datetimepicker": "*"
   },
   "version": "0.1.0",
   "homepage": "https://github.com/kRITZCREEK/FROST-Frontend",
@@ -34,11 +34,5 @@
   ],
   "main": "src/Openspace/Ui/Render.purs",
   "license": "MIT",
-  "private": true,
-  "resolutions": {
-    "purescript-tuples": "0.3.4",
-    "purescript-foldable-traversable": "~0.3.0",
-    "purescript-monoid": "~0.2.0",
-    "purescript-foreign": "0.4.0"
-  }
+  "private": true
 }

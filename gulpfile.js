@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var webpack = require('gulp-webpack');
+var webpack = require('webpack-stream');
 var purescript = require('gulp-purescript');
 
 var paths = {
@@ -36,10 +36,23 @@ gulp.task('copy-bullshit', function() {
    .pipe(gulp.dest('./dist/js/lib'));
 });
 
-gulp.task('purescript', function(){
-  return gulp.src([paths.psc, paths.pscLib]).
-    pipe(purescript.pscMake()
-  );
+
+var sources = [
+    "src/**/*.purs",
+    "bower_components/purescript-*/src/**/*.purs",
+];
+
+var foreigns = [
+    "src/**/*.js",
+    "bower_components/purescript-*/src/**/*.js"
+];
+
+gulp.task("make", function () {
+    return purescript.psc({ src: sources, ffi: foreigns });
+});
+
+gulp.task("bundle", ["make"], function () {
+    return purescript.pscBundle({ src: "output/**/*.js", output: "dist/bundle.js", main: 'Main' });
 });
 
 gulp.task('watch', function() {

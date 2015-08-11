@@ -7,23 +7,23 @@
   "author": "kRITZCREEK",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^0.21.2",
-    "babel-core": "^5.4.7",
-    "babel-loader": "^5.1.3",
-    "babel-eslint": "^3.1.9",
+    "eslint": "*",
+    "babel-core": "*",
+    "babel-loader": "*",
+    "babel-eslint": "*",
     "bower": "*",
-    "gulp": "^3.8.11",
-    "gulp-purescript": "^0.4.2",
-    "gulp-webpack": "^1.4.0",
-    "purescript": "^0.6.10",
-    "purs-loader": "0.2.1",
-    "webpack": "^1.9.9"
+    "gulp": "*",
+    "gulp-purescript": "*",
+    "webpack-stream": "*",
+    "purescript": "*",
+    "purs-loader": "*",
+    "webpack": "*"
   },
   "dependencies": {
-    "lodash": "^3.9.2",
-    "moment": "^2.10.0",
-    "react": "^0.13.1",
-    "react-bootstrap": "^0.22.6",
-    "react-tools": "^0.13.3"
+    "lodash": "*",
+    "moment": "*",
+    "react": "*",
+    "react-bootstrap": "*",
+    "react-tools": "*"
   }
 }
