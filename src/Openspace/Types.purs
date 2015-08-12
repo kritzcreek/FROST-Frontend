@@ -50,7 +50,7 @@ instance foreignTopic :: IsForeign Topic where
   read val = Topic <$> (
     { description: _, typ: _ } <$>
     readProp "description" val <*>
-    readProp "typ" val 
+    readProp "typ" val
     )
 
 ------------
@@ -201,7 +201,7 @@ instance actionAsForeign :: AsForeign Action where
     toForeign { tag: "DeleteBlock"
               , contents: b }
 
-  serialize (AssignTopic s t) = serializeAssignTopic s t
+  serialize (AssignTopic s topic@(Topic t')) = serializeAssignTopic s topic (show t'.typ)
   serialize (UnassignTopic (Topic t)) =
     toForeign { tag: "UnassignTopic"
               , contents: { description: t.description
@@ -212,7 +212,7 @@ instance actionAsForeign :: AsForeign Action where
 foreign import parseAssignTopic :: Foreign -> Foreign
 
 
-foreign import serializeAssignTopic :: Slot -> Topic -> Foreign
+foreign import serializeAssignTopic :: Slot -> Topic -> String -> Foreign
 
 -------------------------
 --| Entire AppState |--

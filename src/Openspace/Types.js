@@ -9,14 +9,16 @@ exports.parseAssignTopic = function(foreign) {
 
 exports.serializeAssignTopic = function(slot) {
     return function(topic) {
-        return {
-            tag: "AssignTopic",
-            contents: [
-                slot, {
-                    description: topic.description,
-                    typ: Prelude.show(showTopicType)(topic.typ)
-                }
-            ]
+        return function(topictyp){
+            return {
+                tag: "AssignTopic",
+                contents: [
+                    slot, {
+                        description: topic.description,
+                        typ: topictyp
+                    }
+                ]
+            };
         };
     };
 };
