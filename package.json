@@ -1,29 +1,41 @@
 {
   "name": "FROST-Frontend",
-  "version": "0.1.0",
-  "description": "The Frontend for the FROST Application.",
-  "main": "",
-  "private": false,
-  "author": "kRITZCREEK",
-  "license": "MIT",
-  "devDependencies": {
-    "eslint": "^0.21.2",
-    "babel-core": "^5.4.7",
-    "babel-loader": "^5.1.3",
-    "babel-eslint": "^3.1.9",
-    "bower": "*",
-    "gulp": "^3.8.11",
-    "gulp-purescript": "^0.4.2",
-    "gulp-webpack": "^1.4.0",
-    "purescript": "^0.6.10",
-    "purs-loader": "0.2.1",
-    "webpack": "^1.9.9"
-  },
+  "version": "1.0.0",
+  "description": "React.js View >>= RX Binding >>= Purescript Controller.",
+  "main": "gulpfile.js",
   "dependencies": {
-    "lodash": "^3.9.2",
-    "moment": "^2.10.0",
-    "react": "^0.13.1",
-    "react-bootstrap": "^0.22.6",
-    "react-tools": "^0.13.3"
-  }
+    "babel-core": "^5.8.22",
+    "babel-loader": "^5.3.2",
+    "eslint": "^1.1.0",
+    "gulp": "^3.9.0",
+    "gulp-purescript": "^0.6.0",
+    "babel-eslint": "^4.0.5",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
+    "purescript": "^0.7.2",
+    "purs-loader": "^0.3.2",
+    "react": "^0.13.3",
+    "react-bootstrap": "^0.24.4",
+    "react-tools": "^0.13.3",
+    "jquery": "^2.1.4",
+    "rx": "^3.0.0",
+    "webpack": "^1.11.0",
+    "rx-jquery": "^1.1.7",
+    "webpack-stream": "^2.1.0",
+    "bower": "^1.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kRITZCREEK/FROST-Frontend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kRITZCREEK/FROST-Frontend/issues"
+  },
+  "homepage": "https://github.com/kRITZCREEK/FROST-Frontend"
 }

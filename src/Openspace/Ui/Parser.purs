@@ -1,19 +1,16 @@
 module Openspace.Ui.Parser where
 
-import Control.Monad.JQuery
+
+import Control.Monad.Eff.JQuery hiding (append)
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Tuple (Tuple(..))
 import Openspace.Types
+import Prelude
 import Rx.Observable
 
-foreign import getDetail
-"""
-function getDetail (e){
-    return e.originalEvent.detail;
-}
-""" :: JQueryEvent -> Foreign
+foreign import getDetail :: JQueryEvent -> Foreign
 
 type Parser a = Foreign -> F a
 

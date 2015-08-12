@@ -2,11 +2,13 @@ module Openspace.Types where
 
 import           Data.Either
 import           Data.Foreign
+import Data.List (toList)
 import           Data.Foreign.Class
 import           Data.Foreign.Index
 import qualified Data.Map as M
 import           Data.Maybe
 import           Data.Tuple
+import           Prelude
 
 -----------------
 --| TopicType |--
@@ -17,8 +19,7 @@ data TopicType = Discussion
                | Workshop
 
 instance eqTopicType :: Eq TopicType where
-(==) tt1 tt2 = show tt1 == show tt2
-(/=) tt1 tt2 = show tt1 /= show tt2
+  eq tt1 tt2 = show tt1 == show tt2
 
 instance showTopicType :: Show TopicType where
   show Discussion = "Discussion"
@@ -43,14 +44,13 @@ newtype Topic = Topic { description :: String
                       , typ   :: TopicType }
 
 instance eqTopic :: Eq Topic where
-  (==) (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
-  (/=) t1 t2 = not (t1 == t2)
+  eq (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
 
 instance foreignTopic :: IsForeign Topic where
   read val = Topic <$> (
     { description: _, typ: _ } <$>
     readProp "description" val <*>
-    readProp "typ" val 
+    readProp "typ" val
     )
 
 ------------
@@ -60,8 +60,7 @@ instance foreignTopic :: IsForeign Topic where
 newtype Slot = Slot { room :: Room, block :: Block }
 
 instance eqSlot :: Eq Slot where
-  (==) (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
-  (/=) (Slot s1) (Slot s2) = s1.room /= s2.room || s1.block /= s2.block
+  eq (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
 
 instance ordSlot :: Ord Slot where
   compare (Slot s1) (Slot s2) =
@@ -87,8 +86,7 @@ instance showRoom :: Show Room where
   show (Room r) = r.name
 
 instance eqRoom :: Eq Room where
-  (==) (Room r1) (Room r2) = r1.name == r2.name
-  (/=) (Room r1) (Room r2) = r1.name /= r2.name
+  eq (Room r1) (Room r2) = r1.name == r2.name
 
 instance foreignRoom :: IsForeign Room where
   read val = Room <$> (
@@ -111,16 +109,14 @@ instance showBlock :: Show Block where
   show (Block b) = b.description
 
 instance eqBlock :: Eq Block where
-  (==) (Block b1) (Block b2) = b1.description == b2.description
+  eq (Block b1) (Block b2) = b1.description == b2.description
                                && b1.startHours == b2.startHours
                                && b1.startMinutes == b2.startMinutes
                                && b1.endHours == b2.endHours
                                && b1.endMinutes == b2.endMinutes
 
-  (/=) b1 b2 = not (b1 == b2)
-
 instance ordBlock :: Ord Block where
-  compare (Block b1) (Block b2) = compare (hourDiff * 60 + minDiff) 0
+  compare (Block b1) (Block b2) = compare (hourDiff * 60.0 + minDiff) 0.0
     where hourDiff = b1.startHours - b2.startHours
           minDiff = b1.startMinutes - b2.startMinutes
 
@@ -153,7 +149,7 @@ data Action = AddTopic Topic
             | DeleteBlock Block
             | AssignTopic Slot Topic
             | UnassignTopic Topic
-            | ReplayActions [Action]
+            | ReplayActions (Array Action)
             | ShowError String
             | NOP
 
@@ -205,7 +201,7 @@ instance actionAsForeign :: AsForeign Action where
     toForeign { tag: "DeleteBlock"
               , contents: b }
 
-  serialize (AssignTopic s t) = serializeAssignTopic s t
+  serialize (AssignTopic s topic@(Topic t')) = serializeAssignTopic s topic (show t'.typ)
   serialize (UnassignTopic (Topic t)) =
     toForeign { tag: "UnassignTopic"
               , contents: { description: t.description
@@ -213,33 +209,10 @@ instance actionAsForeign :: AsForeign Action where
                           }
               }
 
-foreign import parseAssignTopic
-"""
-function parseAssignTopic(foreign) {
-  return {
-    topic : foreign.contents[1],
-    slot : foreign.contents[0]
-    }
-  }
-  """ :: Foreign -> Foreign
+foreign import parseAssignTopic :: Foreign -> Foreign
 
 
-foreign import serializeAssignTopic
-"""
-function serializeAssignTopic(slot) {
-  return function(topic){
-    return { tag: "AssignTopic",
-             contents:[
-               slot,
-               {
-                 description: topic.description
-                 , typ: Prelude.show(showTopicType)(topic.typ)
-               }
-             ]
-           }
-  }
-}
-""" :: Slot -> Topic -> Foreign
+foreign import serializeAssignTopic :: Slot -> Topic -> String -> Foreign
 
 -------------------------
 --| Entire AppState |--
@@ -247,9 +220,9 @@ function serializeAssignTopic(slot) {
 
 type Timeslot = Tuple Slot Topic
 
-type AppState = { topics :: [Topic]
-                , rooms :: [Room]
-                , blocks :: [Block]
+type AppState = { topics :: Array Topic
+                , rooms :: Array Room
+                , blocks :: Array Block
                 , timeslots :: M.Map Slot Topic
                 }
 
@@ -259,22 +232,22 @@ type AppState = { topics :: [Topic]
 
 emptyState = {topics: [], rooms:[], blocks:[], timeslots: (M.empty) :: M.Map Slot Topic }
 
-myRoom = Room {name: "Berlin", capacity: 100}
-myRoom1 = Room {name: "Hamburg", capacity: 80}
-myRoom2 = Room {name: "Koeln", capacity: 30}
+myRoom = Room {name: "Berlin", capacity: 100.0}
+myRoom1 = Room {name: "Hamburg", capacity: 80.0}
+myRoom2 = Room {name: "Koeln", capacity: 30.0}
 
 myBlock = Block {
   description:"First",
-  startHours: 8,
-  startMinutes: 0,
-  endHours: 10,
-  endMinutes: 0}
+  startHours: 8.0,
+  startMinutes: 0.0,
+  endHours: 10.0,
+  endMinutes: 0.0}
 myBlock1 = Block {
   description:"Second",
-  startHours: 8,
-  startMinutes: 0,
-  endHours: 10,
-  endMinutes: 0}
+  startHours: 8.0,
+  startMinutes: 0.0,
+  endHours: 10.0,
+  endMinutes: 0.0}
 
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}
@@ -289,5 +262,5 @@ myTopic5 = Topic {description:"fix", typ:Discussion}
 myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
-           , timeslots: M.fromList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
+           , timeslots: M.fromList $ toList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]
            }

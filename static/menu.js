@@ -1,7 +1,6 @@
 import {
   Button,
   Panel,
-  ModalTrigger,
   Modal,
   Input
 }
@@ -18,7 +17,7 @@ var AddModal = React.createClass({
       }
     });
     this.props.emit(event);
-    this.props.onRequestHide();
+    this.props.close();
   },
   render() {
     var options = this.props.topicTypes.map(topicType =>
@@ -41,7 +40,7 @@ var AddModal = React.createClass({
           </form>
         </div>
         <div className="modal-footer">
-          <Button onClick={this.props.onRequestHide}>Close</Button>
+          <Button onClick={this.props.close}>Close</Button>
           <Button bsStyle="success" onClick={this.handleClick}>
             Hinzufügen
           </Button>
@@ -52,13 +51,23 @@ var AddModal = React.createClass({
 });
 
 var OpenAddModal = React.createClass({
-  render() {
-    return (
-      <ModalTrigger modal={ <AddModal {...this.props}/>}>
-        <span className={"glyphicon glyphicon-plus"} />
-      </ModalTrigger>
-    );
-  }
+    getInitialState(){
+        return { show: false };
+    },
+    close(){
+        this.setState({show: false});
+    },
+    open(){
+        this.setState({show: true});
+    },
+    render() {
+        return (
+                <div onClick={this.open}>
+                <AddModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
+                <span className={"glyphicon glyphicon-plus"} />
+                </div>
+        );
+    }
 });
 
 var RemoveButton = React.createClass({

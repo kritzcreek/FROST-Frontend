@@ -4,77 +4,23 @@ import Control.Monad.Eff
 import Data.Either
 import Data.Foreign
 import Rx.Observable
-
+import Prelude
 
 data Socket = Socket | EmptySocket -- TODO: remove the need for EmptySocket
 data SocketError = SocketError
 
 foreign import data Net :: !
+
 foreign import data Message :: *
 
-foreign import getSocket
-"""
-function getSocket(url){
-    return new WebSocket(url);
-}
-""" :: String -> Socket
+foreign import getSocket :: String -> Socket
 
-foreign import socketObserver
-"""
-function socketObserver(ws){
-  return function (){
-    return Rx.Observable.create (function (obs) {
-      // Handle messages
-      ws.onmessage = obs.onNext.bind(obs)
-      //TODO: Handle ServerNotAvailable
-      //ws.onerror = obs.onError.bind(obs)
-      ws.onclose = obs.onCompleted.bind(obs)
-      // Return way to unsubscribe
-      return ws.close.bind(ws)
-    })
-  }
-}
-""" :: forall eff. Socket -> Eff (net :: Net | eff) (Observable Message)
+foreign import socketObserver :: forall eff. Socket -> Eff (net :: Net | eff) (Observable Message)
 
-foreign import parseMessage
-"""
-function parseMessage(msg){
-  return JSON.parse(msg.data)
-}
-""" :: Message -> Foreign
+foreign import parseMessage :: Message -> Foreign
 
-foreign import emitAction
-"""
-function emitAction(socket){
-  return function (action){
-    return function(){
-      if(socket.readyState == WebSocket.OPEN){ socket.send(JSON.stringify(action)) }
-    }
-  }
-}
-""" :: forall eff. Socket -> Foreign -> Eff (net :: Net | eff) Unit
+foreign import emitAction :: forall eff. Socket -> Foreign -> Eff (net :: Net | eff) Unit
 
-foreign import getSocketUrl
-"""
-  function getSocketUrl() {
-      var host = window.location.host;
-      return host + window.location.pathname.replace('instance', 'socket');
-  }
-""" :: forall eff. Eff( net :: Net |eff ) String
+foreign import getSocketUrl :: forall eff. Eff( net :: Net |eff ) String
 
-
-foreign import emitRefresh
-"""
-function emitRefresh(socket){
-  return function(){
-    //UGLY HACK!
-    if(socket.readyState == WebSocket.OPEN){
-      socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
-    }else{
-      socket.onopen = function(){
-        socket.send(JSON.stringify({"tag":"RequestState","contents":[]}))
-      }
-    }
-  }
-}
-""" :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit
+foreign import emitRefresh :: forall eff. Socket -> Eff ( net :: Net | eff ) Unit

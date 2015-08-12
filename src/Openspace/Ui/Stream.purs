@@ -11,6 +11,7 @@ import Openspace.Types
 import Openspace.Ui.Emitter
 import Openspace.Ui.Parser
 import Openspace.Ui.Render
+import Prelude
 import Rx.Observable
 
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
@@ -24,7 +25,7 @@ dragStream = do
   let lookup = emitterLookup emitters
       dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
-                         Left e -> UnassignTopic
+                         Left err -> UnassignTopic
                      ) <$> lookup "dragOverSlot"
 
       dragOverTrash = const DeleteTopic <$> lookup "dragOverTrash"
@@ -39,10 +40,13 @@ dragStream = do
       dragStart = parseTopic <<< getDetail
                   <$> lookup "dragStartTopic" `merge` lookup "dragStartGridTopic"
 
-      dragTopic = do Right t <- dragStart
-                     action <- dragOver
-                     lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
-                     return $ action t
+      {-
+         rebindable "bind" would make this a lot easier
+      -}
+      dragTopic = dragStart `flatMapLatest`
+           (\(Right t) -> dragOver `flatMapLatest`
+             (\action -> lookup "dragEndTopic" `merge` lookup "dragEndGridTopic" `flatMapLatest`
+               (\_ -> return $ action t)))
   return dragTopic
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
