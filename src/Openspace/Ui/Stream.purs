@@ -40,10 +40,13 @@ dragStream = do
       dragStart = parseTopic <<< getDetail
                   <$> lookup "dragStartTopic" `merge` lookup "dragStartGridTopic"
 
-      dragTopic = do Right t <- dragStart
-                     action <- dragOver
-                     lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
-                     return $ action t
+      {-
+         rebindable "bind" would make this a lot easier
+      -}
+      dragTopic = dragStart `flatMapLatest`
+           (\(Right t) -> dragOver `flatMapLatest`
+             (\action -> lookup "dragEndTopic" `merge` lookup "dragEndGridTopic" `flatMapLatest`
+               (\_ -> return $ action t)))
   return dragTopic
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
@@ -66,7 +69,7 @@ uiStream = do
 
 main = do
   socketUrl <- getSocketUrl
-  let sockEmitter = getSocket ("ws://" ++ "frost.kritzcreek.me/socket/ba27265e-4dad-4bc7-bce0-6d2435da0496" ) -- ++ socketUrl)
+  let sockEmitter = getSocket ("ws://" ++ socketUrl)
   -- until Websocket support is given by the server
   -- let sockEmitter = EmptySocket
   -- Initial State
