@@ -72,9 +72,12 @@ uiStream = do
 
 main = do
   socketUrl <- getSocketUrl
+  -- Uncomment for testing:
+  -- let sockEmitter = getSocket ("ws://frost.kritzcreek.me/socket/0")
+  -- Comment for testing:
   let sockEmitter = getSocket ("ws://" ++ socketUrl)
-  -- until Websocket support is given by the server
-  -- let sockEmitter = EmptySocket
+
+
   -- Initial State
   appSt <- newSTRef emptyState
   -- Initial Render

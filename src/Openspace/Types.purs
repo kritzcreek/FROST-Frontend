@@ -3,7 +3,6 @@ module Openspace.Types where
 import           Data.Either
 import           Data.Foreign
 import           Data.Foreign.Class
-import           Data.Foreign.Generic
 import           Data.Foreign.Index
 import           Data.Generic
 import           Data.List (toList)
