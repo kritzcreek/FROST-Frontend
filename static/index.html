@@ -5,34 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Open Space</title>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"></link>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap-datetimepicker.min.css"></link>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.8/semantic.min.css"></link>
     <link type="text/css" rel="stylesheet" href="css/main.css"></link>
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div id="grid"></div>
-        </div>
-        <div class="row">
-            <div>
-                <div id="topics"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="menu"></div>
+    <div class="navbar">
+        <div class="ui secondary pointing menu">
+            <a class="active item" href="#">
+              Timetable
+            </a>
+            <a class="item" href="#">
+              Settings
+            </a>
+            <div class="right menu">
+                <a class="ui item" href="#">Logout</a>
             </div>
         </div>
     </div>
+    <div class="page-wrap">
+        <div class="ui container">
+            <div class="ui segment">
+                <div id="grid"></div>
+            </div>
+            <div class="ui segment">
+                <div id="topics"></div>
+            </div>
+            <div id="menu"></div>
+        </div>
+    </div>
 </body>
-<script type="text/javascript" src="js/lib/jquery.js"></script>
-<script type="text/javascript" src="js/lib/moment.js"></script>
-<script type="text/javascript" src="js/lib/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript" src="js/lib/rx.lite.min.js"></script>
-<script type="text/javascript" src="js/lib/rx.jquery.min.js"></script>
 
 <script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.8/semantic.js"></script>
 
 </html>

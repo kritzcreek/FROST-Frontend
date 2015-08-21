@@ -1,3 +1,22 @@
+.navbar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right 0;
+    height: 50px;
+    width: 100%;
+}
+
+
+.page-wrap {
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    right 0;
+}
+
 .topic {
     padding: 10px;
     border: 1px solid #a80002;
@@ -18,51 +37,23 @@ td > div.tabletopic {
     background-color: #a80002;
 }
 
-#menuContainer > span.glyphicon-plus {
-    color: #000000;
-    font-size: 3.5em;
-    text-align: center;
-    padding: 10px;
-    border: 3px solid #000000;
-    border-radius: 5px;
+#menuContainer>.icon {
+    font-size: 3em;
 }
 
-#menuContainer > span.glyphicon-trash {
-    font-size: 3.5em;
-    text-align: center;
-    padding: 10px 10px 10px 9px;
-    border: 3px solid #000000;
-    border-radius: 5px;
-}
-
-#menuContainer > span.glyphicon-trash.highlight {
-    color: #FF0000;
-    border: 5px solid #FF0000;
-}
-
-td > span.glyphicon-trash {
+td > .icon {
     font-size: 1.5em;
     float: right;
 }
-th > span.glyphicon-trash {
+th > .icon {
+    position: relative;
+    top: 10px;
     font-size: 1.5em;
     float: right;
 }
 
 #menuContainer {
     text-align: center;
-}
-
-.notice {
-    font-size: 3em;
-}
-span.glyphicon-arrow-right {
-    padding-right: 10px;
-    padding-left: 5px;
-}
-span.glyphicon-arrow-left {
-    padding-right: 5px;
-    padding-left: 10px;
 }
 
 .draggable {

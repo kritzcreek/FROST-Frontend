@@ -3,7 +3,6 @@ module Openspace.Types where
 import           Data.Either
 import           Data.Foreign
 import           Data.Foreign.Class
-import           Data.Foreign.Generic
 import           Data.Foreign.Index
 import           Data.Generic
 import           Data.List (toList)
@@ -164,12 +163,15 @@ read val = case readProp "tag" val of
   Right "DeleteRoom"    -> DeleteRoom <$> readProp "contents" val
   Right "AddBlock"      -> AddBlock <$> readProp "contents" val
   Right "DeleteBlock"   -> DeleteBlock <$> readProp "contents" val
-  Right "AssignTopic"   -> let val' = parseAssignTopic val
-                           in AssignTopic <$> readProp "slot" val' <*> readProp "topic" val'
+  Right "AssignTopic"   ->
+    let val' = parseAssignTopic val
+    in AssignTopic <$> readProp "slot" val' <*> readProp "topic" val'
   Right "UnassignTopic" -> UnassignTopic <$> readProp "contents" val
   Right "ReplayEvents"  -> ReplayActions <$> readProp "contents" val
   Right "ShowError"     -> ShowError <$> readProp "message" val
-  Left e -> Right $ ShowError (show e)
+  Right a               ->
+    Right $ ShowError ("A foreign action could not be recognized. It was: " ++ a)
+  Left e                -> Right $ ShowError (show e)
 
 class AsForeign a where
   serialize :: a -> Foreign
