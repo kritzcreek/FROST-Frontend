@@ -69,4 +69,4 @@ gulp.task('watch', function() {
     gulp.watch(paths.static, ['copy', 'bundle']);
 });
 
-gulp.task('default', ['bundle', 'watch']);
+gulp.task('default', ['copy', 'bundle-psc', 'bundle', 'watch']);
