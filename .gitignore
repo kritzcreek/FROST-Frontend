@@ -5,3 +5,5 @@ tmp/
 build/
 dist/
 .tern-port
+/.psci
+.psci*

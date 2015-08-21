@@ -12,7 +12,7 @@
     "babel-eslint": "^4.0.5",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
-    "purescript": "^0.7.2",
+    "purescript": "0.7.3-fixed",
     "purs-loader": "^0.3.2",
     "react": "^0.13.3",
     "react-bootstrap": "^0.24.4",

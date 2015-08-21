@@ -2,9 +2,11 @@ module Openspace.Types where
 
 import           Data.Either
 import           Data.Foreign
-import Data.List (toList)
 import           Data.Foreign.Class
+import           Data.Foreign.Generic
 import           Data.Foreign.Index
+import           Data.Generic
+import           Data.List (toList)
 import qualified Data.Map as M
 import           Data.Maybe
 import           Data.Tuple
@@ -18,13 +20,13 @@ data TopicType = Discussion
                | Presentation
                | Workshop
 
-instance eqTopicType :: Eq TopicType where
-  eq tt1 tt2 = show tt1 == show tt2
+derive instance genericTopicType :: Generic TopicType
 
 instance showTopicType :: Show TopicType where
-  show Discussion = "Discussion"
-  show Presentation = "Presentation"
-  show Workshop = "Workshop"
+  show = gShow
+
+instance eqTopicType :: Eq TopicType where
+  eq = gEq
 
 instance foreignTopicType :: IsForeign TopicType where
   read val = case readString val of
@@ -41,10 +43,12 @@ topicTypes = [Discussion, Presentation, Workshop]
 --------------
 
 newtype Topic = Topic { description :: String
-                      , typ   :: TopicType }
+                      , typ         :: TopicType }
+
+derive instance genericTopic :: Generic Topic
 
 instance eqTopic :: Eq Topic where
-  eq (Topic t1) (Topic t2) = t1.description == t2.description && t1.typ == t2.typ
+  eq = gEq
 
 instance foreignTopic :: IsForeign Topic where
   read val = Topic <$> (
@@ -59,15 +63,16 @@ instance foreignTopic :: IsForeign Topic where
 
 newtype Slot = Slot { room :: Room, block :: Block }
 
+derive instance genericSlot :: Generic Slot
+
 instance eqSlot :: Eq Slot where
-  eq (Slot s1) (Slot s2) = s1.room == s2.room && s1.block == s2.block
+  eq = gEq
 
 instance ordSlot :: Ord Slot where
-  compare (Slot s1) (Slot s2) =
-    (show s1.room ++ show s1.block) `compare` (show s2.room ++ show s2.block)
+  compare = gCompare
 
 instance showSlot :: Show Slot where
-  show (Slot s) = "{ room: " ++ show s.room ++" block: " ++ show s.block ++ "}"
+  show = gShow
 
 instance foreignSlot :: IsForeign Slot where
   read val = Slot <$> (
@@ -82,11 +87,13 @@ instance foreignSlot :: IsForeign Slot where
 
 newtype Room = Room { name :: String, capacity :: Number }
 
+derive instance genericRoom :: Generic Room
+
 instance showRoom :: Show Room where
-  show (Room r) = r.name
+  show = gShow
 
 instance eqRoom :: Eq Room where
-  eq (Room r1) (Room r2) = r1.name == r2.name
+  eq = gEq
 
 instance foreignRoom :: IsForeign Room where
   read val = Room <$> (
@@ -105,22 +112,18 @@ newtype Block = Block { description :: String
                       , endHours :: Number
                       , endMinutes :: Number}
 
+derive instance genericBlock :: Generic Block
+
 instance showBlock :: Show Block where
-  show (Block b) = b.description
+  show = gShow
 
 instance eqBlock :: Eq Block where
-  eq (Block b1) (Block b2) = b1.description == b2.description
-                               && b1.startHours == b2.startHours
-                               && b1.startMinutes == b2.startMinutes
-                               && b1.endHours == b2.endHours
-                               && b1.endMinutes == b2.endMinutes
+  eq = gEq
 
 instance ordBlock :: Ord Block where
   compare (Block b1) (Block b2) = compare (hourDiff * 60.0 + minDiff) 0.0
     where hourDiff = b1.startHours - b2.startHours
           minDiff = b1.startMinutes - b2.startMinutes
-
-
 
 instance foreignBlock :: IsForeign Block where
   read val = Block <$> (
@@ -155,17 +158,17 @@ data Action = AddTopic Topic
 
 instance foreignAction :: IsForeign Action where
 read val = case readProp "tag" val of
-  Right "AddTopic" -> AddTopic <$> readProp "contents" val
-  Right "DeleteTopic" -> DeleteTopic <$> readProp "contents" val
-  Right "AddRoom" -> AddRoom <$> readProp "contents" val
-  Right "DeleteRoom" -> DeleteRoom <$> readProp "contents" val
-  Right "AddBlock" -> AddBlock <$> readProp "contents" val
-  Right "DeleteBlock" -> DeleteBlock <$> readProp "contents" val
-  Right "AssignTopic" -> let val' = parseAssignTopic val
-                         in AssignTopic <$> readProp "slot" val' <*> readProp "topic" val'
+  Right "AddTopic"      -> AddTopic <$> readProp "contents" val
+  Right "DeleteTopic"   -> DeleteTopic <$> readProp "contents" val
+  Right "AddRoom"       -> AddRoom <$> readProp "contents" val
+  Right "DeleteRoom"    -> DeleteRoom <$> readProp "contents" val
+  Right "AddBlock"      -> AddBlock <$> readProp "contents" val
+  Right "DeleteBlock"   -> DeleteBlock <$> readProp "contents" val
+  Right "AssignTopic"   -> let val' = parseAssignTopic val
+                           in AssignTopic <$> readProp "slot" val' <*> readProp "topic" val'
   Right "UnassignTopic" -> UnassignTopic <$> readProp "contents" val
-  Right "ReplayEvents" -> ReplayActions <$> readProp "contents" val
-  Right "ShowError" -> ShowError <$> readProp "message" val
+  Right "ReplayEvents"  -> ReplayActions <$> readProp "contents" val
+  Right "ShowError"     -> ShowError <$> readProp "message" val
   Left e -> Right $ ShowError (show e)
 
 class AsForeign a where
@@ -210,8 +213,6 @@ instance actionAsForeign :: AsForeign Action where
               }
 
 foreign import parseAssignTopic :: Foreign -> Foreign
-
-
 foreign import serializeAssignTopic :: Slot -> Topic -> String -> Foreign
 
 -------------------------

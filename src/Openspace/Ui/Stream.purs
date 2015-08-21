@@ -41,12 +41,15 @@ dragStream = do
                   <$> lookup "dragStartTopic" `merge` lookup "dragStartGridTopic"
 
       {-
-         rebindable "bind" would make this a lot easier
+         rebindable "bind" does make this a lot easier
       -}
-      dragTopic = dragStart `flatMapLatest`
-           (\(Right t) -> dragOver `flatMapLatest`
-             (\action -> lookup "dragEndTopic" `merge` lookup "dragEndGridTopic" `flatMapLatest`
-               (\_ -> return $ action t)))
+      dragTopic = do
+        let bind = flatMapLatest
+        Right t <- dragStart
+        action <- dragOver
+        lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
+        return $ action t
+
   return dragTopic
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
