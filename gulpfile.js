@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 var purescript = require('gulp-purescript');
+var runSequence = require('run-sequence');
+var del = require('del');
 
 var paths = {
     'psc': ['src/**/*.purs', 'src/**/*.js'],
@@ -19,20 +21,31 @@ var foreigns = [
     'bower_components/purescript-*/src/**/*.js'
 ];
 
-gulp.task('copy-index-html', function() {
-    gulp.src('static/index.html')
-    .pipe(gulp.dest('./dist'));
+gulp.task('clean', function(){
+    return del([
+        'dist/',
+        'output/'
+    ]);
 });
 
-gulp.task('copy', ['copy-index-html']);
+gulp.task('copy-index-html', function() {
+    return gulp.src('static/index.html')
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('copy-css', function(){
+    return gulp.src('static/main.css')
+        .pipe(gulp.dest('dist/css/'));
+});
+
+gulp.task('copy', ['copy-index-html', 'copy-css']);
 
 gulp.task('make', function () {
     return purescript.psc({ src: sources, ffi: foreigns });
 });
 
 gulp.task('bundle-psc', ['make'], function (cb) {
-    purescript.pscBundle({ src: 'output/**/*.js', output: 'dist/bundle.js', main: 'Main' });
-    cb();
+    return purescript.pscBundle({ src: 'output/**/*.js', output: 'dist/bundle.js', main: 'Main' });
 });
 
 gulp.task('bundle', function(){
@@ -51,4 +64,6 @@ gulp.task('watch', function() {
     gulp.watch(paths.static, ['copy', 'bundle']);
 });
 
-gulp.task('default', ['copy', 'bundle-psc', 'bundle', 'watch']);
+gulp.task('default', function(cb){
+    runSequence('clean', ['copy', 'bundle-psc'], 'bundle', 'watch', cb);
+});

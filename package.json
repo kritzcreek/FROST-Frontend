@@ -23,7 +23,10 @@
     "webpack": "^1.11.0",
     "webpack-stream": "^2.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "del": "^1.2.1",
+    "run-sequence": "^1.1.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
