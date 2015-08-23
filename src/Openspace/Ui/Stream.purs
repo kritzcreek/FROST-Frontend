@@ -22,9 +22,8 @@ netStream socket = do
 
 dragStream :: forall eff. Eff( dom :: DOM| eff) (Observable Action)
 dragStream = do
-  emitters <- getEmitters
-  let lookup = emitterLookup emitters
-      dragOverSlot = (\e -> case parseSlot (getDetail e) of
+  lookup <- emitterLookup <$> getEmitters
+  let dragOverSlot = (\e -> case parseSlot (getDetail e) of
                          Right s -> AssignTopic s
                          Left err -> UnassignTopic
                      ) <$> lookup "dragOverSlot"
@@ -44,20 +43,23 @@ dragStream = do
       {-
          rebindable "bind" does make this a lot easier
       -}
+      dragTopic :: Observable Action
       dragTopic = do
         let bind = flatMapLatest
-        Right t <- dragStart
-        action <- dragOver
-        lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
-        return $ action t
+        t' <- dragStart
+        case t' of
+          Right t -> do
+            action <- dragOver
+            lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
+            return (action t)
+          Left e -> return $ ShowError (show e)
 
   return dragTopic
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
 uiStream = do
-  emitters <- getEmitters
-  let lookup = emitterLookup emitters
-      addTopic    = (actionFromForeign parseTopic AddTopic) <<< getDetail
+  lookup <- emitterLookup <$> getEmitters
+  let addTopic    = (actionFromForeign parseTopic AddTopic) <<< getDetail
                     <$> lookup "addTopic"
       addRoom     = (actionFromForeign parseRoom AddRoom) <<< getDetail
                     <$> lookup "addRoom"
@@ -95,6 +97,5 @@ main = do
   subscribe ui (\a -> case a of
                    ShowError e -> log e
                    _ -> emitAction sockEmitter (serialize a))
-  -- Evaluate Action Observables
-  let actions = net --ui `merge` net
-  subscribe actions (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
+  -- Evaluate Actions from the Server
+  subscribe net (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
