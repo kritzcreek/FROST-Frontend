@@ -25,7 +25,8 @@
     "purescript-foreign": "*",
     "purescript-dom": "~0.1.3",
     "purescript-jquery": "~0.5.0",
-    "purescript-monoid": "~0.3.0"
+    "purescript-monoid": "~0.3.0",
+    "purescript-globals": "~0.2.0"
   },
   "version": "0.1.0",
   "homepage": "https://github.com/kRITZCREEK/FROST-Frontend",

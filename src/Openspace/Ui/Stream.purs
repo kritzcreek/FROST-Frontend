@@ -1,6 +1,7 @@
 module Openspace.Ui.Stream where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Console
 import Control.Monad.ST
 import DOM
 import Data.Either
@@ -91,7 +92,9 @@ main = do
   ui  <- uiStream
   net <- netStream sockEmitter
   -- Broadcast the UI Observable
-  subscribe ui (\a -> emitAction sockEmitter (serialize a))
+  subscribe ui (\a -> case a of
+                   ShowError e -> log e
+                   _ -> emitAction sockEmitter (serialize a))
   -- Evaluate Action Observables
   let actions = net --ui `merge` net
   subscribe actions (\a -> modifySTRef appSt (evalAction a) >>= renderApp)
