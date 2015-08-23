@@ -1,7 +1,3 @@
-import {
-  Panel
-}
-from 'react-bootstrap';
 import React from 'react';
 
 var Topic = React.createClass({
@@ -43,17 +39,16 @@ var Topics = React.createClass({
     this.getDOMNode().dispatchEvent(event);
   },
   render: function () {
-    var topics = this.props.topics.map(function (topic) {
-      return (
-        <Topic emit={this.emit} key={topic.description} topic={topic}/>
-      );
-    }, this);
+    var topics = this.props.topics.map(topic => {
+      return <Topic emit={this.emit} key={topic.description} topic={topic}/>
+    });
     return (
-      <Panel bsStyle="primary" header="Themen" id="topicsContainer">
+      <div id="topicsContainer">
+        <h3>Themen</h3>
         <div id="topic">
           {topics}
         </div>
-      </Panel>
+      </div>
     );
   }
 });

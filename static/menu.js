@@ -1,12 +1,10 @@
-import {
-  Button,
-  Panel,
-  Modal,
-  Input
-}
-from 'react-bootstrap';
 import React from 'react';
 import _ from 'lodash';
+import Modal from 'react-modal'
+
+var appElement = document.getElementById("menu");
+Modal.setAppElement(appElement);
+Modal.injectCSS();
 
 var AddModal = React.createClass({
   handleClick() {
@@ -24,27 +22,22 @@ var AddModal = React.createClass({
         <option key={topicType} value={topicType}>{topicType}</option>
     );
     return (
-      <Modal animation={true} title="Neues Thema" {...this.props}>
-        <div className="modal-body">
-          <form role="form">
-            <div className="form-group">
-              <label htmlFor="descriptionInput">Thema:
-              </label>
-              <input className="form-control" id="descriptionInput" type="text"/>
-            </div>
-            <div className="form-group">
-              <Input defaultValue={_.head(this.props.topicTypes)} id="topicTypeInput" label='Typ' type="select">
-                {options}
-              </Input>
-            </div>
-          </form>
-        </div>
-        <div className="modal-footer">
-          <Button onClick={this.props.close}>Close</Button>
-          <Button bsStyle="success" onClick={this.handleClick}>
-            Hinzufügen
-          </Button>
-        </div>
+      <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
+        <h3 className="ui header">Add Topic</h3>
+        <form className="ui form">
+          <div className="field">
+            <label>Thema</label>
+            <input id="descriptionInput" type="text"/>
+          </div>
+          <div className="field">
+            <label>Typ</label>
+            <select id="topicTypeInput" type="select" className="ui fluid dropdown">
+              {options}
+            </select>
+          </div>
+          <button type="button" onClick={this.props.close} className="ui black deny button"> Close </button>
+          <button type="button" onClick={this.handleClick} className="ui green button"> Hinzufügen </button>
+        </form>
       </Modal>
     );
   }
@@ -62,10 +55,12 @@ var OpenAddModal = React.createClass({
     },
     render() {
         return (
-                <div onClick={this.open}>
-                <AddModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
-                <span className={"glyphicon glyphicon-plus"} />
-                </div>
+          <div>
+            <button onClick={this.open} className="ui green button">
+              Neues Thema
+            </button>
+            <AddModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
+          </div>
         );
     }
 });
@@ -94,9 +89,9 @@ var RemoveButton = React.createClass({
     this.props.emit(new CustomEvent('dragOverTrash'));
   },
   render() {
-    let classes = 'glyphicon glyphicon-trash' + (this.state.dragOver ? ' highlight' : '');
+    let classes = 'trash icon' + (this.state.dragOver ? ' highlight' : '');
     return (
-      <span className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} />
+      <i className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} />
     );
   }
 });
@@ -108,18 +103,8 @@ var Menu = React.createClass({
   render() {
     return (
       <div id="menuContainer">
-        <span className="notice">
-          <span>
-            Drop a Topic
-          </span>
-          <span className="glyphicon glyphicon-arrow-right"/>
-        </span>
         <RemoveButton emit={this.emit} />
         <OpenAddModal emit={this.emit} topicTypes={this.props.topicTypes} />
-        <span className="notice">
-          <span className="glyphicon glyphicon-arrow-left" />
-          <span>Click to add a Topic</span>
-        </span>
       </div>
     );
   }

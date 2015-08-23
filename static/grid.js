@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Table,
-  Button,
-  Modal,
-  Input
-}
-from 'react-bootstrap';
+import Modal from 'react-modal';
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -17,26 +11,27 @@ var AddRoomModal = React.createClass({
         capacity: parseInt($('#capacityInput').val())
       }
     });
-    this.props.emit(event);
-    this.props.close();
+      this.props.emit(event);
+      this.props.close();
   },
   render() {
     return (
-      <Modal animation={true} title="New Room" {...this.props}>
-        <div className="modal-body">
-          <form role="form">
-            <div className="form-group">
-              <Input id="nameInput" label="Room" type="text"/>
-            </div>
-            <div className="form-group">
-              <Input id="capacityInput" label="Capacity" type="number"></Input>
-            </div>
-          </form>
-        </div>
-        <div className="modal-footer">
-          <Button onClick={this.props.close}>Close</Button>
-          <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
-        </div>
+      <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
+        <h3 className="ui header">Add Room</h3>
+        <form className="ui form" role="form">
+          <div className="field">
+            <label>Name</label>
+            <input id="nameInput" type="text"/>
+          </div>
+          <div className="field">
+            <label>Capacity</label>
+            <input id="capacityInput" type="number"/>
+          </div>
+          <button type="button" onClick={this.props.close} className="ui black deny button">
+            Cancel
+          </button>
+          <button type="button" onClick={this.handleClick} className="ui button">Add</button>
+        </form>
       </Modal>
     );
   }
@@ -45,111 +40,61 @@ var AddRoomModal = React.createClass({
 
 var OpenAddRoomModal = React.createClass({
     getInitialState(){
-        return { show: false };
-    },
-    close(){
-        this.setState({show: false});
+        return {show: false};
     },
     open(){
         this.setState({show: true});
     },
+    close(){
+        this.setState({show: false});
+    },
     render() {
         return (
-                <div onClick={this.open}>
-                <AddRoomModal show={this.state.show} onHide={this.close} close={this.close} {...this.props}/>
-                <Button bsStyle="success" className="btn-block">New Room</Button>
-                </div>
+          <div>
+            <AddRoomModal show={this.state.show} close={this.close} emit={this.props.emit}/>
+            <button onClick={this.open} className="ui button">Add Room</button>
+          </div>
         );
     }
 });
 
 var AddBlockModal = React.createClass({
-  getInitialState() {
+  parseDate(){
     return {
-      start: {
-        hours: 0,
-        minutes: 0
-      },
-      end: {
-        hours: 0,
-        minutes: 0
-      }
-    };
-  },
-  componentDidMount() {
-    var self = this;
-    var start = $('#start');
-    start.datetimepicker({
-      format: 'LT',
-      stepping: 15
-    });
-
-    start.on('dp.change', function (event) {
-      self.setState({
-        start: {
-          hours: event.date.hours(),
-          minutes: event.date.minutes()
-        }
-      });
-    });
-
-    var end = $('#end');
-    end.datetimepicker({
-      format: 'LT',
-      stepping: 15
-    });
-
-    end.on('dp.change', function (event) {
-      self.setState({
-        end: {
-          hours: event.date.hours(),
-          minutes: event.date.minutes()
-        }
-      });
-    });
-
-  },
+      description: $('#descriptionInput').val(),
+      startHours: parseInt($('#startInput').val().slice(0, 2), 10),
+      startMinutes: parseInt($('#startInput').val().slice(2, 4), 10),
+      endHours: parseInt($('#endInput').val().slice(0, 2), 10),
+      endMinutes: parseInt($('#endInput').val().slice(2, 4), 10)
+      };
+    },
   handleClick() {
     var event = new CustomEvent('addBlock', {
-      'detail': {
-        'description': $('#descriptionInput').val(),
-        'startHours': this.state.start.hours,
-        'startMinutes': this.state.start.minutes,
-        'endHours': this.state.end.hours,
-        'endMinutes': this.state.end.minutes
-      }
+        detail: this.parseDate()
     });
     this.props.emit(event);
     this.props.close();
   },
   render() {
     return (
-      <Modal animation={true} title="New Block" {...this.props}>
-        <div className="modal-body">
-          <form role="form">
-            <div className="form-group">
-              <Input id="descriptionInput" label="Description" type="text"/>
-              <label htmlFor="start">Start</label>
-              <div className='input-group date' id="start">
-                <Input className="form-control" type='text'/>
-                <span className="input-group-addon">
-                  <span className="glyphicon glyphicon-time"></span>
-                </span>
-              </div>
-              <label htmlFor="end">End</label>
-              <div className='input-group date' id="end">
-                <Input className="form-control" type='text'/>
-                <span className="input-group-addon">
-                  <span className="glyphicon glyphicon-time"></span>
-                </span>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div className="modal-footer">
-          <Button onClick={this.props.close}>Close</Button>
-          <Button bsStyle="success" onClick={this.handleClick}>Add</Button>
-        </div>
+      <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
+        <h3 className="ui header">Add Block</h3>
+        <form className="ui form">
+          <div className="field">
+            <label>Description</label>
+            <input id="descriptionInput" type="text"/>
+          </div>
+          <div className="field" id="start">
+            <label>Start</label>
+            <input id="startInput" type="number"/>
+          </div>
+          <div className="field">
+            <label>End</label>
+            <input id="endInput" type="number"/>
+          </div>
+          <button type="button" onClick={this.props.close} className="ui button">Close</button>
+          <button type="button" onClick={this.handleClick} className="ui button">Add</button>
+        </form>
       </Modal>
     );
   }
@@ -167,10 +112,10 @@ var OpenAddBlockModal = React.createClass({
     },
     render() {
         return (
-                <div onClick={this.open}>
-                <AddBlockModal show={this.state.show} onHide={this.close} close={this.close} {...this.props}/>
-                <Button bsStyle="success" className="btn-block">New Block</Button>
-                </div>
+          <div>
+            <AddBlockModal show={this.state.show} close={this.close} emit={this.props.emit}/>
+            <button onClick={this.open} className="ui button">New Block</button>
+          </div>
         );
     }
 });
@@ -188,6 +133,7 @@ var Tableheader = React.createClass({
       var timeEnd = moment(block.endHours + ':' + block.endMinutes, 'HH:mm').format('LT');
       return (
         <th key={block.description}>
+          <i className="close icon" onClick={this.handleDelete.bind(this, block)} />
           <div>
             <div>
               {block.description}
@@ -196,7 +142,6 @@ var Tableheader = React.createClass({
               {timeStart + ' - ' + timeEnd}
             </div>
           </div>
-          <span className="glyphicon glyphicon-trash" onClick={this.handleDelete.bind(this, block)} />
         </th>
       );
     });
@@ -251,7 +196,7 @@ var Tablerow = React.createClass({
       <tr>
         <td>
           {this.props.room.name}
-          <span className="glyphicon glyphicon-trash" onClick={this.handleDelete} />
+          <i className="close icon" onClick={this.handleDelete} />
         </td>
           {topics}
       </tr>
@@ -327,10 +272,10 @@ var Grid = React.createClass({
   },
   render() {
     return (
-      <Table bordered condensed id='gridContainer' striped>
+      <table id='gridContainer' className="ui celled striped table">
         <Tableheader blocks={this.props.blocks} emit={this.emit}/>
         <Tablebody emit={this.emit} {...this.props}/>
-      </Table>
+      </table>
     );
   }
 });
