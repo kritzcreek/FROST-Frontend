@@ -43,7 +43,8 @@ topicTypes = [Discussion, Presentation, Workshop]
 --------------
 
 newtype Topic = Topic { description :: String
-                      , typ         :: TopicType }
+                      , typ         :: TopicType
+                      , host        :: String}
 
 derive instance genericTopic :: Generic Topic
 
@@ -52,9 +53,10 @@ instance eqTopic :: Eq Topic where
 
 instance foreignTopic :: IsForeign Topic where
   read val = Topic <$> (
-    { description: _, typ: _ } <$>
+    { description: _, typ: _, host: _ } <$>
     readProp "description" val <*>
-    readProp "typ" val
+    readProp "typ" val <*>
+    readProp "host" val
     )
 
 ------------
@@ -189,6 +191,7 @@ instance actionAsForeign :: AsForeign Action where
     toForeign { tag: "AddTopic"
               , contents: { description: t.description
                           , typ: show t.typ
+                          , host: t.host
                           }
               }
 
@@ -196,6 +199,7 @@ instance actionAsForeign :: AsForeign Action where
     toForeign { tag: "DeleteTopic"
               , contents: { description: t.description
                           , typ: show t.typ
+                          , host: t.host
                           }
               }
   serialize (AddRoom (Room r)) =
@@ -219,6 +223,7 @@ instance actionAsForeign :: AsForeign Action where
     toForeign { tag: "UnassignTopic"
               , contents: { description: t.description
                           , typ: show t.typ
+                          , host: t.host
                           }
               }
 
@@ -263,14 +268,11 @@ myBlock1 = Block {
 mySlot = Slot {room:myRoom, block:myBlock}
 mySlot1 = Slot {room:myRoom1, block:myBlock1}
 
-myTopic = Topic  {description:"Purescript is great", typ:Workshop}
-myTopic1 = Topic {description:"Reactive Design", typ:Presentation}
-myTopic2 = Topic {description:"Functional Javascript", typ:Discussion}
-myTopic3 = Topic {description:"Enemy of the State", typ:Presentation}
-myTopic4 = Topic {description:"Wayyyyyyy too long name for a Topic.", typ:Workshop}
-myTopic5 = Topic {description:"fix", typ:Discussion}
+myTopic = Topic  {description:"Purescript is great", typ:Workshop, host: "Carl"}
+myTopic1 = Topic {description:"Reactive Design", typ:Presentation, host: "Norbert"}
+myTopic2 = Topic {description:"Functional Javascript", typ:Discussion, host: "Christoph"}
 
-myState1 = { topics: [myTopic, myTopic1, myTopic2, myTopic3, myTopic4, myTopic5]
+myState1 = { topics: [myTopic, myTopic1, myTopic2]
            , rooms : [myRoom, myRoom1, myRoom2]
            , blocks : [myBlock, myBlock1]
            , timeslots: M.fromList $ toList [Tuple mySlot myTopic, Tuple mySlot1 myTopic1]

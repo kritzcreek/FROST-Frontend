@@ -10,8 +10,9 @@ var AddModal = React.createClass({
   handleClick() {
     var event = new CustomEvent('addTopic', {
       'detail': {
-        description: $('#descriptionInput').val(),
-        typ: $('#topicTypeInput').val()
+          description: $('#descriptionInput').val(),
+          typ: $('#topicTypeInput').val(),
+          host: $('#hostInput').val()
       }
     });
     this.props.emit(event);
@@ -28,6 +29,10 @@ var AddModal = React.createClass({
           <div className="field">
             <label>Thema</label>
             <input id="descriptionInput" type="text"/>
+          </div>
+          <div className="field">
+            <label>Host</label>
+            <input id="hostInput" type="text"/>
           </div>
           <div className="field">
             <label>Typ</label>

@@ -14,11 +14,13 @@ import           Openspace.Types
 import           Prelude
 
 type Grid = Array (Array (Maybe SanitizedTopic))
-type SanitizedTopic = { description :: String, typ :: String }
+type SanitizedTopic = { description :: String, typ :: String, host :: String }
 
 sanitizeTopic :: Topic -> SanitizedTopic
-sanitizeTopic (Topic t) = { description: t.description,
-                            typ: show t.typ }
+sanitizeTopic (Topic t) = { description: t.description
+                          , typ: show t.typ
+                          , host: t.host
+                          }
 
 findIn :: Room -> Block -> M.Map Slot Topic -> Maybe SanitizedTopic
 findIn r b timeslots = M.lookup (Slot {block:b, room:r}) timeslots
