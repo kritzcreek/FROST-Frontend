@@ -9,6 +9,7 @@ import           Data.List (toList)
 import qualified Data.Map as M
 import           Data.Maybe
 import           Data.Tuple
+import           Global (isFinite, isNaN)
 import           Prelude
 
 -----------------
@@ -98,8 +99,15 @@ instance foreignRoom :: IsForeign Room where
   read val = Room <$> (
     { name: _, capacity: _} <$>
     readProp "name" val     <*>
-    readProp "capacity" val
+    safeCapacity
     )
+    where
+      safeCapacity :: F Number
+      safeCapacity = do
+        capacity <- readProp "capacity" val
+        if not (isNaN capacity) && isFinite capacity
+          then return capacity
+          else (Left (JSONError "Room Capacity could not be read"))
 
 -------------
 --| Block |--
