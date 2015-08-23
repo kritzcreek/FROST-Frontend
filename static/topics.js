@@ -29,6 +29,8 @@ var Topic = React.createClass({
           Thema: {this.props.topic.description}</div>
         <div className="typ">
           Typ: {this.props.topic.typ}</div>
+        <div className="typ">
+          Host: {this.props.topic.host}</div>
       </div>
     );
   }
@@ -40,7 +42,7 @@ var Topics = React.createClass({
   },
   render: function () {
     var topics = this.props.topics.map(topic => {
-      return <Topic emit={this.emit} key={topic.description} topic={topic}/>
+        return <Topic emit={this.emit} key={topic.description} topic={topic}/>;
     });
     return (
       <div id="topicsContainer">

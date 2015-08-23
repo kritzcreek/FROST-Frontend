@@ -15,7 +15,8 @@ exports.serializeAssignTopic = function(slot) {
                 contents: [
                     slot, {
                         description: topic.description,
-                        typ: topictyp
+                        typ: topictyp,
+                        host: topic.host
                     }
                 ]
             };
