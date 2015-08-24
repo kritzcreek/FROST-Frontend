@@ -1,5 +1,16 @@
 import React from 'react';
 
+let topicTypeColor = function(topicType){
+    switch(topicType){
+    case "Discussion":
+        return "topic-discussion";
+    case "Presentation":
+        return "topic-presentation";
+    case "Workshop":
+        return "topic-workshop";
+    }
+};
+
 
 var Tablecell = React.createClass({
   getInitialState() {
@@ -45,20 +56,20 @@ var Tablecell = React.createClass({
   },
   render() {
     var topic = this.props.topic.value0;
-    var highlight = this.state.dragOver;
+    var highlight = this.state.dragOver ? 'highlight ' : '';
     if (topic) {
-      let classes = highlight ? 'tabletopic highlight draggable' : 'tabletopic draggable';
+      let classes = 'tabletopic draggable ' + highlight + topicTypeColor(topic.typ);
       return (
         <td>
           <div className={classes} draggable="true" onDragEnd={this.handleDragEnd} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} onDragStart={this.handleDragStart}>
-						<p>Host: Zack</p>
-						<p>Topic: {topic.description}</p>
+						<p><b>{topic.description}</b></p>
+            <p>Host: <i>{topic.host}</i></p>
           </div>
         </td>
       );
     } else {
       return (
-        <td className={highlight ? 'highlight' : ''} draggable="false" onDragEnd={this.handleDragEnd} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}/>
+        <td className={highlight} draggable="false" onDragEnd={this.handleDragEnd} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}/>
       );
     }
   }

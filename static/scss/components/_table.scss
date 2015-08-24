@@ -29,6 +29,18 @@ td > div.tabletopic {
 	/*display: inline-block;*/
 }
 
+.topic-discussion {
+    background: coral;
+}
+
+.topic-presentation {
+    background: lightblue;
+}
+
+.topic-workshop {
+    background: cornflowerblue;
+}
+
 td > .icon {
 	font-size: 1.5em;
 	float: right;
