@@ -51,7 +51,7 @@ var OpenAddRoomModal = React.createClass({
         return (
           <div>
             <AddRoomModal show={this.state.show} close={this.close} emit={this.props.emit}/>
-            <button onClick={this.open} className="ui button">Add Room</button>
+            <button onClick={this.open} className="ui button">New Room</button>
           </div>
         );
     }

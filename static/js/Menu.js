@@ -2,6 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import AddTopicModal from 'babel!./components/AddTopicModal.js';
 import RemoveButton from 'babel!./components/RemoveButton.js';
+import AddBlockModal from 'babel!./components/AddBlockModal.js';
+import AddRoomModal from 'babel!./components/AddRoomModal.js';
 
 
 var Menu = React.createClass({
@@ -17,9 +19,9 @@ var Menu = React.createClass({
         }
     return (
       <div id="menuContainer" className={classes}>
-            <button className="ui button"> Add Room</button>
+            <AddRoomModal emit={this.emit}/>
             {el}
-            <button className="ui button"> Add Block</button>
+            <AddBlockModal emit={this.emit}/>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import React from 'react';
 import Tablerow from 'babel!./Tablerow.js';
-import AddRoomModal from 'babel!./AddRoomModal.js';
 
 import _ from 'lodash';
 
@@ -16,11 +15,6 @@ var Tablebody = React.createClass({
         return (
                 <tbody>
                 {rows}
-                <tr>
-                <td>
-                <AddRoomModal emit={this.props.emit}/>
-                </td>
-                </tr>
                 </tbody>
         );
     }

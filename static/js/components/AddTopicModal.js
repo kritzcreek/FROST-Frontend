@@ -58,7 +58,7 @@ var OpenAddTopicModal = React.createClass({
         return (
           <div>
             <button onClick={this.open} className="ui green big-button button">
-              Neues Thema
+              New Topic
             </button>
             <AddTopicModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
           </div>

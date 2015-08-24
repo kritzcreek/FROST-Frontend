@@ -33,7 +33,6 @@ var Tableheader = React.createClass({
                 <tr>
                 <th></th>
                 {ths}
-                <th><AddBlockModal emit={this.props.emit}/></th>
                 </tr>
                 </thead>
         );

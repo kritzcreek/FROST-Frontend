@@ -1,7 +1,6 @@
 import React from 'react';
 import Topic from 'babel!./components/Topic.js';
 
-
 var Topics = React.createClass({
   emit: function (event) {
     this.getDOMNode().dispatchEvent(event);
