@@ -45,11 +45,13 @@ var Topics = React.createClass({
         return <Topic emit={this.emit} key={topic.description} topic={topic}/>;
     });
     return (
-      <div id="topicsContainer">
-        <h3>Themen</h3>
-        <div id="topic">
+      <div id="topicsContainer" className="ui segments">
+				<div className="ui segment">
+					<h3>Themen</h3>
+				</div>
+				<div className="ui segment">
           {topics}
-        </div>
+				</div>
       </div>
     );
   }

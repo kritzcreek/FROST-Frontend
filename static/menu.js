@@ -61,7 +61,7 @@ var OpenAddModal = React.createClass({
     render() {
         return (
           <div>
-            <button onClick={this.open} className="ui green button">
+            <button onClick={this.open} className="ui green big-button button">
               Neues Thema
             </button>
             <AddModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
@@ -88,15 +88,19 @@ var RemoveButton = React.createClass({
     this.props.emit(new CustomEvent('dragLeaveTrash'));
   },
   handleClick() {
-    this.props.emit(new CustomEvent('removeTopic'));
+		this.props.emit(new CustomEvent('removeTopic'));
   },
   handleDragOver() {
     this.props.emit(new CustomEvent('dragOverTrash'));
   },
   render() {
-    let classes = 'trash icon' + (this.state.dragOver ? ' highlight' : '');
+    let classes = 'ui big-button button' + (this.state.dragOver ? ' highlight-alt' : '');
     return (
-      <i className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} />
+			<div>
+				<div className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}>
+				Remove Topic
+				</div>
+			</div>
     );
   }
 });
@@ -107,9 +111,10 @@ var Menu = React.createClass({
   },
   render() {
     return (
-      <div id="menuContainer">
-        <RemoveButton emit={this.emit} />
+
+      <div id="menuContainer" className="ui segment">
         <OpenAddModal emit={this.emit} topicTypes={this.props.topicTypes} />
+        <RemoveButton emit={this.emit} />
       </div>
     );
   }
