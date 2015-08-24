@@ -15,6 +15,9 @@ import Openspace.Ui.Render
 import Prelude
 import Rx.Observable
 
+foreign import setDrag :: forall eff. Eff eff Unit
+foreign import unsetDrag :: forall eff. Eff eff Unit
+
 netStream :: forall eff. Socket -> Eff( net :: Net | eff ) (Observable Action)
 netStream socket = do
   onReceive <- socketObserver socket
@@ -39,10 +42,9 @@ dragStream = do
 
       dragStart = parseTopic <<< getDetail
                   <$> lookup "dragStartTopic" `merge` lookup "dragStartGridTopic"
+      dragEnd = lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
 
-      {-
-         rebindable "bind" does make this a lot easier
-      -}
+      {- rebindable "bind" does make this a lot easier -}
       dragTopic :: Observable Action
       dragTopic = do
         let bind = flatMapLatest
@@ -50,11 +52,14 @@ dragStream = do
         case t' of
           Right t -> do
             action <- dragOver
-            lookup "dragEndTopic" `merge` lookup "dragEndGridTopic"
+            dragEnd
             return (action t)
           Left e -> return $ ShowError (show e)
 
-  return dragTopic
+  runObservable $ const setDrag <$> dragStart
+  runObservable $ const unsetDrag <$> dragEnd
+
+  return $ dragTopic `merge` reRender
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
 uiStream = do

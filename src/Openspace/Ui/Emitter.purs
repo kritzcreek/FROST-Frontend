@@ -25,15 +25,15 @@ getEmitters :: forall eff. Eff(dom :: DOM | eff) Emitters
 getEmitters = do
     menuEmitter <- J.select "#menuContainer"
     let menu = mkObservable menuEmitter <$> ["addTopic", "dragOverTrash"
-                                            , "dragLeaveTrash"]
+                                            , "dragLeaveTrash", "addRoom"
+                                            , "addBlock"]
 
     topicEmitter <- J.select "#topicsContainer"
     let topic = mkObservable topicEmitter <$> ["dragStartTopic", "dragEndTopic"]
 
     gridEmitter <- J.select "#gridContainer"
     let grid = mkObservable gridEmitter <$> [ "dragOverSlot", "dragLeaveSlot"
-                                            , "addRoom", "deleteRoom"
-                                            , "addBlock", "deleteBlock"
+                                            ,  "deleteRoom" , "deleteBlock"
                                             , "dragStartGridTopic", "dragEndGridTopic"
                                             , "removeBlock", "removeRoom"]
 

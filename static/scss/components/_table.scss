@@ -17,12 +17,28 @@
 	padding: 0;
 }
 
+.ui.table tr {
+    height: 80px;
+}
+
 td > div.tabletopic {
 	padding: 1em;
 	/*text-align: center;*/
 	height: 100%;
 	width: 100%;
 	/*display: inline-block;*/
+}
+
+.topic-discussion {
+    background: coral;
+}
+
+.topic-presentation {
+    background: lightblue;
+}
+
+.topic-workshop {
+    background: cornflowerblue;
 }
 
 td > .icon {
@@ -34,4 +50,8 @@ th > .icon {
 	top: 10px;
 	font-size: 1.5em;
 	float: right;
+}
+
+.ui.table td.table-room {
+    text-align: center;
 }

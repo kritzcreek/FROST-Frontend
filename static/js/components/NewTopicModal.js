@@ -1,12 +1,8 @@
 import React from 'react';
-import _ from 'lodash';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
 
-var appElement = document.getElementById("menu");
-Modal.setAppElement(appElement);
-Modal.injectCSS();
 
-var AddModal = React.createClass({
+var AddTopicModal = React.createClass({
   handleClick() {
     var event = new CustomEvent('addTopic', {
       'detail': {
@@ -24,7 +20,7 @@ var AddModal = React.createClass({
     );
     return (
       <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
-        <h3 className="ui header">Add Topic</h3>
+        <h3 className="ui header">New Topic</h3>
         <form className="ui form">
           <div className="field">
             <label>Thema</label>
@@ -48,7 +44,7 @@ var AddModal = React.createClass({
   }
 });
 
-var OpenAddModal = React.createClass({
+var OpenNewTopicModal = React.createClass({
     getInitialState(){
         return { show: false };
     },
@@ -62,62 +58,12 @@ var OpenAddModal = React.createClass({
         return (
           <div>
             <button onClick={this.open} className="ui green big-button button">
-              Neues Thema
+              New Topic
             </button>
-            <AddModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
+            <AddTopicModal close={this.close} show={this.state.show} onHide={this.close} {...this.props}/>
           </div>
         );
     }
 });
 
-var RemoveButton = React.createClass({
-  getInitialState() {
-    return {
-      dragOver: false
-    };
-  },
-  handleDragEnter() {
-    this.setState({
-      dragOver: true
-    });
-  },
-  handleDragLeave() {
-    this.setState({
-      dragOver: false
-    });
-    this.props.emit(new CustomEvent('dragLeaveTrash'));
-  },
-  handleClick() {
-		this.props.emit(new CustomEvent('removeTopic'));
-  },
-  handleDragOver() {
-    this.props.emit(new CustomEvent('dragOverTrash'));
-  },
-  render() {
-    let classes = 'ui big-button button' + (this.state.dragOver ? ' highlight-alt' : '');
-    return (
-			<div>
-				<div className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}>
-				Remove Topic
-				</div>
-			</div>
-    );
-  }
-});
-
-var Menu = React.createClass({
-  emit(event) {
-    this.getDOMNode().dispatchEvent(event);
-  },
-  render() {
-    return (
-
-      <div id="menuContainer" className="ui segment">
-        <OpenAddModal emit={this.emit} topicTypes={this.props.topicTypes} />
-        <RemoveButton emit={this.emit} />
-      </div>
-    );
-  }
-});
-
-export default Menu;
+export default OpenNewTopicModal;
