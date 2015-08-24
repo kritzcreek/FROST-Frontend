@@ -1,13 +1,16 @@
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 var purescript = require('gulp-purescript');
+var sass = require('gulp-sass');
+var minifyCss = require('gulp-minify-css');
+var autoprefixer = require('gulp-autoprefixer');
 var runSequence = require('run-sequence');
 var del = require('del');
 
 var paths = {
     'psc': ['src/**/*.purs', 'src/**/*.js'],
     'javascript': 'static/*js',
-    'static': 'static/*',
+    'static': 'static/**/*',
     'deployFolder': '../FROST-Backend/static/'
 };
 
@@ -34,8 +37,17 @@ gulp.task('copy-index-html', function() {
 });
 
 gulp.task('copy-css', function(){
-    return gulp.src('static/main.css')
-        .pipe(gulp.dest('dist/css/'));
+    return gulp.src('static/scss/main.scss')
+		.pipe(sass())
+		.on('error', function(err) {
+			console.log(err.message);
+			this.emit('end');
+		})
+		.pipe(autoprefixer({
+			browsers: 'last 2 versions'
+		}))
+		.pipe(minifyCss())
+		.pipe(gulp.dest('dist/css/'));
 });
 
 gulp.task('copy', ['copy-index-html', 'copy-css']);

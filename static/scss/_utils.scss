@@ -1,0 +1,15 @@
+.highlight {
+	background-color: $highlight-color;
+}
+.highlight-alt {
+	background-color: $c-theme-red !important;
+	color: white !important;
+}
+
+.draggable {
+	cursor: move;
+	user-select: none;
+	/* Required to make elements draggable in old WebKit */
+	-khtml-user-drag: element;
+	-webkit-user-drag: element;
+}

@@ -254,7 +254,8 @@ var Tablecell = React.createClass({
       return (
         <td>
           <div className={classes} draggable="true" onDragEnd={this.handleDragEnd} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} onDragStart={this.handleDragStart}>
-            {topic.description}
+						<p>Host: Zack</p>
+						<p>Topic: {topic.description}</p>
           </div>
         </td>
       );

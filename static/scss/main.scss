@@ -1,0 +1,30 @@
+@import "variables";
+@import "components/base";
+@import "utils";
+
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
+body, html {
+	height: 100%;
+}
+
+.navbar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+	width: 100%;
+}
+
+.page-wrap {
+	padding-top: 56px;
+	> .container-fluid {
+		padding: 0 1em;
+	}
+}
+
+

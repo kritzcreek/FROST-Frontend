@@ -1,0 +1,14 @@
+#menuContainer {
+	text-align: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	.trash {
+		font-size: 4em;
+		line-height: 1;
+		vertical-align: middle;
+	}
+	.big-button {
+		font-size: 2em;
+	}
+}

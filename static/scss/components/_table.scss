@@ -1,0 +1,37 @@
+#topics {
+	margin: 2em 0;
+}
+
+.topic {
+	padding: 1em;
+	background: $c-global-light;
+	border-radius: 3px;
+	display: inline-block;
+	margin-right: 1em;
+	&:hover, &:active {
+		background: $c-global-light-medium;
+	}
+}
+
+.ui.table td {
+	padding: 0;
+}
+
+td > div.tabletopic {
+	padding: 1em;
+	/*text-align: center;*/
+	height: 100%;
+	width: 100%;
+	/*display: inline-block;*/
+}
+
+td > .icon {
+	font-size: 1.5em;
+	float: right;
+}
+th > .icon {
+	position: relative;
+	top: 10px;
+	font-size: 1.5em;
+	float: right;
+}

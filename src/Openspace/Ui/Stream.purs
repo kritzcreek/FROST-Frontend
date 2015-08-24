@@ -76,9 +76,9 @@ uiStream = do
 main = do
   socketUrl <- getSocketUrl
   -- Uncomment for testing:
-  -- let sockEmitter = getSocket ("ws://frost.kritzcreek.me/socket/0")
+  let sockEmitter = getSocket ("ws://frost.kritzcreek.me/socket/0")
   -- Comment for testing:
-  let sockEmitter = getSocket ("ws://" ++ socketUrl)
+  -- let sockEmitter = getSocket ("ws://" ++ socketUrl)
 
 
   -- Initial State
