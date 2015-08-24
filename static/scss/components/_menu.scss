@@ -1,7 +1,11 @@
 #menuContainer {
-	text-align: center;
 	display: flex;
-	justify-content: space-between;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+	text-align: center;
+	justify-content: center;
 	align-items: center;
 	.trash {
 		font-size: 4em;
@@ -11,4 +15,8 @@
 	.big-button {
 		font-size: 2em;
 	}
+}
+
+.menu-delete {
+    background: red;
 }
