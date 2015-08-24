@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-var AddBlockModal = React.createClass({
+var NewBlockModal = React.createClass({
   parseDate(){
     return {
       description: $('#descriptionInput').val(),
@@ -21,7 +21,7 @@ var AddBlockModal = React.createClass({
   render() {
     return (
       <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
-        <h3 className="ui header">Add Block</h3>
+        <h3 className="ui header">New Block</h3>
         <form className="ui form">
           <div className="field">
             <label>Description</label>
@@ -35,15 +35,15 @@ var AddBlockModal = React.createClass({
             <label>End</label>
             <input id="endInput" type="number"/>
           </div>
-          <button type="button" onClick={this.props.close} className="ui button">Close</button>
-          <button type="button" onClick={this.handleClick} className="ui button">Add</button>
+          <button type="button" onClick={this.props.close} className="ui button">Cancel</button>
+          <button type="button" onClick={this.handleClick} className="ui button">Submit</button>
         </form>
       </Modal>
     );
   }
 });
 
-var OpenAddBlockModal = React.createClass({
+var OpenNewBlockModal = React.createClass({
     getInitialState(){
         return { show: false };
     },
@@ -56,11 +56,11 @@ var OpenAddBlockModal = React.createClass({
     render() {
         return (
           <div>
-            <AddBlockModal show={this.state.show} close={this.close} emit={this.props.emit}/>
+            <NewBlockModal show={this.state.show} close={this.close} emit={this.props.emit}/>
             <button onClick={this.open} className="ui button">New Block</button>
           </div>
         );
     }
 });
 
-export default OpenAddBlockModal;
+export default OpenNewBlockModal;

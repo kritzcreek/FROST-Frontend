@@ -1,8 +1,6 @@
 import React from 'react';
 import moment from 'moment';
 
-import AddBlockModal from 'babel!./AddBlockModal.js';
-
 var Tableheader = React.createClass({
     handleDelete(block) {
         var event = new CustomEvent('deleteBlock', {

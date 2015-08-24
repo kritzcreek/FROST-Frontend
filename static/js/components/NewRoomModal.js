@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 
 
-var AddRoomModal = React.createClass({
+var NewRoomModal = React.createClass({
   handleClick() {
     var event = new CustomEvent('addRoom', {
       'detail': {
@@ -16,7 +16,7 @@ var AddRoomModal = React.createClass({
   render() {
     return (
       <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
-        <h3 className="ui header">Add Room</h3>
+        <h3 className="ui header">New Room</h3>
         <form className="ui form" role="form">
           <div className="field">
             <label>Name</label>
@@ -26,10 +26,8 @@ var AddRoomModal = React.createClass({
             <label>Capacity</label>
             <input id="capacityInput" type="number"/>
           </div>
-          <button type="button" onClick={this.props.close} className="ui black deny button">
-            Cancel
-          </button>
-          <button type="button" onClick={this.handleClick} className="ui button">Add</button>
+          <button type="button" onClick={this.props.close} className="ui button">Cancel</button>
+          <button type="button" onClick={this.handleClick} className="ui button">Submit</button>
         </form>
       </Modal>
     );
@@ -37,7 +35,7 @@ var AddRoomModal = React.createClass({
 });
 
 
-var OpenAddRoomModal = React.createClass({
+var OpenNewRoomModal = React.createClass({
     getInitialState(){
         return {show: false};
     },
@@ -50,11 +48,11 @@ var OpenAddRoomModal = React.createClass({
     render() {
         return (
           <div>
-            <AddRoomModal show={this.state.show} close={this.close} emit={this.props.emit}/>
+            <NewRoomModal show={this.state.show} close={this.close} emit={this.props.emit}/>
             <button onClick={this.open} className="ui button">New Room</button>
           </div>
         );
     }
 });
 
-export default OpenAddRoomModal;
+export default OpenNewRoomModal;

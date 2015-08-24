@@ -20,7 +20,7 @@ var AddTopicModal = React.createClass({
     );
     return (
       <Modal isOpen={this.props.show} onRequestClose={this.props.close}>
-        <h3 className="ui header">Add Topic</h3>
+        <h3 className="ui header">New Topic</h3>
         <form className="ui form">
           <div className="field">
             <label>Thema</label>
@@ -44,7 +44,7 @@ var AddTopicModal = React.createClass({
   }
 });
 
-var OpenAddTopicModal = React.createClass({
+var OpenNewTopicModal = React.createClass({
     getInitialState(){
         return { show: false };
     },
@@ -66,4 +66,4 @@ var OpenAddTopicModal = React.createClass({
     }
 });
 
-export default OpenAddTopicModal;
+export default OpenNewTopicModal;

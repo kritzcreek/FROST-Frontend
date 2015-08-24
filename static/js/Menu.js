@@ -1,10 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import AddTopicModal from 'babel!./components/AddTopicModal.js';
+import NewTopicModal from 'babel!./components/NewTopicModal.js';
 import RemoveButton from 'babel!./components/RemoveButton.js';
-import AddBlockModal from 'babel!./components/AddBlockModal.js';
-import AddRoomModal from 'babel!./components/AddRoomModal.js';
-
+import NewBlockModal from 'babel!./components/NewBlockModal.js';
+import NewRoomModal from 'babel!./components/NewRoomModal.js';
 
 var Menu = React.createClass({
     emit(event) {
@@ -12,16 +11,16 @@ var Menu = React.createClass({
     },
     render() {
         let classes = "ui segment";
-        let el = (<AddTopicModal emit={this.emit} topicTypes={this.props.topicTypes} />);
+        let el = (<NewTopicModal emit={this.emit} topicTypes={this.props.topicTypes} />);
         if(window.switch === true){
             classes = "ui segment menu-delete";
             el = (<RemoveButton emit={this.emit} />);
         }
     return (
       <div id="menuContainer" className={classes}>
-            <AddRoomModal emit={this.emit}/>
+            <NewRoomModal emit={this.emit}/>
             {el}
-            <AddBlockModal emit={this.emit}/>
+            <NewBlockModal emit={this.emit}/>
       </div>
     );
   }
