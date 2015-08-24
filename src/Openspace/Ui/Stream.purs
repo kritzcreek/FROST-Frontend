@@ -59,7 +59,7 @@ dragStream = do
   runObservable $ const setDrag <$> dragStart
   runObservable $ const unsetDrag <$> dragEnd
 
-  return $ dragTopic `merge` reRender
+  return dragTopic
 
 uiStream :: forall eff. Eff( dom :: DOM | eff ) (Observable Action)
 uiStream = do
