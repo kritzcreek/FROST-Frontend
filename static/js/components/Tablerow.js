@@ -18,9 +18,9 @@ var Tablerow = React.createClass({
                     );
         return (
                 <tr>
-                <td>
-                {this.props.room.name}
-                <i className="close icon" onClick={this.handleDelete} />
+                <td className="table-room">
+                  <b>{this.props.room.name}</b>
+                  <i className="close icon" onClick={this.handleDelete} />
                 </td>
                 {topics}
             </tr>
