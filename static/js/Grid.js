@@ -3,8 +3,8 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import _ from 'lodash';
 
-import Tableheader from 'babel!./components/Tableheader.js';
-import Tablebody from 'babel!./components/Tablebody.js';
+import Tableheader from './components/Tableheader.js';
+import Tablebody from './components/Tablebody.js';
 
 var Grid = React.createClass({
   emit(event) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import Tablecell from 'babel!./Tablecell.js';
+import Tablecell from './Tablecell.js';
 
 import _ from 'lodash';
 

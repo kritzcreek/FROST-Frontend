@@ -1,8 +1,8 @@
 import React from 'react';
-import NewTopicModal from 'babel!./components/NewTopicModal.js';
-import RemoveButton from 'babel!./components/RemoveButton.js';
-import NewBlockModal from 'babel!./components/NewBlockModal.js';
-import NewRoomModal from 'babel!./components/NewRoomModal.js';
+import NewTopicModal from './components/NewTopicModal.js';
+import RemoveButton from './components/RemoveButton.js';
+import NewBlockModal from './components/NewBlockModal.js';
+import NewRoomModal from './components/NewRoomModal.js';
 
 import Rx from 'rx';
 

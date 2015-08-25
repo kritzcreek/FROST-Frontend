@@ -1,5 +1,5 @@
 import React from 'react';
-import Tablerow from 'babel!./Tablerow.js';
+import Tablerow from './Tablerow.js';
 
 import _ from 'lodash';
 

@@ -10,9 +10,9 @@ Modal.setAppElement(appElement);
 Modal.injectCSS();
 
 
-window.Grid = require('babel!./Grid.js');
-window.Menu = require('babel!./Menu.js');
-window.Topics = require('babel!./Topics.js');
+window.Grid = require('./Grid.js');
+window.Menu = require('./Menu.js');
+window.Topics = require('./Topics.js');
 window.React = require('react');
 
 require('Openspace.Ui.Stream').main();
