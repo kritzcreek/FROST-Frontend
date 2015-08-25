@@ -9,7 +9,6 @@ var del = require('del');
 
 var paths = {
     'psc': ['src/**/*.purs', 'src/**/*.js'],
-    'javascript': 'static/*js',
     'static': 'static/**/*',
     'deployFolder': '../FROST-Backend/static/'
 };
@@ -50,14 +49,12 @@ gulp.task('copy-css', function(){
 		.pipe(gulp.dest('dist/css/'));
 });
 
-gulp.task('copy', ['copy-index-html', 'copy-css']);
+gulp.task('copy', function(cb){
+    runSequence('copy-index-html', 'copy-css', cb);
+});
 
 gulp.task('make', function () {
     return purescript.psc({ src: sources, ffi: foreigns });
-});
-
-gulp.task('bundle-psc', ['make'], function (cb) {
-    return purescript.pscBundle({ src: 'output/**/*.js', output: 'dist/bundle.js', main: 'Main' });
 });
 
 gulp.task('bundle', function(){
@@ -72,10 +69,12 @@ gulp.task('deploy', function(){
 });
 
 gulp.task('watch', function() {
-    gulp.watch(paths.psc, ['bundle-psc', 'bundle']);
+    gulp.watch(paths.psc, function(){
+        runSequence('make', 'bundle');
+    });
     gulp.watch(paths.static, ['copy', 'bundle']);
 });
 
 gulp.task('default', function(cb){
-    runSequence('clean', ['copy', 'bundle-psc'], 'bundle', 'watch', cb);
+    runSequence('clean', ['copy', 'make'], 'bundle', 'watch', cb);
 });

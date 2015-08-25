@@ -1,4 +1,8 @@
 var path = require('path');
+var webpack = require('webpack');
+
+var DedupePlugin = new webpack.optimize.DedupePlugin();
+var UglifyJsPlugin = new webpack.optimize.UglifyJsPlugin();
 
 module.exports = {
     entry: './static/js/entry.js',
@@ -26,4 +30,7 @@ module.exports = {
             'output'
         ]
     }
+    // Uncomment for production build
+    /*, plugins: [DedupePlugin, UglifyJsPlugin]*/
 };
+
