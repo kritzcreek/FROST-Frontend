@@ -33,7 +33,7 @@ class Tablerow extends Component {
     return (
       <tr>
         <td className="table-room">
-          <b>{this.props.room.name}</b>
+          <strong>{this.props.room.name}</strong>
           <i className="close icon" onClick={this.handleDelete.bind(this)} />
         </td>
         {topics}

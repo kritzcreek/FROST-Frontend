@@ -3,13 +3,25 @@
 }
 .highlight-alt {
 	background-color: $c-theme-red !important;
-	color: white !important;
-}
+	color: white !important; }
 
 .draggable {
-	cursor: move;
+	//cursor: move;
+  cursor: grab;
 	user-select: none;
 	/* Required to make elements draggable in old WebKit */
 	-khtml-user-drag: element;
 	-webkit-user-drag: element;
 }
+.dragging {
+  cursor: grabbing;
+}
+
+.inline-button {
+  display: inline-block;
+  margin-right: 1em;
+  &:last-child {
+    margin-right: 0
+  }
+}
+

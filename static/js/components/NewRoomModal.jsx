@@ -43,8 +43,8 @@ class NewRoomModal extends Component {
 
   render() {
     return (
-      <div>
-        <button onClick={this.open} className="ui button">New Room</button>
+      <div className="inline-button">
+        <button onClick={this.open} className="ui huge button">New Room</button>
         <Modal isOpen={this.state.show} onRequestClose={this.close}>
           <h3 className="ui header">New Room</h3>
           <form className="ui form" role="form">

@@ -46,7 +46,7 @@ class NewBlockModal extends Component {
 
   render() {
     return (
-      <div>
+      <div className="inline-button">
         <Modal isOpen={this.state.show} onRequestClose={this.close}>
           <h3 className="ui header">New Block</h3>
           <form className="ui form">
@@ -66,7 +66,7 @@ class NewBlockModal extends Component {
             <button type="button" onClick={this.handleClick} className="ui button">Submit</button>
           </form>
         </Modal>
-        <button onClick={this.open} className="ui button">New Block</button>
+        <button onClick={this.open} className="ui huge button">New Block</button>
       </div>
     );
   }

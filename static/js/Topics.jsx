@@ -13,14 +13,13 @@ class Topics extends Component {
     const topics = this.props.topics.map(topic =>
       <Topic emit={this.emit.bind(this)} key={topic.description} topic={topic}/>
     );
+    const header = (<div className="ui segment"><h2>Drag your topic onto the time table</h2></div>);
     return (
       <div id="topicsContainer" className="ui segments">
-				<div className="ui segment">
-					<h3>Themen</h3>
-				</div>
-				<div className="ui segment">
+        { topics.length !== 0 ? header : null }
+        <div className="ui segment">
           {topics}
-				</div>
+        </div>
       </div>
     );
   }

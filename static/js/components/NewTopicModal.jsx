@@ -46,7 +46,7 @@ class NewTopicModal extends Component {
     );
     return (
       <div>
-        <button onClick={this.open} className="ui green big-button button">
+        <button onClick={this.open} className="ui green massive button">
           New Topic
         </button>
         <Modal isOpen={this.state.show} onRequestClose={this.close}>
