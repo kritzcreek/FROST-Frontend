@@ -25,7 +25,7 @@ class Tableheader extends Component {
       const timeEnd = moment(block.endHours + ':' + block.endMinutes,
         'HH:mm').format('LT');
       return (
-        <th key={block.description}>
+        <th className="table-block" key={block.description}>
           <i className="close icon" onClick={this.handleDelete.bind(this, block)} />
           <div>
             <div>

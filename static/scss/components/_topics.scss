@@ -1,7 +1,17 @@
 #topics {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 102px;
-    margin: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 100px;
+  margin: 0;
+  .ui.segments {
+    border-radius: 0;
+    border: none;
+  }
+  .ui.segment {
+    border: none;
+    &:empty {
+      padding: 0;
+    }
+  }
 }

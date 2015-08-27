@@ -1,57 +1,108 @@
-#topics {
-	margin: 2em 0;
+$topic-color: $c-global-light;
+
+@mixin topic-style($color: $topic-color, $alt: 'auto') {
+  background: $color;
+  border: 1px solid darken($color, 10%);
+  @if $alt == 'auto' {
+    color: #222;
+  } @else {
+    color: white;
+  }
+  &:hover:not([disabled]) {
+    background: darken($color, 7%);
+  }
 }
 
-.topic {
-	padding: 1em;
-	background: $c-global-light;
-	border-radius: 3px;
-	display: inline-block;
-	margin-right: 1em;
-	&:hover, &:active {
-		background: $c-global-light-medium;
-	}
-}
-
-.ui.table td {
-	padding: 0;
-}
-
-.ui.table tr {
-    height: 80px;
-}
-
-td > div.tabletopic {
-	padding: 1em;
-	/*text-align: center;*/
-	height: 100%;
-	width: 100%;
-	/*display: inline-block;*/
+.topic-default {
+  @include topic-style();
 }
 
 .topic-discussion {
-    background: coral;
+  @include topic-style($c-theme-yellow);
 }
 
 .topic-presentation {
-    background: lightblue;
+  @include topic-style($c-theme-blue, true);
 }
 
 .topic-workshop {
-    background: cornflowerblue;
+  @include topic-style($c-theme-olive, true);
+}
+
+#gridContainer {
+  [class*='topic-'] {
+    border: none;
+  }
+}
+
+#topics {
+  margin: 2em 0;
+}
+
+.topic {
+  padding: 1em;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 1em;
+}
+.topic--description {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+
+.ui.table td {
+  padding: 0;
+}
+
+.ui.table tr {
+  height: 70px;
+}
+
+td > div.tabletopic {
+  padding: 1em;
+  /*text-align: center;*/
+  height: 100%;
+  width: 100%;
+  /*display: inline-block;*/
 }
 
 td > .icon {
-	font-size: 1.5em;
-	float: right;
+  font-size: 1.5em;
+  float: right;
 }
 th > .icon {
-	position: relative;
-	top: 10px;
-	font-size: 1.5em;
-	float: right;
+  position: relative;
+  top: 10px;
+  font-size: 1.5em;
+  float: right;
+}
+
+.ui.table th.table-block,
+.ui.table td.table-room {
+  position: relative;
+  i {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: 0;
+    right: 0.15em;
+    cursor: pointer;
+  }
+  &:hover {
+    i {
+      display: inline-block;
+    }
+  }
+}
+.ui.table th.table-block {
+  padding: 1em 2.5em 1em 1em;
 }
 
 .ui.table td.table-room {
-    text-align: center;
+  text-align: center;
+  strong {
+    padding: 0 2.5em 0 2em;
+  }
 }

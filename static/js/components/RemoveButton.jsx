@@ -24,13 +24,12 @@ var RemoveButton = React.createClass({
         this.props.emit(new CustomEvent('dragOverTrash'));
     },
     render() {
-        let classes = 'ui big-button button' + (this.state.dragOver ? ' highlight-alt' : '');
+        let classes = 'menu-delete--inner' + (this.state.dragOver ? ' highlight-alt' : '');
        return (
-         <div>
-           <div className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}>
-            Remove Topic
-            </div>
-          </div>
+         <div className={classes} onClick={this.handleClick} onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}>
+         <i className="icon trash"></i>
+         <h2>Delete Topic</h2>
+        </div>
         );
     }
 });

@@ -1,17 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-
-function topicTypeColor(topicType) {
-  switch (topicType) {
-  case 'Discussion':
-    return 'topic-discussion';
-  case 'Presentation':
-    return 'topic-presentation';
-  case 'Workshop':
-    return 'topic-workshop';
-  default:
-    return '';
-  }
-}
+import {topicTypeColor} from '../utils/topics.js';
 
 export const propTypes = {
   emit: PropTypes.any,
@@ -76,7 +64,7 @@ class Tablecell extends Component {
             onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}
             onDragStart={this.handleDragStart}
             >
-						<p><b>{topic.description}</b></p>
+						<div className="topic--description">{topic.description}</div>
             <p>Host: <i>{topic.host}</i></p>
           </div>
         </td>

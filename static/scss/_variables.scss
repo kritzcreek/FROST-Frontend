@@ -3,6 +3,9 @@ $c-global-light: #E0E1E2;
 $c-global-light-medium: #CCCCCC;
 $c-global-light-dark: #BBBBBB;
 
+// Global Borders
+$c-global-light-border: 1px solid #C5C5C5;
+
 // Topic Colors
 $c-topic-red: red;
 $c-topic-green: green;
@@ -10,10 +13,10 @@ $c-topic-yellow: yellow;
 $c-topic-purple: purple;
 
 // Semantic UI Theme Colors
-$c-theme-red: #B03060;
+$c-theme-red: rgba(219, 40, 40, 1.0);
 $c-theme-orange: #FE9A76;
 $c-theme-yellow: #FFD700;
-$c-theme-olive: #32CD32;
+$c-theme-olive: rgba(181, 204, 24, 1.0);
 $c-theme-green: #016936;
 $c-theme-teal: #008080;
 $c-theme-blue: #0E6EB8;

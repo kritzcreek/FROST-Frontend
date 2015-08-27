@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {topicTypeColor} from '../utils/topics.js';
 
 export const propTypes = {
   emit: PropTypes.any,
@@ -13,6 +14,7 @@ const defaultProps = {
 class Topic extends Component {
   constructor() {
     super();
+    this.state = { isDragging: false}
     this.handleClick = this.handleClick.bind(this);
     this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDragEnd = this.handleDragEnd.bind(this);
@@ -24,6 +26,7 @@ class Topic extends Component {
     this.props.emit(event);
   }
   handleDragStart(e) {
+    this.setState({ isDragging: true });
     const event = new CustomEvent('dragStartTopic', {
       'detail': this.props.topic
     });
@@ -31,21 +34,26 @@ class Topic extends Component {
     this.props.emit(event);
   }
   handleDragEnd() {
+    this.setState({ isDragging: false });
     const event = new CustomEvent('dragEndTopic', {
-      'dconst': this.props.topic
+      'detail': this.props.topic
     });
     this.props.emit(event);
   }
   render() {
     const {description, typ, host} = this.props.topic;
+    const classes = 'topic draggable ' + topicTypeColor(typ) + (this.state.isDragging ? ' dragging' : '');
+
     return (
-      <div className={"topic draggable"} draggable="true"
+      <div className={classes} draggable="true"
         onClick={this.handleClick} onDragEnd={this.handleDragEnd}
         onDragStart={this.handleDragStart}>
-        <div className="description">
-          Thema: {description}</div>
+        <div className="topic--description">
+          {description}
+         </div>
         <div className="typ">
-          Typ: {typ}</div>
+          Typ: {typ}
+         </div>
         <div className="typ">
           Host: {host}</div>
       </div>

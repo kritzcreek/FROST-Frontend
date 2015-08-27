@@ -40,9 +40,13 @@ class Menu extends Component {
     } else {
       el = (
         <div id="menuContainer" className="ui segment">
-          <NewRoomModal emit={this.emit}/>
-          <NewTopicModal emit={this.emit} topicTypes={this.props.topicTypes} />
-          <NewBlockModal emit={this.emit}/>
+          <div>
+            <NewTopicModal emit={this.emit} topicTypes={this.props.topicTypes} />
+          </div>
+          <div>
+            <NewRoomModal emit={this.emit}/>
+            <NewBlockModal emit={this.emit}/>
+          </div>
         </div>
       );
     }
